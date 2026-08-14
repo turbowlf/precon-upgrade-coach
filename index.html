@@ -1,243 +1,790 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Precon Upgrade Coach</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <style>
-        * {
-            box-sizing: border-box;
-        }
+<title>Precon Upgrade Coach</title>
 
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #111827;
-            color: #f9fafb;
-        }
+<style>
+* {
+    box-sizing: border-box;
+}
 
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 60px 20px;
-        }
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #111827;
+    color: #f9fafb;
+}
 
-        h1 {
-            font-size: 48px;
-            margin-bottom: 10px;
-        }
+.container {
+    max-width: 900px;
+    margin: auto;
+    padding: 50px 20px;
+}
 
-        .subtitle {
-            color: #9ca3af;
-            font-size: 20px;
-            margin-bottom: 40px;
-        }
+h1 {
+    font-size: 46px;
+    margin-bottom: 8px;
+}
 
-        .card {
-            background: #1f2937;
-            border-radius: 16px;
-            padding: 30px;
-            margin-bottom: 25px;
-        }
+.subtitle {
+    color: #9ca3af;
+    font-size: 19px;
+    margin-bottom: 35px;
+}
 
-        textarea {
-            width: 100%;
-            min-height: 300px;
-            padding: 15px;
-            border-radius: 10px;
-            border: 1px solid #4b5563;
-            background: #111827;
-            color: white;
-            font-size: 14px;
-            resize: vertical;
-        }
+.card {
+    background: #1f2937;
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 22px;
+}
 
-        button {
-            margin-top: 15px;
-            padding: 14px 24px;
-            border: none;
-            border-radius: 10px;
-            background: #f59e0b;
-            color: #111827;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-        }
+textarea {
+    width: 100%;
+    min-height: 300px;
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid #4b5563;
+    background: #111827;
+    color: white;
+    font-size: 14px;
+    resize: vertical;
+}
 
-        button:hover {
-            background: #fbbf24;
-        }
+button {
+    margin-top: 15px;
+    padding: 14px 24px;
+    border: none;
+    border-radius: 10px;
+    background: #f59e0b;
+    color: #111827;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
 
-        #results {
-            display: none;
-        }
+button:hover {
+    background: #fbbf24;
+}
 
-        .score {
-            font-size: 48px;
-            font-weight: bold;
-        }
+#results {
+    display: none;
+}
 
-        .category {
-            display: flex;
-            justify-content: space-between;
-            padding: 14px 0;
-            border-bottom: 1px solid #374151;
-        }
+.score {
+    font-size: 52px;
+    font-weight: bold;
+    margin: 10px 0 25px;
+}
 
-        .weakness {
-            color: #fbbf24;
-            font-weight: bold;
-        }
-    </style>
+.category {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 0;
+    border-bottom: 1px solid #374151;
+}
+
+.weakness {
+    color: #fbbf24;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.feedback {
+    color: #d1d5db;
+    line-height: 1.6;
+}
+
+.stat {
+    color: #9ca3af;
+    margin-bottom: 8px;
+}
+</style>
 </head>
 
 <body>
 
 <div class="container">
 
-    <h1>Precon Upgrade Coach</h1>
+<h1>Precon Upgrade Coach</h1>
 
-    <p class="subtitle">
-        Upgrade your Commander precon without wasting money.
-    </p>
+<p class="subtitle">
+Upgrade your Commander precon without wasting money.
+</p>
 
-    <div class="card">
+<div class="card">
 
-        <h2>Paste Your Decklist</h2>
+<h2>Paste Your Decklist</h2>
 
-        <p>
-            Paste your Moxfield decklist below and we'll analyze it.
-        </p>
+<p>
+Paste your Moxfield decklist below and we'll analyze it.
+</p>
 
-        <textarea id="decklist"
-            placeholder="Paste your Commander decklist here..."></textarea>
+<textarea id="decklist"
+placeholder="Paste your Commander decklist here..."></textarea>
 
-        <button onclick="analyzeDeck()">
-            Analyze Deck
-        </button>
+<button onclick="analyzeDeck()">
+Analyze Deck
+</button>
 
-    </div>
+</div>
 
-    <div class="card" id="results">
+<div class="card" id="results">
 
-        <h2>Your Deck Score</h2>
+<h2>Your Deck Score</h2>
 
-        <div class="score" id="overallScore">
-            0/100
-        </div>
+<div class="score" id="overallScore">0/100</div>
 
-        <div class="category">
-            <span>Mana</span>
-            <strong id="manaScore">0/15</strong>
-        </div>
+<div class="stat" id="deckCount"></div>
+<div class="stat" id="landCount"></div>
+<div class="stat" id="creatureCount"></div>
 
-        <div class="category">
-            <span>Card Advantage</span>
-            <strong id="drawScore">0/15</strong>
-        </div>
+<br>
 
-        <div class="category">
-            <span>Interaction</span>
-            <strong id="interactionScore">0/15</strong>
-        </div>
+<div class="category">
+<span>Mana</span>
+<strong id="manaScore">0/15</strong>
+</div>
 
-        <div class="category">
-            <span>Synergy</span>
-            <strong id="synergyScore">0/20</strong>
-        </div>
+<div class="category">
+<span>Card Advantage</span>
+<strong id="drawScore">0/15</strong>
+</div>
 
-        <div class="category">
-            <span>Win Conditions</span>
-            <strong id="winScore">0/10</strong>
-        </div>
+<div class="category">
+<span>Interaction</span>
+<strong id="interactionScore">0/15</strong>
+</div>
 
-        <div class="category">
-            <span>Consistency</span>
-            <strong id="consistencyScore">0/10</strong>
-        </div>
+<div class="category">
+<span>Synergy</span>
+<strong id="synergyScore">0/20</strong>
+</div>
 
-        <div class="category">
-            <span>Mana Curve</span>
-            <strong id="curveScore">0/15</strong>
-        </div>
+<div class="category">
+<span>Win Conditions</span>
+<strong id="winScore">0/10</strong>
+</div>
 
-        <br>
+<div class="category">
+<span>Consistency</span>
+<strong id="consistencyScore">0/10</strong>
+</div>
 
-        <h3>Biggest Weakness</h3>
+<div class="category">
+<span>Mana Curve</span>
+<strong id="curveScore">0/15</strong>
+</div>
 
-        <p class="weakness" id="weakness">
-            -
-        </p>
+<br>
 
-    </div>
+<h3>Biggest Weakness</h3>
+
+<p class="weakness" id="weakness">-</p>
+
+<h3>Coach's Advice</h3>
+
+<p class="feedback" id="feedback">-</p>
+
+</div>
 
 </div>
 
 <script>
 
+/*
+==================================================
+CARD CLASSIFICATION
+==================================================
+These lists are our first rules.
+
+We'll expand them as we test more decks.
+*/
+
+const rampCards = [
+    "Sol Ring",
+    "Arcane Signet",
+    "Birds of Paradise",
+    "Cultivate",
+    "Farseek",
+    "Chromatic Lantern",
+    "Commander's Sphere",
+    "Gilded Goose",
+    "Prosperous Innkeeper",
+    "Tireless Provisioner",
+    "Generous Ent"
+];
+
+const drawCards = [
+    "Harmonize",
+    "Night's Whisper",
+    "Mentor of the Meek",
+    "Well of Lost Dreams",
+    "Dawn of Hope",
+    "The Gaffer",
+    "Savvy Hunter",
+    "Trading Post"
+];
+
+const interactionCards = [
+    "Anguished Unmaking",
+    "Go for the Throat",
+    "Mortify",
+    "Path to Exile",
+    "Swords to Plowshares",
+    "Toxic Deluge",
+    "Fell the Mighty",
+    "Fumigate",
+    "Dusk / Dawn",
+    "Crypt Incursion",
+    "Shire Shirriff"
+];
+
+const synergyCards = [
+    "Bilbo, Birthday Celebrant",
+    "Butterbur, Bree Innkeeper",
+    "Feasting Hobbit",
+    "Field-Tested Frying Pan",
+    "Farmer Cotton",
+    "Mirkwood Bats",
+    "Motivated Pony",
+    "Of Herbs and Stewed Rabbit",
+    "Prize Pig",
+    "Rapacious Guest",
+    "Rosie Cotton of South Lane",
+    "Sanguine Bond",
+    "Shire Shirriff",
+    "The Gaffer",
+    "Tireless Provisioner",
+    "Treebeard, Gracious Host",
+    "Well of Lost Dreams",
+    "Prosperous Innkeeper",
+    "Savvy Hunter"
+];
+
+const winCards = [
+    "Sanguine Bond",
+    "Mirkwood Bats",
+    "Bilbo, Birthday Celebrant",
+    "Gollum, Obsessed Stalker",
+    "Rosie Cotton of South Lane",
+    "Treebeard, Gracious Host"
+];
+
+/*
+==================================================
+LAND DETECTION
+==================================================
+Basic first-pass land detection.
+*/
+
+const knownNonBasicLands = [
+    "Access Tunnel",
+    "Ash Barrens",
+    "Brushland",
+    "Canopy Vista",
+    "Command Tower",
+    "Evolving Wilds",
+    "Exotic Orchard",
+    "Fortified Village",
+    "Ghost Quarter",
+    "Graypelt Refuge",
+    "Isolated Chapel",
+    "Murmuring Bosk",
+    "Necroblossom Snarl",
+    "Path of Ancestry",
+    "Rogue's Passage",
+    "Sandsteppe Citadel",
+    "Scattered Groves",
+    "Scoured Barrens",
+    "Shineshadow Snarl",
+    "Shire Terrace",
+    "Sunpetal Grove",
+    "Woodland Cemetery"
+];
+
+function isBasicLand(name) {
+
+    return (
+        name === "Forest" ||
+        name === "Plains" ||
+        name === "Island" ||
+        name === "Swamp" ||
+        name === "Mountain"
+    );
+}
+
+function isLand(name) {
+
+    return (
+        isBasicLand(name) ||
+        knownNonBasicLands.includes(name)
+    );
+}
+
+/*
+==================================================
+DECK PARSER
+==================================================
+Reads lines such as:
+
+1 Sol Ring
+8 Forest
+1 Swords to Plowshares
+*/
+
+function parseDeck(text) {
+
+    const lines = text.split("\n");
+
+    const cards = [];
+
+    lines.forEach(line => {
+
+        line = line.trim();
+
+        if (!line) return;
+
+        /*
+        Remove Moxfield set information.
+
+        Example:
+        1 Sol Ring (LTC) 284
+
+        becomes:
+        Sol Ring
+        */
+
+        const match = line.match(/^(\d+)\s+(.+?)(?:\s+\([A-Z0-9]+\).*)?$/);
+
+        if (!match) return;
+
+        const quantity = parseInt(match[1]);
+        let name = match[2].trim();
+
+        cards.push({
+            name: name,
+            quantity: quantity
+        });
+
+    });
+
+    return cards;
+}
+
+/*
+==================================================
+UTILITY FUNCTIONS
+==================================================
+*/
+
+function countCards(cards) {
+
+    return cards.reduce(
+        (total, card) => total + card.quantity,
+        0
+    );
+}
+
+function countMatching(cards, list) {
+
+    return cards.reduce((total, card) => {
+
+        if (list.includes(card.name)) {
+
+            return total + card.quantity;
+
+        }
+
+        return total;
+
+    }, 0);
+}
+
+function countLands(cards) {
+
+    return cards.reduce((total, card) => {
+
+        if (isLand(card.name)) {
+
+            return total + card.quantity;
+
+        }
+
+        return total;
+
+    }, 0);
+}
+
+/*
+==================================================
+SCORING
+==================================================
+*/
+
+function scoreRamp(ramp) {
+
+    if (ramp >= 10) return 15;
+    if (ramp >= 8) return 13;
+    if (ramp >= 6) return 11;
+    if (ramp >= 4) return 8;
+    if (ramp >= 2) return 5;
+
+    return 2;
+}
+
+function scoreDraw(draw) {
+
+    if (draw >= 10) return 15;
+    if (draw >= 8) return 13;
+    if (draw >= 6) return 11;
+    if (draw >= 4) return 8;
+    if (draw >= 2) return 5;
+
+    return 2;
+}
+
+function scoreInteraction(interaction) {
+
+    if (interaction >= 10) return 15;
+    if (interaction >= 8) return 13;
+    if (interaction >= 6) return 11;
+    if (interaction >= 4) return 8;
+    if (interaction >= 2) return 5;
+
+    return 2;
+}
+
+function scoreMana(lands, ramp) {
+
+    let score = 0;
+
+    if (lands >= 35 && lands <= 40) score += 9;
+    else if (lands >= 32 && lands <= 42) score += 7;
+    else score += 4;
+
+    if (ramp >= 8) score += 6;
+    else if (ramp >= 5) score += 4;
+    else score += 2;
+
+    return Math.min(score, 15);
+}
+
+function scoreSynergy(synergy, totalCards) {
+
+    const percentage = synergy / Math.max(totalCards, 1);
+
+    if (percentage >= 0.22) return 20;
+    if (percentage >= 0.18) return 17;
+    if (percentage >= 0.15) return 14;
+    if (percentage >= 0.12) return 11;
+
+    return 8;
+}
+
+function scoreWinConditions(win) {
+
+    if (win >= 6) return 10;
+    if (win >= 4) return 8;
+    if (win >= 3) return 6;
+    if (win >= 2) return 4;
+
+    return 2;
+}
+
+function scoreConsistency(ramp, draw, synergy) {
+
+    const total = ramp + draw + synergy;
+
+    if (total >= 30) return 10;
+    if (total >= 24) return 8;
+    if (total >= 18) return 6;
+    if (total >= 12) return 4;
+
+    return 2;
+}
+
+function scoreCurve(totalCards) {
+
+    /*
+    For now we don't have mana costs.
+
+    We'll improve this later when we add
+    actual card data.
+    */
+
+    if (totalCards >= 95 && totalCards <= 101) {
+        return 10;
+    }
+
+    return 7;
+}
+
+/*
+==================================================
+MAIN ANALYZER
+==================================================
+*/
+
 function analyzeDeck() {
 
-    const decklist = document
-        .getElementById("decklist")
-        .value
-        .trim();
+    const text =
+        document.getElementById("decklist").value.trim();
 
-    if (!decklist) {
+    if (!text) {
+
         alert("Paste your decklist first.");
+
         return;
     }
 
-    // Temporary test scores.
-    // We will replace these with the real
-    // deck-analysis engine next.
+    const cards = parseDeck(text);
 
-    const mana = 13;
-    const draw = 9;
-    const interaction = 12;
-    const synergy = 17;
-    const win = 8;
-    const consistency = 8;
-    const curve = 7;
+    if (cards.length === 0) {
 
-    const total =
-        mana +
-        draw +
-        interaction +
-        synergy +
-        win +
-        consistency +
-        curve;
+        alert(
+            "I couldn't read that decklist. Try using Moxfield's text export."
+        );
+
+        return;
+    }
+
+    const totalCards = countCards(cards);
+
+    const lands = countLands(cards);
+
+    const ramp = countMatching(cards, rampCards);
+
+    const draw = countMatching(cards, drawCards);
+
+    const interaction =
+        countMatching(cards, interactionCards);
+
+    const synergy =
+        countMatching(cards, synergyCards);
+
+    const win =
+        countMatching(cards, winCards);
+
+    /*
+    Count creatures using the known cards in our
+    first test deck.
+
+    This will become much smarter later.
+    */
+
+    const creatures = cards.filter(card => {
+
+        return (
+            !isLand(card.name) &&
+            (
+                synergyCards.includes(card.name) ||
+                winCards.includes(card.name) ||
+                rampCards.includes(card.name)
+            )
+        );
+
+    }).reduce(
+        (total, card) => total + card.quantity,
+        0
+    );
+
+    /*
+    Calculate scores.
+    */
+
+    const manaScore =
+        scoreMana(lands, ramp);
+
+    const drawScore =
+        scoreDraw(draw);
+
+    const interactionScore =
+        scoreInteraction(interaction);
+
+    const synergyScore =
+        scoreSynergy(synergy, totalCards);
+
+    const winScore =
+        scoreWinConditions(win);
+
+    const consistencyScore =
+        scoreConsistency(ramp, draw, synergy);
+
+    const curveScore =
+        scoreCurve(totalCards);
+
+    const totalScore =
+        manaScore +
+        drawScore +
+        interactionScore +
+        synergyScore +
+        winScore +
+        consistencyScore +
+        curveScore;
+
+    /*
+    Find weakest category.
+    */
+
+    const scores = {
+
+        "Mana": manaScore,
+
+        "Card Advantage": drawScore,
+
+        "Interaction": interactionScore,
+
+        "Synergy": synergyScore,
+
+        "Win Conditions": winScore,
+
+        "Consistency": consistencyScore,
+
+        "Mana Curve": curveScore
+
+    };
+
+    let weakest = "Mana";
+
+    let weakestPercent = 999;
+
+    const maximums = {
+
+        "Mana": 15,
+
+        "Card Advantage": 15,
+
+        "Interaction": 15,
+
+        "Synergy": 20,
+
+        "Win Conditions": 10,
+
+        "Consistency": 10,
+
+        "Mana Curve": 15
+
+    };
+
+    for (const category in scores) {
+
+        const percentage =
+            scores[category] /
+            maximums[category];
+
+        if (percentage < weakestPercent) {
+
+            weakestPercent = percentage;
+
+            weakest = category;
+
+        }
+
+    }
+
+    /*
+    Generate advice.
+    */
+
+    let advice = "";
+
+    if (weakest === "Card Advantage") {
+
+        advice =
+            "Your deck may struggle to keep cards flowing. " +
+            "Look for repeatable draw engines and cards that " +
+            "turn your Food, tokens, or lifegain into additional cards.";
+
+    } else if (weakest === "Interaction") {
+
+        advice =
+            "Your deck could use more ways to answer opposing threats. " +
+            "Prioritize efficient removal and flexible interaction.";
+
+    } else if (weakest === "Mana") {
+
+        advice =
+            "Your mana development could be improved. " +
+            "Consider adding more reliable ramp or improving the mana base.";
+
+    } else if (weakest === "Synergy") {
+
+        advice =
+            "Some cards may not contribute strongly enough to your deck's " +
+            "main strategy. Replacing low-synergy cards should improve consistency.";
+
+    } else if (weakest === "Win Conditions") {
+
+        advice =
+            "Your deck appears to have an engine but may have trouble " +
+            "turning that advantage into an actual win.";
+
+    } else {
+
+        advice =
+            "Your deck's fundamentals are reasonably balanced. " +
+            "Focus upgrades on your weakest category and test the changes.";
+
+    }
+
+    /*
+    Display results.
+    */
 
     document.getElementById("overallScore").textContent =
-        total + "/100";
+        totalScore + "/100";
+
+    document.getElementById("deckCount").textContent =
+        "Cards detected: " + totalCards;
+
+    document.getElementById("landCount").textContent =
+        "Lands detected: " + lands;
+
+    document.getElementById("creatureCount").textContent =
+        "Relevant creatures detected: " + creatures;
 
     document.getElementById("manaScore").textContent =
-        mana + "/15";
+        manaScore + "/15";
 
     document.getElementById("drawScore").textContent =
-        draw + "/15";
+        drawScore + "/15";
 
     document.getElementById("interactionScore").textContent =
-        interaction + "/15";
+        interactionScore + "/15";
 
     document.getElementById("synergyScore").textContent =
-        synergy + "/20";
+        synergyScore + "/20";
 
     document.getElementById("winScore").textContent =
-        win + "/10";
+        winScore + "/10";
 
     document.getElementById("consistencyScore").textContent =
-        consistency + "/10";
+        consistencyScore + "/10";
 
     document.getElementById("curveScore").textContent =
-        curve + "/15";
+        curveScore + "/15";
 
     document.getElementById("weakness").textContent =
-        "Card Advantage";
+        weakest;
+
+    document.getElementById("feedback").textContent =
+        advice;
 
     document.getElementById("results").style.display =
         "block";
+
+    /*
+    Scroll down to the results.
+    */
+
+    document.getElementById("results")
+        .scrollIntoView({
+            behavior: "smooth"
+        });
 }
 
 </script>
