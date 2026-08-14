@@ -266,12 +266,50 @@ const synergyCards = [
 ];
 
 const winCards = [
-    "Sanguine Bond",
-    "Mirkwood Bats",
+  /*
+==================================================
+FOOD & FELLOWSHIP STRATEGY
+==================================================
+*/
+
+const foodStrategyCards = [
+    "Banquet Guests",
     "Bilbo, Birthday Celebrant",
-    "Gollum, Obsessed Stalker",
+    "Butterbur, Bree Innkeeper",
+    "Feasting Hobbit",
+    "Field-Tested Frying Pan",
+    "Farmer Cotton",
+    "Gilded Goose",
+    "Lobelia, Defender of Bag End",
+    "Mirkwood Bats",
+    "Of Herbs and Stewed Rabbit",
+    "Orchard Strider",
+    "Prize Pig",
+    "Prosperous Innkeeper",
+    "Rapacious Guest",
     "Rosie Cotton of South Lane",
-    "Treebeard, Gracious Host"
+    "Savvy Hunter",
+    "The Gaffer",
+    "Tireless Provisioner",
+    "Trading Post",
+    "Treebeard, Gracious Host",
+    "Well of Lost Dreams"
+];
+
+function calculateStrategyScore(cards) {
+
+    const strategyCards =
+        countMatching(cards, foodStrategyCards);
+
+    if (strategyCards >= 20) return 20;
+    if (strategyCards >= 17) return 18;
+    if (strategyCards >= 14) return 16;
+    if (strategyCards >= 11) return 13;
+    if (strategyCards >= 8) return 10;
+    if (strategyCards >= 5) return 7;
+
+    return 4;
+}
 ];
 
 /*
@@ -605,8 +643,8 @@ function analyzeDeck() {
     const interactionScore =
         scoreInteraction(interaction);
 
-    const synergyScore =
-        scoreSynergy(synergy, totalCards);
+   const synergyScore =
+    strategyScore;
 
     const winScore =
         scoreWinConditions(win);
