@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Precon Upgrade Coach</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #111827;
+            color: #f9fafb;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+
+        h1 {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #9ca3af;
+            font-size: 20px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: #1f2937;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 25px;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 300px;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #4b5563;
+            background: #111827;
+            color: white;
+            font-size: 14px;
+            resize: vertical;
+        }
+
+        button {
+            margin-top: 15px;
+            padding: 14px 24px;
+            border: none;
+            border-radius: 10px;
+            background: #f59e0b;
+            color: #111827;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #fbbf24;
+        }
+
+        #results {
+            display: none;
+        }
+
+        .score {
+            font-size: 48px;
+            font-weight: bold;
+        }
+
+        .category {
+            display: flex;
+            justify-content: space-between;
+            padding: 14px 0;
+            border-bottom: 1px solid #374151;
+        }
+
+        .weakness {
+            color: #fbbf24;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Precon Upgrade Coach</h1>
+
+    <p class="subtitle">
+        Upgrade your Commander precon without wasting money.
+    </p>
+
+    <div class="card">
+
+        <h2>Paste Your Decklist</h2>
+
+        <p>
+            Paste your Moxfield decklist below and we'll analyze it.
+        </p>
+
+        <textarea id="decklist"
+            placeholder="Paste your Commander decklist here..."></textarea>
+
+        <button onclick="analyzeDeck()">
+            Analyze Deck
+        </button>
+
+    </div>
+
+    <div class="card" id="results">
+
+        <h2>Your Deck Score</h2>
+
+        <div class="score" id="overallScore">
+            0/100
+        </div>
+
+        <div class="category">
+            <span>Mana</span>
+            <strong id="manaScore">0/15</strong>
+        </div>
+
+        <div class="category">
+            <span>Card Advantage</span>
+            <strong id="drawScore">0/15</strong>
+        </div>
+
+        <div class="category">
+            <span>Interaction</span>
+            <strong id="interactionScore">0/15</strong>
+        </div>
+
+        <div class="category">
+            <span>Synergy</span>
+            <strong id="synergyScore">0/20</strong>
+        </div>
+
+        <div class="category">
+            <span>Win Conditions</span>
+            <strong id="winScore">0/10</strong>
+        </div>
+
+        <div class="category">
+            <span>Consistency</span>
+            <strong id="consistencyScore">0/10</strong>
+        </div>
+
+        <div class="category">
+            <span>Mana Curve</span>
+            <strong id="curveScore">0/15</strong>
+        </div>
+
+        <br>
+
+        <h3>Biggest Weakness</h3>
+
+        <p class="weakness" id="weakness">
+            -
+        </p>
+
+    </div>
+
+</div>
+
+<script>
+
+function analyzeDeck() {
+
+    const decklist = document
+        .getElementById("decklist")
+        .value
+        .trim();
+
+    if (!decklist) {
+        alert("Paste your decklist first.");
+        return;
+    }
+
+    // Temporary test scores.
+    // We will replace these with the real
+    // deck-analysis engine next.
+
+    const mana = 13;
+    const draw = 9;
+    const interaction = 12;
+    const synergy = 17;
+    const win = 8;
+    const consistency = 8;
+    const curve = 7;
+
+    const total =
+        mana +
+        draw +
+        interaction +
+        synergy +
+        win +
+        consistency +
+        curve;
+
+    document.getElementById("overallScore").textContent =
+        total + "/100";
+
+    document.getElementById("manaScore").textContent =
+        mana + "/15";
+
+    document.getElementById("drawScore").textContent =
+        draw + "/15";
+
+    document.getElementById("interactionScore").textContent =
+        interaction + "/15";
+
+    document.getElementById("synergyScore").textContent =
+        synergy + "/20";
+
+    document.getElementById("winScore").textContent =
+        win + "/10";
+
+    document.getElementById("consistencyScore").textContent =
+        consistency + "/10";
+
+    document.getElementById("curveScore").textContent =
+        curve + "/15";
+
+    document.getElementById("weakness").textContent =
+        "Card Advantage";
+
+    document.getElementById("results").style.display =
+        "block";
+}
+
+</script>
+
+</body>
+</html>
