@@ -1,9 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Precon Upgrade Coach</title>
 
 <style>
@@ -123,20 +120,25 @@ Upgrade your Commander precon without wasting money.
 Paste your Moxfield decklist below and we'll analyze it.
 </p>
 
-<textarea id="decklist"
-placeholder="Paste your Commander decklist here..."></textarea>
+<textarea
+    id="decklist"
+    placeholder="Paste your Commander decklist here..."
+></textarea>
 
-<button onclick="analyzeDeck()">
+<button type="button" onclick="analyzeDeck()">
 Analyze Deck
 </button>
 
 </div>
 
+
 <div class="card" id="results">
 
 <h2>Your Deck Score</h2>
 
-<div class="score" id="overallScore">0/100</div>
+<div class="score" id="overallScore">
+0/100
+</div>
 
 <div class="stat" id="deckCount"></div>
 <div class="stat" id="landCount"></div>
@@ -183,28 +185,29 @@ Analyze Deck
 
 <h3>Biggest Weakness</h3>
 
-<p class="weakness" id="weakness">-</p>
+<p class="weakness" id="weakness">
+-
+</p>
 
 <h3>Coach's Advice</h3>
 
-<p class="feedback" id="feedback">-</p>
+<p class="feedback" id="feedback">
+-
+</p>
 
 </div>
 
 </div>
+
 
 <script>
 
-/*
-==================================================
-CARD CLASSIFICATION
-==================================================
-These lists are our first rules.
-
-We'll expand them as we test more decks.
-*/
+/* ==================================================
+   CARD CLASSIFICATION
+   ================================================== */
 
 const rampCards = [
+
     "Sol Ring",
     "Arcane Signet",
     "Birds of Paradise",
@@ -216,9 +219,12 @@ const rampCards = [
     "Prosperous Innkeeper",
     "Tireless Provisioner",
     "Generous Ent"
+
 ];
 
+
 const drawCards = [
+
     "Harmonize",
     "Night's Whisper",
     "Mentor of the Meek",
@@ -227,9 +233,12 @@ const drawCards = [
     "The Gaffer",
     "Savvy Hunter",
     "Trading Post"
+
 ];
 
+
 const interactionCards = [
+
     "Anguished Unmaking",
     "Go for the Throat",
     "Mortify",
@@ -241,9 +250,12 @@ const interactionCards = [
     "Dusk / Dawn",
     "Crypt Incursion",
     "Shire Shirriff"
+
 ];
 
+
 const synergyCards = [
+
     "Bilbo, Birthday Celebrant",
     "Butterbur, Bree Innkeeper",
     "Feasting Hobbit",
@@ -263,23 +275,28 @@ const synergyCards = [
     "Well of Lost Dreams",
     "Prosperous Innkeeper",
     "Savvy Hunter"
+
 ];
 
+
 const winCards = [
+
     "Sanguine Bond",
     "Mirkwood Bats",
     "Bilbo, Birthday Celebrant",
     "Gollum, Obsessed Stalker",
     "Rosie Cotton of South Lane",
     "Treebeard, Gracious Host"
+
 ];
- 
-==================================================
-FOOD & FELLOWSHIP STRATEGY
-==================================================
-*/
+
+
+/* ==================================================
+   FOOD & FELLOWSHIP STRATEGY
+   ================================================== */
 
 const foodStrategyCards = [
+
     "Banquet Guests",
     "Bilbo, Birthday Celebrant",
     "Butterbur, Bree Innkeeper",
@@ -301,32 +318,16 @@ const foodStrategyCards = [
     "Trading Post",
     "Treebeard, Gracious Host",
     "Well of Lost Dreams"
+
 ];
 
-function calculateStrategyScore(cards) {
 
-    const strategyCards =
-        countMatching(cards, foodStrategyCards);
-
-    if (strategyCards >= 20) return 20;
-    if (strategyCards >= 17) return 18;
-    if (strategyCards >= 14) return 16;
-    if (strategyCards >= 11) return 13;
-    if (strategyCards >= 8) return 10;
-    if (strategyCards >= 5) return 7;
-
-    return 4;
-}
-];
-
-/*
-==================================================
-LAND DETECTION
-==================================================
-Basic first-pass land detection.
-*/
+/* ==================================================
+   LAND DETECTION
+   ================================================== */
 
 const knownNonBasicLands = [
+
     "Access Tunnel",
     "Ash Barrens",
     "Brushland",
@@ -349,18 +350,24 @@ const knownNonBasicLands = [
     "Shire Terrace",
     "Sunpetal Grove",
     "Woodland Cemetery"
+
 ];
+
 
 function isBasicLand(name) {
 
-    return (
-        name === "Forest" ||
-        name === "Plains" ||
-        name === "Island" ||
-        name === "Swamp" ||
-        name === "Mountain"
-    );
+    return [
+
+        "Forest",
+        "Plains",
+        "Island",
+        "Swamp",
+        "Mountain"
+
+    ].includes(name);
+
 }
+
 
 function isLand(name) {
 
@@ -368,468 +375,839 @@ function isLand(name) {
         isBasicLand(name) ||
         knownNonBasicLands.includes(name)
     );
+
 }
 
-/*
-==================================================
-DECK PARSER
-==================================================
-Reads lines such as:
 
-1 Sol Ring
-8 Forest
-1 Swords to Plowshares
-*/
+/* ==================================================
+   DECK PARSER
+   ================================================== */
 
 function parseDeck(text) {
 
-    const lines = text.split("\n");
-
     const cards = [];
 
-    lines.forEach(line => {
+    const lines = text.split(/\r?\n/);
 
-        line = line.trim();
+    for (const rawLine of lines) {
 
-        if (!line) return;
+        const line = rawLine.trim();
+
+        if (!line) {
+            continue;
+        }
+
 
         /*
-        Remove Moxfield set information.
+        Handles Moxfield lines like:
 
-        Example:
         1 Sol Ring (LTC) 284
-
-        becomes:
-        Sol Ring
+        8 Forest (LTR) 270
         */
 
-        const match = line.match(/^(\d+)\s+(.+?)(?:\s+\([A-Z0-9]+\).*)?$/);
+        const match = line.match(
+            /^(\d+)\s+(.+?)(?:\s+\([A-Za-z0-9]+\).*)?$/
+        );
 
-        if (!match) return;
 
-        const quantity = parseInt(match[1]);
-        let name = match[2].trim();
+        if (!match) {
+            continue;
+        }
+
+
+        const quantity =
+            Number.parseInt(match[1], 10);
+
+        const name =
+            match[2].trim();
+
+
+        if (
+            !name ||
+            !Number.isFinite(quantity) ||
+            quantity <= 0
+        ) {
+            continue;
+        }
+
 
         cards.push({
+
             name: name,
+
             quantity: quantity
+
         });
 
-    });
+    }
+
 
     return cards;
+
 }
 
-/*
-==================================================
-UTILITY FUNCTIONS
-==================================================
-*/
+
+/* ==================================================
+   UTILITY FUNCTIONS
+   ================================================== */
 
 function countCards(cards) {
 
     return cards.reduce(
-        (total, card) => total + card.quantity,
+
+        (total, card) =>
+            total + card.quantity,
+
         0
+
     );
+
 }
+
 
 function countMatching(cards, list) {
 
-    return cards.reduce((total, card) => {
+    return cards.reduce(
 
-        if (list.includes(card.name)) {
+        (total, card) => {
 
-            return total + card.quantity;
+            if (list.includes(card.name)) {
 
-        }
+                return total + card.quantity;
 
-        return total;
+            }
 
-    }, 0);
+            return total;
+
+        },
+
+        0
+
+    );
+
 }
+
 
 function countLands(cards) {
 
-    return cards.reduce((total, card) => {
+    return cards.reduce(
 
-        if (isLand(card.name)) {
+        (total, card) => {
 
-            return total + card.quantity;
+            if (isLand(card.name)) {
 
-        }
+                return total + card.quantity;
 
-        return total;
+            }
 
-    }, 0);
+            return total;
+
+        },
+
+        0
+
+    );
+
 }
 
-/*
-==================================================
-SCORING
-==================================================
-*/
+
+/* ==================================================
+   SCORING
+   ================================================== */
 
 function scoreRamp(ramp) {
 
     if (ramp >= 10) return 15;
+
     if (ramp >= 8) return 13;
+
     if (ramp >= 6) return 11;
+
     if (ramp >= 4) return 8;
+
     if (ramp >= 2) return 5;
 
     return 2;
+
 }
+
 
 function scoreDraw(draw) {
 
     if (draw >= 10) return 15;
+
     if (draw >= 8) return 13;
+
     if (draw >= 6) return 11;
+
     if (draw >= 4) return 8;
+
     if (draw >= 2) return 5;
 
     return 2;
+
 }
+
 
 function scoreInteraction(interaction) {
 
     if (interaction >= 10) return 15;
+
     if (interaction >= 8) return 13;
+
     if (interaction >= 6) return 11;
+
     if (interaction >= 4) return 8;
+
     if (interaction >= 2) return 5;
 
     return 2;
+
 }
+
 
 function scoreMana(lands, ramp) {
 
     let score = 0;
 
-    if (lands >= 35 && lands <= 40) score += 9;
-    else if (lands >= 32 && lands <= 42) score += 7;
-    else score += 4;
 
-    if (ramp >= 8) score += 6;
-    else if (ramp >= 5) score += 4;
-    else score += 2;
+    if (
+        lands >= 35 &&
+        lands <= 40
+    ) {
+
+        score += 9;
+
+    }
+
+    else if (
+        lands >= 32 &&
+        lands <= 42
+    ) {
+
+        score += 7;
+
+    }
+
+    else {
+
+        score += 4;
+
+    }
+
+
+    if (ramp >= 8) {
+
+        score += 6;
+
+    }
+
+    else if (ramp >= 5) {
+
+        score += 4;
+
+    }
+
+    else {
+
+        score += 2;
+
+    }
+
 
     return Math.min(score, 15);
+
 }
 
-function scoreSynergy(synergy, totalCards) {
 
-    const percentage = synergy / Math.max(totalCards, 1);
+/*
+Food & Fellowship gets its own strategy score.
 
-    if (percentage >= 0.22) return 20;
-    if (percentage >= 0.18) return 17;
-    if (percentage >= 0.15) return 14;
-    if (percentage >= 0.12) return 11;
+This measures how much of the deck
+actually supports the deck's Food/lifegain/token/value plan.
+*/
 
-    return 8;
+function scoreStrategy(strategyCards, totalCards) {
+
+    const percentage =
+        strategyCards /
+        Math.max(totalCards, 1);
+
+
+    if (percentage >= 0.20) return 20;
+
+    if (percentage >= 0.17) return 18;
+
+    if (percentage >= 0.14) return 16;
+
+    if (percentage >= 0.11) return 13;
+
+    if (percentage >= 0.08) return 10;
+
+    if (percentage >= 0.05) return 7;
+
+    return 4;
+
 }
+
 
 function scoreWinConditions(win) {
 
     if (win >= 6) return 10;
+
     if (win >= 4) return 8;
+
     if (win >= 3) return 6;
+
     if (win >= 2) return 4;
 
     return 2;
+
 }
 
-function scoreConsistency(ramp, draw, synergy) {
 
-    const total = ramp + draw + synergy;
+function scoreConsistency(
+    ramp,
+    draw,
+    strategy
+) {
+
+    const total =
+        ramp +
+        draw +
+        strategy;
+
 
     if (total >= 30) return 10;
+
     if (total >= 24) return 8;
+
     if (total >= 18) return 6;
+
     if (total >= 12) return 4;
 
     return 2;
+
 }
+
 
 function scoreCurve(totalCards) {
 
     /*
-    For now we don't have mana costs.
+    We don't have actual mana-cost data yet.
 
-    We'll improve this later when we add
-    actual card data.
+    For now we check whether the deck
+    is approximately Commander-sized.
     */
 
-    if (totalCards >= 95 && totalCards <= 101) {
+    if (
+        totalCards >= 95 &&
+        totalCards <= 101
+    ) {
+
         return 10;
+
     }
 
+
     return 7;
+
 }
 
-/*
-==================================================
-MAIN ANALYZER
-==================================================
-*/
+
+/* ==================================================
+   MAIN ANALYZER
+   ================================================== */
 
 function analyzeDeck() {
 
-    const text =
-        document.getElementById("decklist").value.trim();
+    try {
 
-    if (!text) {
+        const textarea =
+            document.getElementById("decklist");
 
-        alert("Paste your decklist first.");
 
-        return;
-    }
+        const text =
+            textarea.value.trim();
 
-    const cards = parseDeck(text);
 
-    if (cards.length === 0) {
+        if (!text) {
 
-        alert(
-            "I couldn't read that decklist. Try using Moxfield's text export."
-        );
+            alert(
+                "Paste your decklist first."
+            );
 
-        return;
-    }
-
-    const totalCards = countCards(cards);
-
-    const lands = countLands(cards);
-
-    const ramp = countMatching(cards, rampCards);
-
-    const draw = countMatching(cards, drawCards);
-
-    const interaction =
-        countMatching(cards, interactionCards);
-
-    const synergy =
-        countMatching(cards, synergyCards);
-
-    const win =
-        countMatching(cards, winCards);
-
-    /*
-    Count creatures using the known cards in our
-    first test deck.
-
-    This will become much smarter later.
-    */
-
-    const creatures = cards.filter(card => {
-
-        return (
-            !isLand(card.name) &&
-            (
-                synergyCards.includes(card.name) ||
-                winCards.includes(card.name) ||
-                rampCards.includes(card.name)
-            )
-        );
-
-    }).reduce(
-        (total, card) => total + card.quantity,
-        0
-    );
-
-    /*
-    Calculate scores.
-    */
-
-    const manaScore =
-        scoreMana(lands, ramp);
-
-    const drawScore =
-        scoreDraw(draw);
-
-    const interactionScore =
-        scoreInteraction(interaction);
-
-   const synergyScore =
-    strategyScore;
-
-    const winScore =
-        scoreWinConditions(win);
-
-    const consistencyScore =
-        scoreConsistency(ramp, draw, synergy);
-
-    const curveScore =
-        scoreCurve(totalCards);
-
-    const totalScore =
-        manaScore +
-        drawScore +
-        interactionScore +
-        synergyScore +
-        winScore +
-        consistencyScore +
-        curveScore;
-
-    /*
-    Find weakest category.
-    */
-
-    const scores = {
-
-        "Mana": manaScore,
-
-        "Card Advantage": drawScore,
-
-        "Interaction": interactionScore,
-
-        "Synergy": synergyScore,
-
-        "Win Conditions": winScore,
-
-        "Consistency": consistencyScore,
-
-        "Mana Curve": curveScore
-
-    };
-
-    let weakest = "Mana";
-
-    let weakestPercent = 999;
-
-    const maximums = {
-
-        "Mana": 15,
-
-        "Card Advantage": 15,
-
-        "Interaction": 15,
-
-        "Synergy": 20,
-
-        "Win Conditions": 10,
-
-        "Consistency": 10,
-
-        "Mana Curve": 15
-
-    };
-
-    for (const category in scores) {
-
-        const percentage =
-            scores[category] /
-            maximums[category];
-
-        if (percentage < weakestPercent) {
-
-            weakestPercent = percentage;
-
-            weakest = category;
+            return;
 
         }
 
-    }
 
-    /*
-    Generate advice.
-    */
+        const cards =
+            parseDeck(text);
 
-    let advice = "";
 
-    if (weakest === "Card Advantage") {
+        if (cards.length === 0) {
 
-        advice =
-            "Your deck may struggle to keep cards flowing. " +
-            "Look for repeatable draw engines and cards that " +
-            "turn your Food, tokens, or lifegain into additional cards.";
+            alert(
+                "I couldn't read that decklist. " +
+                "Try using Moxfield's text export."
+            );
 
-    } else if (weakest === "Interaction") {
+            return;
 
-        advice =
-            "Your deck could use more ways to answer opposing threats. " +
-            "Prioritize efficient removal and flexible interaction.";
+        }
 
-    } else if (weakest === "Mana") {
 
-        advice =
-            "Your mana development could be improved. " +
-            "Consider adding more reliable ramp or improving the mana base.";
+        const totalCards =
+            countCards(cards);
 
-    } else if (weakest === "Synergy") {
 
-        advice =
-            "Some cards may not contribute strongly enough to your deck's " +
-            "main strategy. Replacing low-synergy cards should improve consistency.";
+        const lands =
+            countLands(cards);
 
-    } else if (weakest === "Win Conditions") {
 
-        advice =
-            "Your deck appears to have an engine but may have trouble " +
-            "turning that advantage into an actual win.";
+        const ramp =
+            countMatching(
+                cards,
+                rampCards
+            );
 
-    } else {
 
-        advice =
-            "Your deck's fundamentals are reasonably balanced. " +
-            "Focus upgrades on your weakest category and test the changes.";
+        const draw =
+            countMatching(
+                cards,
+                drawCards
+            );
 
-    }
 
-    /*
-    Display results.
-    */
+        const interaction =
+            countMatching(
+                cards,
+                interactionCards
+            );
 
-    document.getElementById("overallScore").textContent =
-        totalScore + "/100";
 
-    document.getElementById("deckCount").textContent =
-        "Cards detected: " + totalCards;
+        const strategy =
+            countMatching(
+                cards,
+                foodStrategyCards
+            );
 
-    document.getElementById("landCount").textContent =
-        "Lands detected: " + lands;
 
-    document.getElementById("creatureCount").textContent =
-        "Relevant creatures detected: " + creatures;
+        const win =
+            countMatching(
+                cards,
+                winCards
+            );
 
-    document.getElementById("manaScore").textContent =
-        manaScore + "/15";
 
-    document.getElementById("drawScore").textContent =
-        drawScore + "/15";
+        /*
+        Estimate relevant creatures.
 
-    document.getElementById("interactionScore").textContent =
-        interactionScore + "/15";
+        This will become smarter later.
+        */
 
-    document.getElementById("synergyScore").textContent =
-        synergyScore + "/20";
+        const creatures =
+            cards
+                .filter(card => {
 
-    document.getElementById("winScore").textContent =
-        winScore + "/10";
+                    return (
 
-    document.getElementById("consistencyScore").textContent =
-        consistencyScore + "/10";
+                        !isLand(card.name)
 
-    document.getElementById("curveScore").textContent =
-        curveScore + "/15";
+                        &&
 
-    document.getElementById("weakness").textContent =
-        weakest;
+                        (
+                            synergyCards.includes(
+                                card.name
+                            )
 
-    document.getElementById("feedback").textContent =
-        advice;
+                            ||
 
-    document.getElementById("results").style.display =
-        "block";
+                            foodStrategyCards.includes(
+                                card.name
+                            )
 
-    /*
-    Scroll down to the results.
-    */
+                            ||
 
-    document.getElementById("results")
-        .scrollIntoView({
+                            winCards.includes(
+                                card.name
+                            )
+
+                            ||
+
+                            rampCards.includes(
+                                card.name
+                            )
+
+                        )
+
+                    );
+
+                })
+
+                .reduce(
+
+                    (total, card) =>
+                        total + card.quantity,
+
+                    0
+
+                );
+
+
+        /* Calculate scores */
+
+        const manaScore =
+            scoreMana(
+                lands,
+                ramp
+            );
+
+
+        const drawScore =
+            scoreDraw(
+                draw
+            );
+
+
+        const interactionScore =
+            scoreInteraction(
+                interaction
+            );
+
+
+        const synergyScore =
+            scoreStrategy(
+                strategy,
+                totalCards
+            );
+
+
+        const winScore =
+            scoreWinConditions(
+                win
+            );
+
+
+        const consistencyScore =
+            scoreConsistency(
+                ramp,
+                draw,
+                strategy
+            );
+
+
+        const curveScore =
+            scoreCurve(
+                totalCards
+            );
+
+
+        const totalScore =
+
+            manaScore +
+
+            drawScore +
+
+            interactionScore +
+
+            synergyScore +
+
+            winScore +
+
+            consistencyScore +
+
+            curveScore;
+
+
+        /* Find weakest category */
+
+        const scores = {
+
+            "Mana": [
+                manaScore,
+                15
+            ],
+
+            "Card Advantage": [
+                drawScore,
+                15
+            ],
+
+            "Interaction": [
+                interactionScore,
+                15
+            ],
+
+            "Synergy": [
+                synergyScore,
+                20
+            ],
+
+            "Win Conditions": [
+                winScore,
+                10
+            ],
+
+            "Consistency": [
+                consistencyScore,
+                10
+            ],
+
+            "Mana Curve": [
+                curveScore,
+                15
+            ]
+
+        };
+
+
+        let weakest =
+            "Mana";
+
+
+        let weakestPercent =
+            Infinity;
+
+
+        for (
+            const category in scores
+        ) {
+
+            const score =
+                scores[category][0];
+
+
+            const maximum =
+                scores[category][1];
+
+
+            const percentage =
+                score / maximum;
+
+
+            if (
+                percentage <
+                weakestPercent
+            ) {
+
+                weakestPercent =
+                    percentage;
+
+
+                weakest =
+                    category;
+
+            }
+
+        }
+
+
+        /* Coach advice */
+
+        let advice;
+
+
+        if (
+            weakest ===
+            "Card Advantage"
+        ) {
+
+            advice =
+                "Your deck may struggle to keep cards flowing. " +
+                "Look for repeatable draw engines and cards that " +
+                "turn Food, tokens, or lifegain into additional cards.";
+
+        }
+
+
+        else if (
+            weakest ===
+            "Interaction"
+        ) {
+
+            advice =
+                "Your deck could use more ways to answer opposing threats. " +
+                "Prioritize efficient removal and flexible interaction.";
+
+        }
+
+
+        else if (
+            weakest ===
+            "Mana"
+        ) {
+
+            advice =
+                "Your mana development could be improved. " +
+                "Consider adding more reliable ramp or improving the mana base.";
+
+        }
+
+
+        else if (
+            weakest ===
+            "Synergy"
+        ) {
+
+            advice =
+                "Some cards may not contribute strongly enough to " +
+                "Food, lifegain, tokens, or sacrifice/value. " +
+                "Replacing low-synergy cards should improve consistency.";
+
+        }
+
+
+        else if (
+            weakest ===
+            "Win Conditions"
+        ) {
+
+            advice =
+                "Your deck has an engine but may need more reliable " +
+                "ways to turn Food and lifegain value into a win.";
+
+        }
+
+
+        else if (
+            weakest ===
+            "Consistency"
+        ) {
+
+            advice =
+                "The deck has useful pieces, but improving the overlap " +
+                "between ramp, draw, and the Food/lifegain strategy " +
+                "should make it more reliable.";
+
+        }
+
+
+        else {
+
+            advice =
+                "Your deck's fundamentals are reasonably balanced. " +
+                "Focus upgrades on your weakest category and test the changes.";
+
+        }
+
+
+        /* Display results */
+
+        document.getElementById(
+            "overallScore"
+        ).textContent =
+            totalScore + "/100";
+
+
+        document.getElementById(
+            "deckCount"
+        ).textContent =
+            "Cards detected: " +
+            totalCards;
+
+
+        document.getElementById(
+            "landCount"
+        ).textContent =
+            "Lands detected: " +
+            lands;
+
+
+        document.getElementById(
+            "creatureCount"
+        ).textContent =
+            "Relevant creatures detected: " +
+            creatures;
+
+
+        document.getElementById(
+            "manaScore"
+        ).textContent =
+            manaScore + "/15";
+
+
+        document.getElementById(
+            "drawScore"
+        ).textContent =
+            drawScore + "/15";
+
+
+        document.getElementById(
+            "interactionScore"
+        ).textContent =
+            interactionScore + "/15";
+
+
+        document.getElementById(
+            "synergyScore"
+        ).textContent =
+            synergyScore + "/20";
+
+
+        document.getElementById(
+            "winScore"
+        ).textContent =
+            winScore + "/10";
+
+
+        document.getElementById(
+            "consistencyScore"
+        ).textContent =
+            consistencyScore + "/10";
+
+
+        document.getElementById(
+            "curveScore"
+        ).textContent =
+            curveScore + "/15";
+
+
+        document.getElementById(
+            "weakness"
+        ).textContent =
+            weakest;
+
+
+        document.getElementById(
+            "feedback"
+        ).textContent =
+            advice;
+
+
+        document.getElementById(
+            "results"
+        ).style.display =
+            "block";
+
+
+        document.getElementById(
+            "results"
+        ).scrollIntoView({
+
             behavior: "smooth"
+
         });
+
+    }
+
+
+    catch (error) {
+
+        console.error(
+            "Precon Upgrade Coach error:",
+            error
+        );
+
+
+        alert(
+            "The analyzer hit an error. " +
+            "Please refresh the page and try again."
+        );
+
+    }
+
 }
 
 </script>
