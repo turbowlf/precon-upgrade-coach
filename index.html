@@ -1115,6 +1115,1287 @@ renderRecommendations(cards);
 }
 
 </script>
+<script>
 
-</body>
-</html>
+/* =========================================================
+   PRECON UPGRADE COACH
+   DECK PARSER + ANALYZER
+   ========================================================= */
+
+
+/* =========================================================
+   CARD DATABASE
+   ========================================================= */
+
+const rampCards = [
+    "Sol Ring",
+    "Arcane Signet",
+    "Birds of Paradise",
+    "Cultivate",
+    "Kodama's Reach",
+    "Farseek",
+    "Rampant Growth",
+    "Chromatic Lantern",
+    "Commander's Sphere",
+    "Wayfarer's Bauble",
+    "Nature's Lore",
+    "Three Visits",
+    "Sakura-Tribe Elder",
+    "Gilded Goose",
+    "Prosperous Innkeeper",
+    "Tireless Provisioner",
+    "Wooded Foothills"
+];
+
+const drawCards = [
+    "The One Ring",
+    "Phyrexian Arena",
+    "Rhystic Study",
+    "Mystic Remora",
+    "Esper Sentinel",
+    "Skullclamp",
+    "Harmonize",
+    "Read the Bones",
+    "Sign in Blood",
+    "Painful Truths",
+    "Fact or Fiction",
+    "Mulldrifter",
+    "Well of Lost Dreams",
+    "Trading Post",
+    "Bilbo, Birthday Celebrant",
+    "Feasting Hobbit",
+    "Banquet Guests",
+    "Night's Whisper",
+    "Mentor of the Meek",
+    "Dawn of Hope"
+];
+
+const interactionCards = [
+    "Swords to Plowshares",
+    "Path to Exile",
+    "Generous Gift",
+    "Beast Within",
+    "Anguished Unmaking",
+    "Swan Song",
+    "Counterspell",
+    "Negate",
+    "Arcane Denial",
+    "Return to Nature",
+    "Nature's Claim",
+    "Toxic Deluge",
+    "Wrath of God",
+    "Damn",
+    "Farewell",
+    "Cyclonic Rift",
+    "Chaos Warp",
+    "Vandalblast",
+    "Wear // Tear",
+    "Mortify",
+    "Go for the Throat",
+    "Fell the Mighty",
+    "Fumigate",
+    "Dusk // Dawn",
+    "Crypt Incursion"
+];
+
+const synergyCards = [
+    "Bilbo, Birthday Celebrant",
+    "Banquet Guests",
+    "Butterbur, Bree Innkeeper",
+    "Feasting Hobbit",
+    "Field-Tested Frying Pan",
+    "Farmer Cotton",
+    "Gilded Goose",
+    "Lobelia, Defender of Bag End",
+    "Mirkwood Bats",
+    "Of Herbs and Stewed Rabbit",
+    "Orchard Strider",
+    "Prize Pig",
+    "Prosperous Innkeeper",
+    "Rapacious Guest",
+    "Rosie Cotton of South Lane",
+    "Savvy Hunter",
+    "The Gaffer",
+    "Tireless Provisioner",
+    "Trading Post",
+    "Treebeard, Gracious Host",
+    "Well of Lost Dreams",
+    "Shire Shirriff",
+    "Sanguine Bond",
+    "Sam, Loyal Attendant",
+    "Frodo, Adventurous Hobbit"
+];
+
+const winCards = [
+    "Sanguine Bond",
+    "Mirkwood Bats",
+    "Bilbo, Birthday Celebrant",
+    "Gollum, Obsessed Stalker",
+    "Rosie Cotton of South Lane",
+    "Treebeard, Gracious Host",
+    "Exquisite Blood",
+    "Aetherflux Reservoir",
+    "Felidar Sovereign",
+    "Approach of the Second Sun"
+];
+
+
+/* =========================================================
+   LAND DATABASE
+   =========================================================
+   
+   This is the important fix.
+
+   Food & Fellowship contains 38 lands.
+   The old version only recognized about 22 of them.
+   ========================================================= */
+
+const knownLandNames = [
+
+    /* Basic lands */
+    "Plains",
+    "Island",
+    "Swamp",
+    "Mountain",
+    "Forest",
+    "Wastes",
+
+    /* Food & Fellowship lands */
+    "Access Tunnel",
+    "Ash Barrens",
+    "Brushland",
+    "Canopy Vista",
+    "Command Tower",
+    "Evolving Wilds",
+    "Exotic Orchard",
+    "Fortified Village",
+    "Ghost Quarter",
+    "Graypelt Refuge",
+    "Isolated Chapel",
+    "Murmuring Bosk",
+    "Necroblossom Snarl",
+    "Path of Ancestry",
+    "Rogue's Passage",
+    "Sandsteppe Citadel",
+    "Scattered Groves",
+    "Scoured Barrens",
+    "Shineshadow Snarl",
+    "Shire Terrace",
+    "Sunpetal Grove",
+    "Woodland Cemetery",
+
+    /* Other common Commander lands */
+    "Bojuka Bog",
+    "Temple of the False God",
+    "Reliquary Tower",
+    "Command Beacon",
+    "Reflecting Pool",
+    "City of Brass",
+    "Mana Confluence",
+    "Forbidden Orchard",
+    "Terramorphic Expanse",
+    "Prismatic Vista",
+    "Myriad Landscape",
+    "War Room",
+    "Rogue's Passage",
+    "Bonders' Enclave",
+    "Castle Ardenvale",
+    "Castle Locthwain",
+    "Castle Garenbrig",
+    "Temple of Plenty",
+    "Temple of Silence",
+    "Temple of Malady",
+    "Temple Garden",
+    "Godless Shrine",
+    "Overgrown Tomb",
+    "Woodland Cemetery",
+    "Sunpetal Grove",
+    "Isolated Chapel",
+    "Llanowar Wastes",
+    "Caves of Koilos",
+    "Brushland",
+    "Tainted Field",
+    "Tainted Wood",
+    "Tainted Isle",
+    "Tainted Peak",
+
+    /* Fetch lands */
+    "Marsh Flats",
+    "Verdant Catacombs",
+    "Windswept Heath",
+    "Wooded Foothills",
+    "Bloodstained Mire",
+    "Flooded Strand",
+    "Polluted Delta",
+    "Scalding Tarn",
+    "Arid Mesa",
+    "Misty Rainforest",
+
+    /* Shock lands */
+    "Temple Garden",
+    "Godless Shrine",
+    "Overgrown Tomb",
+    "Breeding Pool",
+    "Hallowed Fountain",
+    "Steam Vents",
+    "Stomping Ground",
+    "Sacred Foundry",
+    "Watery Grave",
+
+    /* Triomes */
+    "Sandsteppe Citadel",
+    "Indatha Triome",
+    "Savai Triome",
+    "Ketria Triome",
+    "Raugrin Triome",
+    "Zagoth Triome",
+
+    /* Other frequently used lands */
+    "The Shire",
+    "Bag End",
+    "Hagra Broodpit",
+    "Hall of Heliod's Generosity",
+    "Yavimaya, Cradle of Growth",
+    "Urborg, Tomb of Yawgmoth",
+    "Boseiju, Who Endures",
+    "Takenuma, Abandoned Mire",
+    "Eiganjo, Seat of the Empire",
+    "Otawara, Soaring City",
+    "Sokenzan, Crucible of Defiance",
+    "Karn's Bastion",
+    "Field of Ruin",
+    "Strip Mine",
+    "Wasteland"
+];
+
+
+/* =========================================================
+   NORMALIZE CARD NAMES
+   ========================================================= */
+
+function normalizeName(name) {
+
+    return name
+        .toLowerCase()
+        .replace(/[“”]/g, '"')
+        .replace(/[’]/g, "'")
+        .replace(/\s+/g, " ")
+        .trim();
+}
+
+
+/* =========================================================
+   LAND DETECTION
+   ========================================================= */
+
+function isLand(name) {
+
+    const normalized = normalizeName(name);
+
+    /* Exact known land match */
+    if (
+        knownLandNames.some(
+            land => normalizeName(land) === normalized
+        )
+    ) {
+        return true;
+    }
+
+    /*
+     Basic land names sometimes have additional information
+     attached to them.
+    */
+
+    const basicLands = [
+        "plains",
+        "island",
+        "swamp",
+        "mountain",
+        "forest",
+        "wastes"
+    ];
+
+    if (basicLands.includes(normalized)) {
+        return true;
+    }
+
+    return false;
+}
+
+
+/* =========================================================
+   CARD MATCHING
+   ========================================================= */
+
+function countMatching(cards, list) {
+
+    const lookup = new Set(
+        list.map(card => normalizeName(card))
+    );
+
+    return cards.reduce((total, card) => {
+
+        if (lookup.has(normalizeName(card.name))) {
+            return total + card.quantity;
+        }
+
+        return total;
+
+    }, 0);
+}
+
+
+/* =========================================================
+   DECK PARSER
+   =========================================================
+   
+   Handles:
+
+   1 Sol Ring
+   4 Forest
+   8 Forest (LTR) 270
+   2 Swamp (LTR) 266
+   1x Sol Ring
+   4x Forest
+   ========================================================= */
+
+function parseDeck(text) {
+
+    const lines = text
+        .split(/\r?\n/)
+        .map(line => line.trim())
+        .filter(Boolean);
+
+    const cards = [];
+
+    for (let line of lines) {
+
+        /*
+         Ignore section headings.
+        */
+
+        const lower = line.toLowerCase();
+
+        if (
+            lower === "commander" ||
+            lower === "commanders" ||
+            lower === "creatures" ||
+            lower === "creature" ||
+            lower === "artifacts" ||
+            lower === "artifact" ||
+            lower === "enchantments" ||
+            lower === "enchantment" ||
+            lower === "instants" ||
+            lower === "instant" ||
+            lower === "sorceries" ||
+            lower === "sorcery" ||
+            lower === "lands" ||
+            lower === "land" ||
+            lower === "sideboard" ||
+            lower === "maybeboard" ||
+            lower === "tokens"
+        ) {
+            continue;
+        }
+
+        /*
+         Remove Moxfield category prefixes such as:
+
+         Commander:
+         Creatures:
+         Lands:
+        */
+
+        line = line.replace(
+            /^(commander|creatures?|artifacts?|enchantments?|instants?|sorceries?|lands?|sideboard|maybeboard|tokens)\s*:\s*/i,
+            ""
+        );
+
+        /*
+         Match quantity at the START.
+
+         Accepts:
+         1 Sol Ring
+         1x Sol Ring
+         4 Forest
+         4x Forest
+        */
+
+        const quantityMatch =
+            line.match(/^(\d+)\s*x?\s+(.+)$/i);
+
+        if (!quantityMatch) {
+            continue;
+        }
+
+        const quantity =
+            parseInt(quantityMatch[1], 10);
+
+        let name =
+            quantityMatch[2].trim();
+
+        if (!quantity || !name) {
+            continue;
+        }
+
+        /*
+         Remove Moxfield set information.
+
+         Examples:
+
+         Forest (LTR) 270
+         Forest (LTR) 271
+         Sol Ring (CMM) 396
+        */
+
+        name = name.replace(
+            /\s+\([A-Za-z0-9-]+\)\s+\S+.*$/,
+            ""
+        ).trim();
+
+        /*
+         Some exports can have collector information
+         without parentheses.
+        */
+
+        name = name.replace(
+            /\s+\[[A-Za-z0-9-]+\]\s+\S+.*$/,
+            ""
+        ).trim();
+
+        /*
+         If the exact same card appears multiple times
+         in the input, combine it.
+        */
+
+        const existing =
+            cards.find(
+                card =>
+                    normalizeName(card.name) ===
+                    normalizeName(name)
+            );
+
+        if (existing) {
+
+            existing.quantity += quantity;
+
+        } else {
+
+            cards.push({
+                name: name,
+                quantity: quantity
+            });
+
+        }
+    }
+
+    return cards;
+}
+
+
+/* =========================================================
+   SCORING
+   ========================================================= */
+
+function scoreMana(lands, ramp) {
+
+    let score = 0;
+
+    if (lands >= 36 && lands <= 40) {
+        score += 9;
+    } else if (lands >= 34 && lands <= 42) {
+        score += 7;
+    } else if (lands >= 31 && lands <= 43) {
+        score += 5;
+    } else {
+        score += 3;
+    }
+
+    if (ramp >= 10) {
+        score += 6;
+    } else if (ramp >= 8) {
+        score += 5;
+    } else if (ramp >= 6) {
+        score += 4;
+    } else if (ramp >= 4) {
+        score += 2;
+    } else {
+        score += 1;
+    }
+
+    return Math.min(score, 15);
+}
+
+
+function scoreDraw(draw) {
+
+    if (draw >= 12) return 15;
+    if (draw >= 9) return 13;
+    if (draw >= 7) return 11;
+    if (draw >= 5) return 9;
+    if (draw >= 3) return 6;
+
+    return 3;
+}
+
+
+function scoreInteraction(interaction) {
+
+    if (interaction >= 12) return 15;
+    if (interaction >= 9) return 13;
+    if (interaction >= 7) return 11;
+    if (interaction >= 5) return 9;
+    if (interaction >= 3) return 6;
+
+    return 3;
+}
+
+
+function scoreSynergy(synergy) {
+
+    if (synergy >= 20) return 20;
+    if (synergy >= 17) return 18;
+    if (synergy >= 14) return 16;
+    if (synergy >= 11) return 13;
+    if (synergy >= 8) return 10;
+    if (synergy >= 5) return 7;
+
+    return 4;
+}
+
+
+function scoreWinConditions(win) {
+
+    if (win >= 5) return 10;
+    if (win >= 4) return 9;
+    if (win >= 3) return 8;
+    if (win >= 2) return 6;
+    if (win >= 1) return 4;
+
+    return 2;
+}
+
+
+function scoreConsistency(
+    ramp,
+    draw,
+    interaction,
+    synergy
+) {
+
+    const total =
+        ramp +
+        draw +
+        interaction +
+        synergy;
+
+    if (total >= 45) return 10;
+    if (total >= 38) return 9;
+    if (total >= 32) return 8;
+    if (total >= 26) return 7;
+    if (total >= 20) return 6;
+    if (total >= 14) return 5;
+
+    return 3;
+}
+
+
+function scoreCurve(totalCards) {
+
+    if (totalCards === 100) return 15;
+    if (totalCards >= 98) return 14;
+    if (totalCards >= 95) return 13;
+    if (totalCards >= 90) return 11;
+    if (totalCards >= 85) return 9;
+    if (totalCards >= 80) return 7;
+
+    return 5;
+}
+
+
+/* =========================================================
+   UPGRADE RECOMMENDATIONS
+   ========================================================= */
+
+const upgradeRecommendations = [
+
+    {
+        cut: "Butterbur, Bree Innkeeper",
+        add: "Academy Manufactor",
+        reason:
+            "Your deck already creates Food. Academy Manufactor multiplies Food production into additional Food, Clues, and Treasures.",
+        impact: 5
+    },
+
+    {
+        cut: "Hithlain Rope",
+        add: "Peregrin Took",
+        reason:
+            "Peregrin Took produces Food and lets you turn excess Food into card draw.",
+        impact: 5
+    },
+
+    {
+        cut: "Crypt Incursion",
+        add: "Agent of the Iron Throne",
+        reason:
+            "Your deck repeatedly sacrifices artifact tokens. Agent of the Iron Throne can turn those sacrifices into damage.",
+        impact: 4
+    },
+
+    {
+        cut: "Great Oak Guardian",
+        add: "Gyome, Master Chef",
+        reason:
+            "Gyome directly supports the Food strategy by creating Food and using Food to protect creatures.",
+        impact: 4
+    },
+
+    {
+        cut: "Call for Unity",
+        add: "Trail of Crumbs",
+        reason:
+            "Trail of Crumbs gives you repeatable card selection whenever you sacrifice Food.",
+        impact: 5
+    },
+
+    {
+        cut: "Landroval, Horizon Witness",
+        add: "Samwise Gamgee",
+        reason:
+            "Samwise directly supports Food production and gives the deck another powerful engine.",
+        impact: 5
+    },
+
+    {
+        cut: "Rapacious Guest",
+        add: "Gyome, Master Chef",
+        reason:
+            "Gyome is more directly connected to the Food engine and gives your creatures additional protection.",
+        impact: 4
+    },
+
+    {
+        cut: "Dawn of Hope",
+        add: "Skullclamp",
+        reason:
+            "Your deck creates creatures and tokens. Skullclamp can convert those creatures into significant card advantage.",
+        impact: 5
+    },
+
+    {
+        cut: "Trading Post",
+        add: "Academy Manufactor",
+        reason:
+            "Academy Manufactor gives the deck a stronger direct Food-token engine.",
+        impact: 5
+    },
+
+    {
+        cut: "Motivated Pony",
+        add: "Rhox Faithmender",
+        reason:
+            "Rhox Faithmender makes your life-gain strategy substantially stronger.",
+        impact: 4
+    },
+
+    {
+        cut: "Orchard Strider",
+        add: "Dina, Soul Steeper",
+        reason:
+            "Dina converts life gain into damage, giving your Food engine another way to pressure opponents.",
+        impact: 5
+    }
+
+];
+
+
+function getRecommendations(cards) {
+
+    const recommendations = [];
+
+    for (const rec of upgradeRecommendations) {
+
+        const hasCut = cards.some(
+            card =>
+                normalizeName(card.name) ===
+                normalizeName(rec.cut)
+        );
+
+        const alreadyHasAdd = cards.some(
+            card =>
+                normalizeName(card.name) ===
+                normalizeName(rec.add)
+        );
+
+        if (hasCut && !alreadyHasAdd) {
+            recommendations.push(rec);
+        }
+    }
+
+    return recommendations.slice(0, 6);
+}
+
+
+function renderRecommendations(cards) {
+
+    const container =
+        document.getElementById("recommendations");
+
+    if (!container) return;
+
+    const recommendations =
+        getRecommendations(cards);
+
+    if (recommendations.length === 0) {
+
+        container.innerHTML = `
+            <div class="recommendation">
+                <h4>No specific swaps detected yet.</h4>
+                <p class="reason">
+                    Your deck may already contain the upgrades
+                    currently in the recommendation database.
+                </p>
+            </div>
+        `;
+
+        return;
+    }
+
+    container.innerHTML =
+        recommendations.map((rec, index) => {
+
+            const stars =
+                "★".repeat(rec.impact) +
+                "☆".repeat(5 - rec.impact);
+
+            return `
+                <div class="recommendation">
+
+                    <h4>#${index + 1} Upgrade</h4>
+
+                    <div class="swap">
+
+                        <div class="cut">
+                            CUT<br>
+                            ${rec.cut}
+                        </div>
+
+                        <div class="arrow">
+                            →
+                        </div>
+
+                        <div class="add">
+                            ADD<br>
+                            ${rec.add}
+                        </div>
+
+                    </div>
+
+                    <p class="reason">
+                        <strong>Why:</strong>
+                        ${rec.reason}
+                    </p>
+
+                    <div class="impact">
+                        Impact: ${stars}
+                    </div>
+
+                </div>
+            `;
+
+        }).join("");
+}
+
+
+/* =========================================================
+   MAIN ANALYZER
+   ========================================================= */
+
+function analyzeDeck() {
+
+    const textarea =
+        document.getElementById("decklist");
+
+    const message =
+        document.getElementById("message");
+
+    const results =
+        document.getElementById("results");
+
+    const text =
+        textarea.value.trim();
+
+    message.innerHTML = "";
+
+    if (!text) {
+
+        results.classList.add("hidden");
+
+        message.innerHTML =
+            '<div class="error">Paste your decklist first.</div>';
+
+        return;
+    }
+
+
+    /* Parse the deck */
+
+    const cards =
+        parseDeck(text);
+
+
+    if (cards.length === 0) {
+
+        results.classList.add("hidden");
+
+        message.innerHTML =
+            '<div class="error">' +
+            "I couldn't read that decklist. " +
+            "Use a Moxfield text export such as " +
+            "\"1 Sol Ring\" or \"8 Forest\"." +
+            "</div>";
+
+        return;
+    }
+
+
+    /* =====================================================
+       COUNT TOTAL CARDS
+       ===================================================== */
+
+    const totalCards =
+        cards.reduce(
+            (total, card) =>
+                total + card.quantity,
+            0
+        );
+
+
+    /* =====================================================
+       COUNT LANDS
+       ===================================================== */
+
+    const lands =
+        cards.reduce(
+            (total, card) => {
+
+                if (isLand(card.name)) {
+                    return total + card.quantity;
+                }
+
+                return total;
+
+            },
+            0
+        );
+
+
+    /* =====================================================
+       COUNT CATEGORIES
+       ===================================================== */
+
+    const ramp =
+        countMatching(cards, rampCards);
+
+    const draw =
+        countMatching(cards, drawCards);
+
+    const interaction =
+        countMatching(cards, interactionCards);
+
+    const synergy =
+        countMatching(cards, synergyCards);
+
+    const win =
+        countMatching(cards, winCards);
+
+
+    /* =====================================================
+       CREATURE ESTIMATE
+       ===================================================== */
+
+    const creatureNames =
+        new Set(
+            [
+                ...synergyCards,
+                ...winCards,
+                ...rampCards,
+                ...drawCards
+            ].map(normalizeName)
+        );
+
+    const creatures =
+        cards.reduce(
+            (total, card) => {
+
+                if (
+                    creatureNames.has(
+                        normalizeName(card.name)
+                    ) &&
+                    !isLand(card.name)
+                ) {
+                    return total + card.quantity;
+                }
+
+                return total;
+
+            },
+            0
+        );
+
+
+    /* =====================================================
+       CALCULATE SCORES
+       ===================================================== */
+
+    const manaScore =
+        scoreMana(lands, ramp);
+
+    const drawScore =
+        scoreDraw(draw);
+
+    const interactionScore =
+        scoreInteraction(interaction);
+
+    const synergyScore =
+        scoreSynergy(synergy);
+
+    const winScore =
+        scoreWinConditions(win);
+
+    const consistencyScore =
+        scoreConsistency(
+            ramp,
+            draw,
+            interaction,
+            synergy
+        );
+
+    const curveScore =
+        scoreCurve(totalCards);
+
+
+    const totalScore =
+        manaScore +
+        drawScore +
+        interactionScore +
+        synergyScore +
+        winScore +
+        consistencyScore +
+        curveScore;
+
+
+    /* =====================================================
+       DISPLAY RESULTS
+       ===================================================== */
+
+    document.getElementById("totalScore").textContent =
+        `${totalScore}/100`;
+
+    document.getElementById("cardCount").textContent =
+        totalCards;
+
+    document.getElementById("landCount").textContent =
+        lands;
+
+    document.getElementById("creatureCount").textContent =
+        creatures;
+
+    document.getElementById("manaScore").textContent =
+        `${manaScore}/15`;
+
+    document.getElementById("drawScore").textContent =
+        `${drawScore}/15`;
+
+    document.getElementById("interactionScore").textContent =
+        `${interactionScore}/15`;
+
+    document.getElementById("synergyScore").textContent =
+        `${synergyScore}/20`;
+
+    document.getElementById("winScore").textContent =
+        `${winScore}/10`;
+
+    document.getElementById("consistencyScore").textContent =
+        `${consistencyScore}/10`;
+
+    document.getElementById("curveScore").textContent =
+        `${curveScore}/15`;
+
+
+    /* =====================================================
+       FIND WEAKEST CATEGORY
+       ===================================================== */
+
+    const scores = [
+
+        {
+            name: "Mana",
+            score: manaScore,
+            max: 15
+        },
+
+        {
+            name: "Card Advantage",
+            score: drawScore,
+            max: 15
+        },
+
+        {
+            name: "Interaction",
+            score: interactionScore,
+            max: 15
+        },
+
+        {
+            name: "Synergy",
+            score: synergyScore,
+            max: 20
+        },
+
+        {
+            name: "Win Conditions",
+            score: winScore,
+            max: 10
+        },
+
+        {
+            name: "Consistency",
+            score: consistencyScore,
+            max: 10
+        },
+
+        {
+            name: "Mana Curve",
+            score: curveScore,
+            max: 15
+        }
+
+    ];
+
+
+    scores.sort(
+        (a, b) =>
+            (a.score / a.max) -
+            (b.score / b.max)
+    );
+
+
+    const weakest =
+        scores[0];
+
+
+    document.getElementById("weakness").textContent =
+        weakest.name;
+
+
+    /* =====================================================
+       COACH ADVICE
+       ===================================================== */
+
+    let advice = "";
+
+
+    if (weakest.name === "Mana") {
+
+        advice =
+            `Your mana package could use work. ` +
+            `You have ${lands} lands and ${ramp} recognized ` +
+            `ramp cards.`;
+
+    }
+
+    else if (weakest.name === "Card Advantage") {
+
+        advice =
+            `You could use more ways to draw cards or generate ` +
+            `repeatable card advantage. You currently have ` +
+            `${draw} recognized card-advantage cards.`;
+
+    }
+
+    else if (weakest.name === "Interaction") {
+
+        advice =
+            `Your deck could use more answers. You currently have ` +
+            `${interaction} recognized interaction cards.`;
+
+    }
+
+    else if (weakest.name === "Synergy") {
+
+        advice =
+            `Your deck has room for more cards that directly support ` +
+            `its main strategy. Replace generic cards with pieces that ` +
+            `advance the core game plan.`;
+
+    }
+
+    else if (weakest.name === "Win Conditions") {
+
+        advice =
+            `Your deck may need clearer ways to close games. ` +
+            `Consider adding cards that turn your existing strategy ` +
+            `into a reliable win condition.`;
+
+    }
+
+    else if (weakest.name === "Consistency") {
+
+        advice =
+            `Your deck has some good pieces, but could use more ` +
+            `redundancy between ramp, draw, interaction, and synergy.`;
+
+    }
+
+    else {
+
+        advice =
+            `Your deck's mana curve could be smoother. Look for ` +
+            `expensive cards that can be replaced by cheaper cards ` +
+            `that accomplish a similar job.`;
+
+    }
+
+
+    document.getElementById("advice").textContent =
+        advice;
+
+
+    /* =====================================================
+       SUGGESTED FOCUS
+       ===================================================== */
+
+    const suggestions = [];
+
+
+    if (ramp < 8) {
+
+        suggestions.push(
+            "Add more ramp — aim for roughly 8–12 reliable sources."
+        );
+
+    }
+
+
+    if (draw < 8) {
+
+        suggestions.push(
+            "Add more card-advantage engines."
+        );
+
+    }
+
+
+    if (interaction < 8) {
+
+        suggestions.push(
+            "Add more removal and interaction."
+        );
+
+    }
+
+
+    if (synergy < 12) {
+
+        suggestions.push(
+            "Prioritize cards that directly support the deck's main strategy."
+        );
+
+    }
+
+
+    if (win < 3) {
+
+        suggestions.push(
+            "Consider adding 1–3 more clear ways to close games."
+        );
+
+    }
+
+
+    if (lands < 34) {
+
+        suggestions.push(
+            `You have ${lands} lands. Consider increasing the land count.`
+        );
+
+    }
+
+
+    if (lands > 42) {
+
+        suggestions.push(
+            `You have ${lands} lands. Consider whether some can become spells.`
+        );
+
+    }
+
+
+    if (totalCards < 100) {
+
+        suggestions.push(
+            `Your list contains ${totalCards} cards. A Commander deck normally needs 100 cards including the commander.`
+        );
+
+    }
+
+
+    if (totalCards > 100) {
+
+        suggestions.push(
+            `Your list contains ${totalCards} cards. A Commander deck normally needs 100 cards including the commander.`
+        );
+
+    }
+
+
+    if (suggestions.length === 0) {
+
+        suggestions.push(
+            "Your deck is looking well balanced. Focus upgrades on your weakest category."
+        );
+
+    }
+
+
+    document.getElementById("suggestions").innerHTML =
+        suggestions
+            .map(item => `<li>${item}</li>`)
+            .join("");
+
+
+    /* =====================================================
+       UPGRADE RECOMMENDATIONS
+       ===================================================== */
+
+    renderRecommendations(cards);
+
+
+    /* =====================================================
+       SHOW RESULTS
+       ===================================================== */
+
+    results.classList.remove("hidden");
+
+
+    message.innerHTML =
+        `<div class="success">
+            Deck analyzed successfully.
+            Detected ${totalCards} cards and ${lands} lands.
+        </div>`;
+
+
+    /* =====================================================
+       SCROLL TO RESULTS
+       ===================================================== */
+
+    results.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+    });
+
+}
+
+</script>
