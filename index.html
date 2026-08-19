@@ -252,8 +252,6 @@ function parseDecklist(rawText) {
 
 function parseCardLine(line) {
   let text = line;
-  // Strip Moxfield-style trailing set code / collector number / foil markers, e.g.
-  // "Sol Ring (C21) 263" or "Sol Ring *F*"
   text = text.replace(/\s*\*[fF]\*\s*$/, '');
   text = text.replace(/\s*\([A-Za-z0-9]{2,5}\)\s*[A-Za-z0-9\-★]*\s*$/, '');
 
@@ -269,10 +267,7 @@ function parseCardLine(line) {
 function cleanName(name) { return name.replace(/\s+/g, ' ').trim(); }
 
 /* ---------------------------------------------------------------------
-   2. CARD DATA — Scryfall, with localStorage caching so re-analyzing
-   the same list (or overlapping lists) doesn't re-fetch everything.
-   If the API is unreachable, this degrades gracefully instead of
-   breaking the page.
+   2. CARD DATA — Scryfall, with localStorage caching.
    --------------------------------------------------------------------- */
 const CACHE_PREFIX = 'puc_card_v1_';
 const CACHE_TTL_MS = 14 * 24 * 60 * 60 * 1000; // 14 days
@@ -292,8 +287,6 @@ function cacheSet(name, card) {
   } catch (e) { /* storage full or unavailable — safe to ignore */ }
 }
 
-// Minimal offline fallback so basic land / count detection still works if
-// the Scryfall API cannot be reached at all.
 const FALLBACK_LANDS = new Set([
   'forest','island','swamp','mountain','plains','wastes',
   'command tower','path of ancestry','exotic orchard','terramorphic expanse',
@@ -355,31 +348,13 @@ function cardPrice(card) {
   const usd = parseFloat(card.prices.usd || card.prices.usd_foil || 0);
   return isNaN(usd) ? 0 : usd;
 }
-// Scryfall's usd prices are themselves sourced from TCGplayer market data,
-// and purchase_uris.tcgplayer links straight to that card's TCGplayer listing.
 function cardTcgLink(card) {
   return (card && card.purchase_uris && card.purchase_uris.tcgplayer) || null;
-}
-// Card image for cut/add thumbnails. Falls back to the front face for
-// double-faced / split cards, and returns null gracefully if no art exists
-// (e.g. some tokens) so the UI can skip the thumbnail instead of breaking.
-function cardImage(card, size) {
-  size = size || 'small';
-  if (!card) return null;
-  if (card.image_uris && card.image_uris[size]) return card.image_uris[size];
-  if (card.card_faces && card.card_faces[0] && card.card_faces[0].image_uris) return card.card_faces[0].image_uris[size];
-  return null;
 }
 function colorIdentityOf(card) { return (card && card.color_identity) || []; }
 function isSubsetColors(cardColors, deckColors) {
   const set = new Set(deckColors);
   return cardColors.every(c => set.has(c));
-}
-function creatureTypesOf(card) {
-  const type = normalizedType(card);
-  const parts = type.split('—');
-  if (parts.length < 2) return [];
-  return parts[1].trim().split(/\s+/).filter(t => t.length > 1);
 }
 
 const TAG_RULES = [
@@ -413,7 +388,6 @@ function tagCard(card) {
 
   for (const [tag, re] of TAG_RULES) if (re.test(oracle) || re.test(type)) tags.add(tag);
 
-  // Big beaters read as win conditions even without keyworded text.
   if (tags.has('creature') && card.power && parseInt(card.power, 10) >= 6) tags.add('winCon');
 
   return tags;
@@ -421,9 +395,6 @@ function tagCard(card) {
 
 /* ---------------------------------------------------------------------
    4. RECOMMENDATION CANDIDATE POOL
-   Curated staples tagged by functional role. Color legality and price
-   are resolved live against Scryfall, so nothing here is suggested
-   unless it's actually legal and in budget for THIS deck.
    --------------------------------------------------------------------- */
 const CANDIDATES = [
   {n:'Sol Ring', roles:['ramp']}, {n:'Arcane Signet', roles:['ramp']},
@@ -512,7 +483,7 @@ function analyzeDeck(commanderCard, deckEntries) {
   let totalCards = 0;
   const typeCounts = { land:0, creature:0, artifact:0, enchantment:0, instant:0, sorcery:0, planeswalker:0, battle:0, other:0 };
   const roleCounts = { ramp:0, draw:0, removal:0, wipe:0, protection:0, tutor:0, tokens:0, sacrifice:0, graveyard:0, lifegain:0, counters:0, winCon:0 };
-  const themeFreq = {}; // reuse role tags as "themes" for synergy detection
+  const themeFreq = {};
   const cmcBuckets = { '0-1':0, '2':0, '3':0, '4':0, '5':0, '6+':0 };
   let totalCMC = 0, nonlandCount = 0, unresolvedCount = 0;
 
@@ -559,7 +530,7 @@ function computeScores(analysis) {
 
   const synergyMatches = analysis.sortedThemes.reduce((sum, theme) => sum + (analysis.roleCounts[theme]||0), 0);
   const synergyPct = analysis.nonlandCount ? synergyMatches / analysis.nonlandCount : 0;
-  const synergyScore = Math.max(0, Math.min(100, Math.round(synergyPct * 250))); // 40% match ≈ 100
+  const synergyScore = Math.max(0, Math.min(100, Math.round(synergyPct * 250)));
 
   const winConScore = scoreFromCount(analysis.roleCounts.winCon, 3);
   const consistencyRaw = analysis.roleCounts.tutor * 3 + analysis.roleCounts.draw + analysis.roleCounts.ramp * 0.5;
@@ -617,7 +588,7 @@ async function buildRecommendations(analysis, deckNameSet, budget) {
       if (picked >= limit) break;
       if (used.has(cand.n.toLowerCase())) continue;
       used.add(cand.n.toLowerCase());
-      adds.push({ name: cand.n, price: cardPrice(cand.card), tcgUrl: cardTcgLink(cand.card), img: cardImage(cand.card), roleLabel: label, why: reasonFn(cand) });
+      adds.push({ name: cand.n, price: cardPrice(cand.card), tcgUrl: cardTcgLink(cand.card), roleLabel: label, why: reasonFn(cand) });
       picked++;
     }
   }
@@ -668,7 +639,7 @@ function buildCuts(deckEntries, analysis, adds) {
     }
     return {
       name: s.entry.name, quantity: s.entry.quantity, why: `Low synergy: ${reason}.`, pairedAdd,
-      img: cardImage(s.entry.card), price: cardPrice(s.entry.card), tcgUrl: cardTcgLink(s.entry.card)
+      price: cardPrice(s.entry.card), tcgUrl: cardTcgLink(s.entry.card)
     };
   });
 }
@@ -676,10 +647,15 @@ function buildCuts(deckEntries, analysis, adds) {
 /* ---------------------------------------------------------------------
    7. RENDERING
    --------------------------------------------------------------------- */
-// Small helpers used inside render() to keep the cut/add markup readable.
-function cardThumb(imgUrl, name) {
-  if (!imgUrl) return `<div class="up-thumb up-thumb-blank">No image</div>`;
-  return `<img class="up-thumb" src="${imgUrl}" alt="${name}" loading="lazy">`;
+function escapeHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+// Thumbnails resolve straight from Scryfall's image-redirect endpoint by
+// card name, independent of the JSON we already fetched for scoring.
+function cardThumb(name) {
+  const src = 'https://api.scryfall.com/cards/named?format=image&version=small&exact=' + encodeURIComponent(name);
+  const safeName = escapeHtml(name);
+  return `<img class="up-thumb" src="${src}" alt="${safeName}" loading="lazy" onerror="this.style.visibility='hidden'">`;
 }
 function priceLine(price, tcgUrl) {
   const priceText = price ? `$${price.toFixed(2)}` : 'price n/a';
@@ -697,7 +673,6 @@ function render(commanderCard, analysis, scores, cuts, adds, unresolvedNames, ap
 
   let html = '';
 
-  // Score hero
   html += `<div class="card score-hero" style="--pct:${s.overall}">
     <div class="score-circle"><div class="score-circle-inner"><div class="num" style="color:${overallColor}">${s.overall}</div><div class="lbl">Deck Score</div></div></div>
     <div class="meta">
@@ -706,7 +681,6 @@ function render(commanderCard, analysis, scores, cuts, adds, unresolvedNames, ap
     </div>
   </div>`;
 
-  // Stats
   html += `<div class="card"><h2>Deck Stats</h2><div class="stat-grid">
     <div class="stat-box"><div class="n">${analysis.totalCards}</div><div class="l">Cards Detected</div></div>
     <div class="stat-box"><div class="n">${analysis.typeCounts.land}</div><div class="l">Lands Detected</div></div>
@@ -721,7 +695,6 @@ function render(commanderCard, analysis, scores, cuts, adds, unresolvedNames, ap
   }
   html += `</div>`;
 
-  // Category scores
   html += `<div class="card"><h2>Category Scores</h2><div class="category-grid">`;
   Object.values(s.categories).forEach(cat => {
     const st = statusOf(cat.score);
@@ -733,13 +706,11 @@ function render(commanderCard, analysis, scores, cuts, adds, unresolvedNames, ap
   });
   html += `</div></div>`;
 
-  // Biggest weakness
   const weakestCat = Object.values(s.categories).sort((a,b) => a.score - b.score)[0];
   html += `<div class="card"><h2>Biggest Weakness</h2><div class="weakness-box">
     <b>${weakestCat.label}</b> is this deck's weakest area (score: ${weakestCat.score}/100) — ${weakestCat.detail}.
   </div></div>`;
 
-  // Coach's advice
   const strongestCat = Object.values(s.categories).sort((a,b) => b.score - a.score)[0];
   const themeText = analysis.sortedThemes.length
     ? analysis.sortedThemes.map(t => (ROLE_LABELS[t]||t).toLowerCase()).join(', ')
@@ -750,24 +721,22 @@ function render(commanderCard, analysis, scores, cuts, adds, unresolvedNames, ap
     a deck that can't draw cards or answer threats won't get to use its synergy anyway.
   </div></div>`;
 
-  // Suggested focus
   html += `<div class="card"><h2>Suggested Focus</h2><div class="focus-box">
     ${analysis.sortedThemes.length ? `Lean further into <b>${(ROLE_LABELS[analysis.sortedThemes[0]]||analysis.sortedThemes[0])}</b> — it's already the deck's clearest identity.` : `Establish a clearer identity — right now the deck reads as generically "good stuff" rather than built around one plan.`}
     Fix <b>${weakestCat.label.toLowerCase()}</b> first; it's the biggest thing capping the deck's overall score.
   </div></div>`;
 
-  // Recommended upgrades
   html += `<div class="card"><h2>Recommended Upgrades (${cuts.length} paired swap${cuts.length===1?'':'s'})</h2>`;
   if (cuts.length === 0) {
     html += `<p style="color:var(--muted);font-size:14px;">No clear low-synergy cards stood out to cut. That's a good sign — the deck's cards mostly connect to its strategy or fill needed roles.</p>`;
   }
   cuts.forEach(c => {
     html += `<div class="upgrade-row">
-      <div class="up-col cut">${cardThumb(c.img, c.name)}<div class="up-body"><div class="up-tag cut">Cut</div><div class="up-name">${c.name}${c.quantity>1?` ×${c.quantity}`:''}</div>
+      <div class="up-col cut">${cardThumb(c.name)}<div class="up-body"><div class="up-tag cut">Cut</div><div class="up-name">${c.name}${c.quantity>1?` ×${c.quantity}`:''}</div>
         ${priceLine(c.price, c.tcgUrl)}<div class="up-why">${c.why}</div></div></div>`;
     if (c.pairedAdd) {
       const a = c.pairedAdd;
-      html += `<div class="up-col add">${cardThumb(a.img, a.name)}<div class="up-body"><div class="up-tag add">Add</div><div class="up-name">${a.name}</div>
+      html += `<div class="up-col add">${cardThumb(a.name)}<div class="up-body"><div class="up-tag add">Add</div><div class="up-name">${a.name}</div>
         ${priceLine(a.price, a.tcgUrl)}<div class="up-why">${a.roleLabel} &middot; ${a.why}</div></div></div>`;
     } else {
       html += `<div class="up-col add"><div class="up-body"><div class="up-tag add">Add</div><div class="up-name">— deck is otherwise stocked here</div></div></div>`;
@@ -779,7 +748,7 @@ function render(commanderCard, analysis, scores, cuts, adds, unresolvedNames, ap
   if (extraAdds.length) {
     html += `<h2 style="margin-top:20px;">Additional Cards To Add</h2>`;
     extraAdds.forEach(a => {
-      html += `<div class="solo-add">${cardThumb(a.img, a.name)}<div class="up-body"><div class="up-tag add">Add</div><div class="up-name">${a.name}</div>
+      html += `<div class="solo-add">${cardThumb(a.name)}<div class="up-body"><div class="up-tag add">Add</div><div class="up-name">${a.name}</div>
         ${priceLine(a.price, a.tcgUrl)}<div class="up-why">${a.roleLabel} &middot; ${a.why}</div></div></div>`;
     });
   }
@@ -874,7 +843,6 @@ async function runAnalysis() {
       .map(c => {
         let card = cardData.get(c.name.toLowerCase()) || null;
         if (!card && apiFailed && FALLBACK_LANDS.has(c.name.toLowerCase())) {
-          // Degraded-mode fallback so land counts still work with no API access.
           card = { name: c.name, type_line: 'Land', cmc: 0, color_identity: [], oracle_text: '' };
         }
         const tags = card ? tagCard(card) : new Set();
@@ -890,7 +858,7 @@ async function runAnalysis() {
     statusLine.textContent = 'Finding upgrade candidates…';
     const deckNameSet = new Set(deckEntries.map(e => e.name.toLowerCase()));
     if (commanderCard) deckNameSet.add(commanderCard.name.toLowerCase());
-    const adds = await buildRecommendations(analysis, deckNameSet, 100); // default $100 budget cap
+    const adds = await buildRecommendations(analysis, deckNameSet, 100);
     const cuts = buildCuts(deckEntries, analysis, adds);
 
     render(commanderCard, analysis, scores, cuts, adds, unresolvedNames, apiFailed);
