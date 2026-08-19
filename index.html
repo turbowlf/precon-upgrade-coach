@@ -140,17 +140,32 @@ button#analyzeBtn:disabled{opacity:.55;cursor:progress;}
   border-radius:8px;overflow:hidden;margin-bottom:12px;
 }
 @media (max-width:700px){.upgrade-row{grid-template-columns:1fr;}}
-.up-col{padding:14px 16px;}
+.up-col{padding:14px 16px;display:flex;gap:12px;align-items:flex-start;}
 .up-col.cut{background:rgba(255,92,92,0.07);border-right:1px solid var(--border);}
 .up-col.add{background:rgba(62,207,126,0.07);}
 @media (max-width:700px){.up-col.cut{border-right:none;border-bottom:1px solid var(--border);}}
+.up-body{flex:1;min-width:0;}
+.up-thumb{
+  width:64px;height:89px;object-fit:cover;border-radius:6px;flex-shrink:0;
+  border:1px solid var(--border);background:#0c0e12;
+}
+.up-thumb-blank{
+  width:64px;height:89px;border-radius:6px;flex-shrink:0;border:1px dashed var(--border);
+  display:flex;align-items:center;justify-content:center;text-align:center;
+  font-size:10px;color:var(--muted);background:#0c0e12;padding:4px;
+}
 .up-tag{font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;font-weight:800;}
 .up-tag.cut{color:#ff8f8f;}
 .up-tag.add{color:#7fe3ab;}
 .up-name{font-weight:700;font-size:15.5px;margin:3px 0 4px;}
 .up-price{font-size:11.5px;color:var(--orange);margin-bottom:6px;}
+.up-price a{color:var(--orange);text-decoration:none;}
+.up-price a:hover{text-decoration:underline;}
 .up-why{font-size:13px;color:var(--muted);}
-.solo-add{border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:10px;background:rgba(62,207,126,0.05);}
+.solo-add{
+  border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:10px;
+  background:rgba(62,207,126,0.05);display:flex;gap:12px;align-items:flex-start;
+}
 
 .confidence-note{font-size:12px;color:var(--muted);margin-top:6px;font-style:italic;}
 footer{text-align:center;color:#5c6070;font-size:12px;margin-top:40px;}
@@ -178,7 +193,7 @@ footer{text-align:center;color:#5c6070;font-size:12px;margin-top:40px;}
 
   <div id="results"></div>
 
-  <footer>Card data via the Scryfall API, cached in your browser. Not affiliated with Wizards of the Coast.</footer>
+  <footer>Card data & prices via the Scryfall API (Scryfall's USD prices are sourced from TCGplayer), cached in your browser. Not affiliated with Wizards of the Coast.</footer>
 </div>
 
 <script>
@@ -339,6 +354,21 @@ function cardPrice(card) {
   if (!card || !card.prices) return 0;
   const usd = parseFloat(card.prices.usd || card.prices.usd_foil || 0);
   return isNaN(usd) ? 0 : usd;
+}
+// Scryfall's usd prices are themselves sourced from TCGplayer market data,
+// and purchase_uris.tcgplayer links straight to that card's TCGplayer listing.
+function cardTcgLink(card) {
+  return (card && card.purchase_uris && card.purchase_uris.tcgplayer) || null;
+}
+// Card image for cut/add thumbnails. Falls back to the front face for
+// double-faced / split cards, and returns null gracefully if no art exists
+// (e.g. some tokens) so the UI can skip the thumbnail instead of breaking.
+function cardImage(card, size) {
+  size = size || 'small';
+  if (!card) return null;
+  if (card.image_uris && card.image_uris[size]) return card.image_uris[size];
+  if (card.card_faces && card.card_faces[0] && card.card_faces[0].image_uris) return card.card_faces[0].image_uris[size];
+  return null;
 }
 function colorIdentityOf(card) { return (card && card.color_identity) || []; }
 function isSubsetColors(cardColors, deckColors) {
@@ -587,7 +617,7 @@ async function buildRecommendations(analysis, deckNameSet, budget) {
       if (picked >= limit) break;
       if (used.has(cand.n.toLowerCase())) continue;
       used.add(cand.n.toLowerCase());
-      adds.push({ name: cand.n, price: cardPrice(cand.card), roleLabel: label, why: reasonFn(cand) });
+      adds.push({ name: cand.n, price: cardPrice(cand.card), tcgUrl: cardTcgLink(cand.card), img: cardImage(cand.card), roleLabel: label, why: reasonFn(cand) });
       picked++;
     }
   }
@@ -636,13 +666,29 @@ function buildCuts(deckEntries, analysis, adds) {
     } else {
       reason = 'it doesn\'t connect to your deck\'s main strategy and isn\'t filling a role your deck is short on';
     }
-    return { name: s.entry.name, quantity: s.entry.quantity, why: `Low synergy: ${reason}.`, pairedAdd };
+    return {
+      name: s.entry.name, quantity: s.entry.quantity, why: `Low synergy: ${reason}.`, pairedAdd,
+      img: cardImage(s.entry.card), price: cardPrice(s.entry.card), tcgUrl: cardTcgLink(s.entry.card)
+    };
   });
 }
 
 /* ---------------------------------------------------------------------
    7. RENDERING
    --------------------------------------------------------------------- */
+// Small helpers used inside render() to keep the cut/add markup readable.
+function cardThumb(imgUrl, name) {
+  if (!imgUrl) return `<div class="up-thumb up-thumb-blank">No image</div>`;
+  return `<img class="up-thumb" src="${imgUrl}" alt="${name}" loading="lazy">`;
+}
+function priceLine(price, tcgUrl) {
+  const priceText = price ? `$${price.toFixed(2)}` : 'price n/a';
+  const inner = tcgUrl
+    ? `<a href="${tcgUrl}" target="_blank" rel="noopener">${priceText} on TCGplayer ↗</a>`
+    : `${priceText} (TCGplayer)`;
+  return `<div class="up-price">${inner}</div>`;
+}
+
 function render(commanderCard, analysis, scores, cuts, adds, unresolvedNames, apiFailed) {
   const results = document.getElementById('results');
   results.style.display = 'block';
@@ -717,13 +763,14 @@ function render(commanderCard, analysis, scores, cuts, adds, unresolvedNames, ap
   }
   cuts.forEach(c => {
     html += `<div class="upgrade-row">
-      <div class="up-col cut"><div class="up-tag cut">Cut</div><div class="up-name">${c.name}${c.quantity>1?` ×${c.quantity}`:''}</div><div class="up-why">${c.why}</div></div>`;
+      <div class="up-col cut">${cardThumb(c.img, c.name)}<div class="up-body"><div class="up-tag cut">Cut</div><div class="up-name">${c.name}${c.quantity>1?` ×${c.quantity}`:''}</div>
+        ${priceLine(c.price, c.tcgUrl)}<div class="up-why">${c.why}</div></div></div>`;
     if (c.pairedAdd) {
-      html += `<div class="up-col add"><div class="up-tag add">Add</div><div class="up-name">${c.pairedAdd.name}</div>
-        <div class="up-price">${c.pairedAdd.price ? '~$'+c.pairedAdd.price.toFixed(2) : 'price n/a'} &middot; ${c.pairedAdd.roleLabel}</div>
-        <div class="up-why">${c.pairedAdd.why}</div></div>`;
+      const a = c.pairedAdd;
+      html += `<div class="up-col add">${cardThumb(a.img, a.name)}<div class="up-body"><div class="up-tag add">Add</div><div class="up-name">${a.name}</div>
+        ${priceLine(a.price, a.tcgUrl)}<div class="up-why">${a.roleLabel} &middot; ${a.why}</div></div></div>`;
     } else {
-      html += `<div class="up-col add"><div class="up-tag add">Add</div><div class="up-name">— deck is otherwise stocked here</div></div>`;
+      html += `<div class="up-col add"><div class="up-body"><div class="up-tag add">Add</div><div class="up-name">— deck is otherwise stocked here</div></div></div>`;
     }
     html += `</div>`;
   });
@@ -732,9 +779,8 @@ function render(commanderCard, analysis, scores, cuts, adds, unresolvedNames, ap
   if (extraAdds.length) {
     html += `<h2 style="margin-top:20px;">Additional Cards To Add</h2>`;
     extraAdds.forEach(a => {
-      html += `<div class="solo-add"><div class="up-tag add">Add</div><div class="up-name">${a.name}</div>
-        <div class="up-price">${a.price ? '~$'+a.price.toFixed(2) : 'price n/a'} &middot; ${a.roleLabel}</div>
-        <div class="up-why">${a.why}</div></div>`;
+      html += `<div class="solo-add">${cardThumb(a.img, a.name)}<div class="up-body"><div class="up-tag add">Add</div><div class="up-name">${a.name}</div>
+        ${priceLine(a.price, a.tcgUrl)}<div class="up-why">${a.roleLabel} &middot; ${a.why}</div></div></div>`;
     });
   }
   html += `</div>`;
