@@ -137,22 +137,48 @@ button#analyzeBtn:disabled{opacity:.55;cursor:progress;}
 
 .upgrade-row{
   display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--border);
-  border-radius:8px;overflow:hidden;margin-bottom:12px;
+  border-radius:8px;margin-bottom:12px;
+  /* no overflow:hidden here — it would clip the hover-zoom popup below */
 }
 @media (max-width:700px){.upgrade-row{grid-template-columns:1fr;}}
 .up-col{padding:14px 16px;display:flex;gap:12px;align-items:flex-start;}
-.up-col.cut{background:rgba(255,92,92,0.07);border-right:1px solid var(--border);}
-.up-col.add{background:rgba(62,207,126,0.07);}
-@media (max-width:700px){.up-col.cut{border-right:none;border-bottom:1px solid var(--border);}}
+.up-col.cut{background:rgba(255,92,92,0.07);border-right:1px solid var(--border);border-radius:8px 0 0 8px;}
+.up-col.add{background:rgba(62,207,126,0.07);border-radius:0 8px 8px 0;}
+@media (max-width:700px){
+  .up-col.cut{border-right:none;border-bottom:1px solid var(--border);border-radius:8px 8px 0 0;}
+  .up-col.add{border-radius:0 0 8px 8px;}
+}
 .up-body{flex:1;min-width:0;}
+.up-thumb-wrap{position:relative;display:inline-block;flex-shrink:0;}
 .up-thumb{
   width:64px;height:89px;object-fit:cover;border-radius:6px;flex-shrink:0;
-  border:1px solid var(--border);background:#0c0e12;
+  border:1px solid var(--border);background:#0c0e12;display:block;
 }
 .up-thumb-blank{
   width:64px;height:89px;border-radius:6px;flex-shrink:0;border:1px dashed var(--border);
   display:flex;align-items:center;justify-content:center;text-align:center;
   font-size:10px;color:var(--muted);background:#0c0e12;padding:4px;
+}
+/* Hover-zoom preview: a sharper, larger image shown next to the thumbnail
+   on mouseover. Hidden by default and only revealed on hover, so it never
+   affects normal page layout or scroll height. */
+.up-thumb-large{
+  display:none;
+  position:absolute;
+  top:50%; left:76px;
+  transform:translateY(-50%);
+  width:260px;
+  border-radius:12px;
+  border:2px solid var(--orange);
+  box-shadow:0 14px 40px rgba(0,0,0,0.65);
+  z-index:100;
+  pointer-events:none;
+}
+.up-thumb-wrap:hover .up-thumb-large{display:block;}
+.up-col.add .up-thumb-large{left:auto;right:76px;}
+@media (max-width:700px){
+  /* No hover on touch devices — avoid a popup that can't be dismissed. */
+  .up-thumb-large{display:none !important;}
 }
 .up-tag{font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;font-weight:800;}
 .up-tag.cut{color:#ff8f8f;}
@@ -650,12 +676,21 @@ function buildCuts(deckEntries, analysis, adds) {
 function escapeHtml(str) {
   return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
-// Thumbnails resolve straight from Scryfall's image-redirect endpoint by
-// card name, independent of the JSON we already fetched for scoring.
+// Thumbnails are built straight from Scryfall's image-redirect endpoint by
+// card name, rather than from the image_uris field on the JSON we already
+// fetched. This is deliberate: it means a card's thumbnail can never go
+// missing just because our earlier fetch/cache logic dropped or reshaped
+// that field — the <img> tag resolves its own image independently.
+// A hidden, higher-res "normal" version sits alongside the small thumbnail;
+// CSS (.up-thumb-large) reveals it on hover for a bigger, sharper preview.
 function cardThumb(name) {
-  const src = 'https://api.scryfall.com/cards/named?format=image&version=small&exact=' + encodeURIComponent(name);
+  const small = 'https://api.scryfall.com/cards/named?format=image&version=small&exact=' + encodeURIComponent(name);
+  const large = 'https://api.scryfall.com/cards/named?format=image&version=normal&exact=' + encodeURIComponent(name);
   const safeName = escapeHtml(name);
-  return `<img class="up-thumb" src="${src}" alt="${safeName}" loading="lazy" onerror="this.style.visibility='hidden'">`;
+  return `<span class="up-thumb-wrap">
+    <img class="up-thumb" src="${small}" alt="${safeName}" loading="lazy" onerror="this.style.visibility='hidden'">
+    <img class="up-thumb-large" src="${large}" alt="${safeName}" loading="lazy">
+  </span>`;
 }
 function priceLine(price, tcgUrl) {
   const priceText = price ? `$${price.toFixed(2)}` : 'price n/a';
