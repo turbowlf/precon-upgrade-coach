@@ -6,111 +6,55 @@
 <title>Precon Upgrade Coach</title>
 <style>
 :root{
-  --bg:#0f1115;
-  --panel:#181b22;
-  --panel2:#1f232c;
-  --border:#2a2f3a;
-  --text:#e8e9ee;
-  --muted:#9298a8;
-  --orange:#ff8a2b;
-  --orange-dark:#e0741a;
-  --good:#3ecf7e;
-  --ok:#ffbf4d;
-  --bad:#ff5c5c;
+  --bg:#0f1115; --panel:#181b22; --panel2:#1f232c; --border:#2a2f3a;
+  --text:#e8e9ee; --muted:#9298a8; --orange:#ff8a2b; --orange-dark:#e0741a;
+  --good:#3ecf7e; --ok:#ffbf4d; --bad:#ff5c5c; --purple:#b48cff;
 }
 *{box-sizing:border-box;}
-body{
-  margin:0;
-  background:var(--bg);
-  color:var(--text);
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-  line-height:1.5;
-}
-.wrap{max-width:1000px;margin:0 auto;padding:32px 20px 100px;}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.5;}
+.wrap{max-width:1040px;margin:0 auto;padding:32px 20px 100px;}
 header{text-align:center;margin-bottom:28px;}
-h1{
-  font-size:34px;
-  margin:0 0 6px;
-  color:var(--orange);
-  letter-spacing:-0.5px;
-}
+h1{font-size:34px;margin:0 0 6px;color:var(--orange);letter-spacing:-0.5px;}
 header p{color:var(--muted);margin:0;font-size:15px;}
-
-.card{
-  background:var(--panel);
-  border:1px solid var(--border);
-  border-radius:10px;
-  padding:20px;
-  margin-bottom:20px;
-}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:20px;}
 .card h2{margin:0 0 12px;font-size:18px;color:var(--text);}
-textarea{
-  width:100%;
-  min-height:260px;
-  background:#0c0e12;
-  border:1px solid var(--border);
-  border-radius:8px;
-  color:var(--text);
-  font-family:ui-monospace,SFMono-Regular,Consolas,monospace;
-  font-size:13px;
-  padding:12px;
-  resize:vertical;
-}
+.card h3{margin:0 0 8px;font-size:15px;color:var(--text);}
+textarea{width:100%;min-height:260px;background:#0c0e12;border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:13px;padding:12px;resize:vertical;}
 .controls-row{display:flex;gap:12px;margin-top:12px;flex-wrap:wrap;align-items:center;}
 .controls-row label{font-size:13px;color:var(--muted);}
-input[type=text]{
-  background:#0c0e12;border:1px solid var(--border);border-radius:6px;color:var(--text);
-  padding:8px 10px;font-size:13px;flex:1;min-width:200px;
-}
-button#analyzeBtn{
-  background:var(--orange);
-  color:#1a1105;
-  border:none;
-  font-weight:700;
-  font-size:15px;
-  padding:12px 22px;
-  border-radius:8px;
-  cursor:pointer;
-  margin-top:14px;
-  width:100%;
-}
+input[type=text]{background:#0c0e12;border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;flex:1;min-width:200px;}
+.budget-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+.budget-chip{padding:8px 14px;border-radius:20px;border:1px solid var(--border);font-size:12.5px;cursor:pointer;color:var(--muted);background:transparent;font-family:inherit;}
+.budget-chip.active{background:var(--orange);border-color:var(--orange);color:#1a1105;font-weight:700;}
+button#analyzeBtn{background:var(--orange);color:#1a1105;border:none;font-weight:700;font-size:15px;padding:12px 22px;border-radius:8px;cursor:pointer;margin-top:14px;width:100%;}
 button#analyzeBtn:hover:not(:disabled){background:var(--orange-dark);}
 button#analyzeBtn:disabled{opacity:.55;cursor:progress;}
-.sample-link{
-  background:none;border:none;color:var(--orange);font-size:12.5px;cursor:pointer;
-  text-decoration:underline;padding:0;margin-top:8px;
-}
+.sample-link{background:none;border:none;color:var(--orange);font-size:12.5px;cursor:pointer;text-decoration:underline;padding:0;margin-top:8px;}
 #statusLine{margin-top:10px;font-size:13px;color:var(--muted);min-height:18px;}
-#errorBox{
-  display:none;margin-top:12px;padding:12px 14px;border-radius:8px;
-  background:rgba(255,92,92,0.12);border:1px solid rgba(255,92,92,0.4);color:#ffb3b3;font-size:13.5px;
-}
-
+#errorBox{display:none;margin-top:12px;padding:12px 14px;border-radius:8px;background:rgba(255,92,92,0.12);border:1px solid rgba(255,92,92,0.4);color:#ffb3b3;font-size:13.5px;}
 #results{display:none;}
 
-.score-hero{
-  display:flex;align-items:center;gap:24px;flex-wrap:wrap;
-}
-.score-circle{
-  width:110px;height:110px;border-radius:50%;
-  background:conic-gradient(var(--orange) calc(var(--pct,0)*1%), #2a2f3a 0);
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;
-}
-.score-circle-inner{
-  width:88px;height:88px;border-radius:50%;background:var(--panel);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-}
+.score-hero{display:flex;align-items:center;gap:24px;flex-wrap:wrap;}
+.score-circle{width:110px;height:110px;border-radius:50%;background:conic-gradient(var(--orange) calc(var(--pct,0)*1%), #2a2f3a 0);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.score-circle-inner{width:88px;height:88px;border-radius:50%;background:var(--panel);display:flex;flex-direction:column;align-items:center;justify-content:center;}
 .score-circle-inner .num{font-size:28px;font-weight:800;}
 .score-circle-inner .lbl{font-size:10px;color:var(--muted);text-transform:uppercase;}
 .score-hero .meta{flex:1;min-width:200px;}
 .score-hero .commander-name{font-size:20px;font-weight:700;}
 .score-hero .commander-sub{color:var(--muted);font-size:13px;margin-top:2px;}
+.theme-tag{display:inline-block;background:var(--panel2);border:1px solid var(--border);padding:4px 11px;border-radius:20px;font-size:12px;margin:4px 6px 0 0;color:var(--orange);}
 
 .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px;}
 @media (max-width:700px){.stat-grid{grid-template-columns:repeat(2,1fr);}}
 .stat-box{background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center;}
 .stat-box .n{font-size:22px;font-weight:800;color:var(--orange);}
 .stat-box .l{font-size:11px;color:var(--muted);text-transform:uppercase;margin-top:2px;}
+
+.comp-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;font-size:13px;}
+.comp-label{width:140px;flex-shrink:0;color:var(--muted);}
+.comp-track{flex:1;height:10px;background:#2a2f3a;border-radius:5px;overflow:hidden;}
+.comp-fill{height:100%;border-radius:5px;background:var(--orange);}
+.comp-num{width:34px;text-align:right;font-weight:700;flex-shrink:0;}
 
 .category-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:6px;}
 @media (max-width:700px){.category-grid{grid-template-columns:1fr;}}
@@ -122,78 +66,72 @@ button#analyzeBtn:disabled{opacity:.55;cursor:progress;}
 .bar-fill{height:100%;border-radius:4px;}
 .cat-box .cat-detail{font-size:12px;color:var(--muted);margin-top:6px;}
 
-.weakness-box{
-  background:rgba(255,92,92,0.08);border:1px solid rgba(255,92,92,0.35);border-radius:8px;
-  padding:14px 16px;font-size:14px;
-}
-.advice-box{
-  background:rgba(255,138,43,0.08);border:1px solid rgba(255,138,43,0.35);border-radius:8px;
-  padding:14px 16px;font-size:14px;
-}
-.focus-box{
-  background:rgba(62,207,126,0.08);border:1px solid rgba(62,207,126,0.35);border-radius:8px;
-  padding:14px 16px;font-size:14px;
-}
+.weakness-box{background:rgba(255,92,92,0.08);border:1px solid rgba(255,92,92,0.35);border-radius:8px;padding:14px 16px;font-size:14px;}
+.advice-box{background:rgba(255,138,43,0.08);border:1px solid rgba(255,138,43,0.35);border-radius:8px;padding:14px 16px;font-size:14px;}
+.focus-box{background:rgba(62,207,126,0.08);border:1px solid rgba(62,207,126,0.35);border-radius:8px;padding:14px 16px;font-size:14px;}
+.report-box{background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:16px 18px;font-size:14.5px;}
+.report-box p{margin:0 0 10px;}
+.report-box p:last-child{margin-bottom:0;}
 
-.upgrade-row{
-  display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--border);
-  border-radius:8px;margin-bottom:12px;
-  /* no overflow:hidden here — it would clip the hover-zoom popup below */
-}
+.flag-list{list-style:none;margin:0;padding:0;}
+.flag-list li{padding:9px 0;border-top:1px dashed var(--border);font-size:13.5px;display:flex;gap:8px;}
+.flag-list li:first-child{border-top:none;}
+.flag-list li::before{content:"🚩";flex-shrink:0;}
+.flag-list.ok li::before{content:"✅";}
+
+.weak-rank{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px dashed var(--border);}
+.weak-rank:first-child{border-top:none;}
+.weak-rank .rk{width:26px;height:26px;border-radius:50%;background:var(--panel2);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:var(--orange);flex-shrink:0;}
+.weak-rank .wn{flex:1;font-weight:600;font-size:14px;}
+.weak-rank .ws{font-family:ui-monospace,monospace;font-size:13px;color:var(--bad);font-weight:700;}
+
+.priority-badge{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;padding:3px 9px;border-radius:20px;display:inline-block;}
+.p1{background:rgba(255,92,92,0.2);color:#ff8f8f;border:1px solid rgba(255,92,92,0.5);}
+.p2{background:rgba(255,191,77,0.2);color:var(--ok);border:1px solid rgba(255,191,77,0.5);}
+.p3{background:rgba(255,138,43,0.18);color:var(--orange);border:1px solid rgba(255,138,43,0.45);}
+.p4{background:rgba(62,207,126,0.18);color:var(--good);border:1px solid rgba(62,207,126,0.45);}
+.p5{background:rgba(180,140,255,0.18);color:var(--purple);border:1px solid rgba(180,140,255,0.45);}
+
+.upgrade-block{border:1px solid var(--border);border-radius:10px;margin-bottom:16px;overflow:visible;}
+.upgrade-head{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;background:var(--panel2);border-bottom:1px solid var(--border);border-radius:10px 10px 0 0;}
+.upgrade-row{display:grid;grid-template-columns:1fr 1fr;gap:0;}
 @media (max-width:700px){.upgrade-row{grid-template-columns:1fr;}}
 .up-col{padding:14px 16px;display:flex;gap:12px;align-items:flex-start;}
-.up-col.cut{background:rgba(255,92,92,0.07);border-right:1px solid var(--border);border-radius:8px 0 0 8px;}
-.up-col.add{background:rgba(62,207,126,0.07);border-radius:0 8px 8px 0;}
-@media (max-width:700px){
-  .up-col.cut{border-right:none;border-bottom:1px solid var(--border);border-radius:8px 8px 0 0;}
-  .up-col.add{border-radius:0 0 8px 8px;}
-}
+.up-col.cut{background:rgba(255,92,92,0.06);border-right:1px solid var(--border);}
+.up-col.add{background:rgba(62,207,126,0.06);}
+@media (max-width:700px){.up-col.cut{border-right:none;border-bottom:1px solid var(--border);}}
 .up-body{flex:1;min-width:0;}
 .up-thumb-wrap{position:relative;display:inline-block;flex-shrink:0;}
-.up-thumb{
-  width:64px;height:89px;object-fit:cover;border-radius:6px;flex-shrink:0;
-  border:1px solid var(--border);background:#0c0e12;display:block;
-}
-.up-thumb-blank{
-  width:64px;height:89px;border-radius:6px;flex-shrink:0;border:1px dashed var(--border);
-  display:flex;align-items:center;justify-content:center;text-align:center;
-  font-size:10px;color:var(--muted);background:#0c0e12;padding:4px;
-}
-/* Hover-zoom preview: a sharper, larger image shown next to the thumbnail
-   on mouseover. Hidden by default and only revealed on hover, so it never
-   affects normal page layout or scroll height. */
-.up-thumb-large{
-  display:none;
-  position:absolute;
-  top:50%; left:76px;
-  transform:translateY(-50%);
-  width:260px;
-  border-radius:12px;
-  border:2px solid var(--orange);
-  box-shadow:0 14px 40px rgba(0,0,0,0.65);
-  z-index:100;
-  pointer-events:none;
-}
+.up-thumb{width:64px;height:89px;object-fit:cover;border-radius:6px;flex-shrink:0;border:1px solid var(--border);background:#0c0e12;display:block;}
+.up-thumb-large{display:none;position:absolute;top:50%;left:76px;transform:translateY(-50%);width:260px;border-radius:12px;border:2px solid var(--orange);box-shadow:0 14px 40px rgba(0,0,0,0.65);z-index:100;pointer-events:none;}
 .up-thumb-wrap:hover .up-thumb-large{display:block;}
 .up-col.add .up-thumb-large{left:auto;right:76px;}
-@media (max-width:700px){
-  /* No hover on touch devices — avoid a popup that can't be dismissed. */
-  .up-thumb-large{display:none !important;}
-}
+@media (max-width:700px){.up-thumb-large{display:none !important;}}
 .up-tag{font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;font-weight:800;}
-.up-tag.cut{color:#ff8f8f;}
-.up-tag.add{color:#7fe3ab;}
+.up-tag.cut{color:#ff8f8f;} .up-tag.add{color:#7fe3ab;}
 .up-name{font-weight:700;font-size:15.5px;margin:3px 0 4px;}
 .up-price{font-size:11.5px;color:var(--orange);margin-bottom:6px;}
-.up-price a{color:var(--orange);text-decoration:none;}
-.up-price a:hover{text-decoration:underline;}
+.up-price a{color:var(--orange);text-decoration:none;} .up-price a:hover{text-decoration:underline;}
 .up-why{font-size:13px;color:var(--muted);}
-.solo-add{
-  border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:10px;
-  background:rgba(62,207,126,0.05);display:flex;gap:12px;align-items:flex-start;
-}
+.edh-tag{display:inline-block;font-size:10.5px;color:var(--purple);border:1px solid rgba(180,140,255,0.4);background:rgba(180,140,255,0.1);padding:1px 7px;border-radius:10px;margin-left:6px;}
+.compare-band{padding:12px 16px;border-top:1px solid var(--border);background:var(--panel2);border-radius:0 0 10px 10px;font-size:13px;}
+.compare-band .cl{margin-bottom:5px;}
+.compare-band b{color:var(--orange);}
+.solo-add{border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:10px;background:rgba(62,207,126,0.05);display:flex;gap:12px;align-items:flex-start;}
+
+.projected-box{display:flex;align-items:center;gap:24px;flex-wrap:wrap;}
+.proj-arrow{font-size:26px;color:var(--muted);}
+.proj-score{text-align:center;}
+.proj-score .n{font-size:30px;font-weight:800;}
+.proj-score .l{font-size:11px;color:var(--muted);text-transform:uppercase;}
+.proj-score.current .n{color:var(--muted);}
+.proj-score.projected .n{color:var(--good);}
+.proj-notes{list-style:none;padding:0;margin:14px 0 0;}
+.proj-notes li{font-size:13px;color:var(--muted);padding:5px 0;}
+.proj-notes li b{color:var(--good);}
 
 .confidence-note{font-size:12px;color:var(--muted);margin-top:6px;font-style:italic;}
+.limitation-note{font-size:12px;color:var(--muted);margin-top:10px;padding-top:10px;border-top:1px dashed var(--border);}
 footer{text-align:center;color:#5c6070;font-size:12px;margin-top:40px;}
 </style>
 </head>
@@ -211,6 +149,14 @@ footer{text-align:center;color:#5c6070;font-size:12px;margin-top:40px;}
       <label for="commanderOverride">Commander (optional, auto-detected otherwise):</label>
       <input type="text" id="commanderOverride" placeholder="Leave blank to auto-detect">
     </div>
+    <label style="display:block;font-size:12.5px;color:var(--muted);margin-top:14px;">Upgrade budget</label>
+    <div class="budget-row" id="budgetRow">
+      <button class="budget-chip" data-budget="10">$10</button>
+      <button class="budget-chip" data-budget="25">$25</button>
+      <button class="budget-chip active" data-budget="50">$50</button>
+      <button class="budget-chip" data-budget="100">$100</button>
+      <button class="budget-chip" data-budget="0">No Budget</button>
+    </div>
     <button id="analyzeBtn">Analyze Deck</button>
     <button class="sample-link" id="sampleBtn">Use a sample decklist instead</button>
     <div id="statusLine"></div>
@@ -219,25 +165,24 @@ footer{text-align:center;color:#5c6070;font-size:12px;margin-top:40px;}
 
   <div id="results"></div>
 
-  <footer>Card data & prices via the Scryfall API (Scryfall's USD prices are sourced from TCGplayer), cached in your browser. Not affiliated with Wizards of the Coast.</footer>
+  <footer>Card data & prices via the Scryfall API (USD prices sourced from TCGplayer). Strategy signal from EDHREC's public commander pages, used best-effort. Cached in your browser. Not affiliated with Wizards of the Coast, Scryfall, or EDHREC.</footer>
 </div>
 
 <script>
 /* =====================================================================
    PRECON UPGRADE COACH — generic Commander deck analyzer.
-   Every count, tag, and recommendation is derived from the cards the
-   user actually pastes in, resolved live against Scryfall. Nothing here
-   is keyed to a specific precon, commander, or set.
+   Every count, tag, score, and recommendation is derived from the cards
+   the user actually pastes in, resolved live against Scryfall (and,
+   best-effort, EDHREC). Nothing here is keyed to a specific precon,
+   commander, or set — see the CANDIDATES pool and TAG_RULES below.
    ===================================================================== */
 
 /* ---------------------------------------------------------------------
-   1. DECKLIST PARSER
-   The rule that matters most: quantities are summed, never treated as
-   "1 unique line = 1 card." "10 Forest" is ten lands, not one.
+   1. DECKLIST PARSER (Moxfield-oriented, but tolerant of variants)
    --------------------------------------------------------------------- */
 function parseDecklist(rawText) {
   const lines = rawText.split(/\r?\n/);
-  const mainCards = new Map(); // lowercase name -> {name, quantity}
+  const mainCards = new Map();
   const commanderNames = [];
   let section = 'main';
 
@@ -247,9 +192,11 @@ function parseDecklist(rawText) {
   const inlineCmdrRe = /^\s*commander\s*:\s*(.+)$/i;
 
   for (const raw of lines) {
-    const line = raw.trim();
+    let line = raw.trim();
     if (!line) continue;
     if (line.startsWith('//') || line.startsWith('#')) continue;
+    // Moxfield "SB: 1 Card Name" sideboard prefix — skip those lines entirely.
+    if (/^SB:\s*/i.test(line)) continue;
 
     const inlineMatch = line.match(inlineCmdrRe);
     if (inlineMatch) { commanderNames.push(cleanName(inlineMatch[1])); continue; }
@@ -279,24 +226,32 @@ function parseDecklist(rawText) {
 function parseCardLine(line) {
   let text = line;
   text = text.replace(/\s*\*[fF]\*\s*$/, '');
+  // Trailing set code + collector number, e.g. "Sol Ring (C21) 263"
   text = text.replace(/\s*\([A-Za-z0-9]{2,5}\)\s*[A-Za-z0-9\-★]*\s*$/, '');
+  // Trailing tab-separated extra columns some exports include after the name.
+  text = text.split('\t')[0] + (text.includes('\t') ? '' : '');
+  if (line.includes('\t')) {
+    // Tab-delimited exports: "1\tCard Name\t..." — take count + name columns only.
+    const cols = line.split('\t');
+    if (cols.length >= 2 && /^\d+$/.test(cols[0].trim())) {
+      return { quantity: parseInt(cols[0].trim(), 10), name: cleanName(cols[1]) };
+    }
+  }
 
   let m = text.match(/^\s*(\d+)\s*[xX]?\s+(.+?)\s*$/);
   if (m) return { quantity: parseInt(m[1], 10), name: cleanName(m[2]) };
-
   m = text.match(/^(.+?)\s*[xX]\s*(\d+)\s*$/);
   if (m) return { quantity: parseInt(m[2], 10), name: cleanName(m[1]) };
-
   if (text.trim().length > 0) return { quantity: 1, name: cleanName(text) };
   return null;
 }
 function cleanName(name) { return name.replace(/\s+/g, ' ').trim(); }
 
 /* ---------------------------------------------------------------------
-   2. CARD DATA — Scryfall, with localStorage caching.
+   2. CARD DATA — Scryfall, with localStorage caching + graceful failure.
    --------------------------------------------------------------------- */
-const CACHE_PREFIX = 'puc_card_v1_';
-const CACHE_TTL_MS = 14 * 24 * 60 * 60 * 1000; // 14 days
+const CACHE_PREFIX = 'puc_card_v2_';
+const CACHE_TTL_MS = 14 * 24 * 60 * 60 * 1000;
 
 function cacheGet(name) {
   try {
@@ -308,9 +263,8 @@ function cacheGet(name) {
   } catch (e) { return null; }
 }
 function cacheSet(name, card) {
-  try {
-    localStorage.setItem(CACHE_PREFIX + name.toLowerCase(), JSON.stringify({ ts: Date.now(), card }));
-  } catch (e) { /* storage full or unavailable — safe to ignore */ }
+  try { localStorage.setItem(CACHE_PREFIX + name.toLowerCase(), JSON.stringify({ ts: Date.now(), card })); }
+  catch (e) { /* storage full/unavailable — safe to ignore */ }
 }
 
 const FALLBACK_LANDS = new Set([
@@ -327,14 +281,12 @@ async function fetchCollection(names) {
     if (cached) results.set(n.toLowerCase(), cached);
     else toFetch.push(n);
   }
-
   let apiFailed = false;
   for (let i = 0; i < toFetch.length; i += 75) {
     const batch = toFetch.slice(i, i + 75);
     try {
       const resp = await fetch('https://api.scryfall.com/cards/collection', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ identifiers: batch.map(n => ({ name: n })) })
       });
       if (!resp.ok) throw new Error('status ' + resp.status);
@@ -344,14 +296,52 @@ async function fetchCollection(names) {
         try {
           const r = await fetch('https://api.scryfall.com/cards/named?fuzzy=' + encodeURIComponent(nf.name));
           if (r.ok) { const card = await r.json(); results.set(nf.name.toLowerCase(), card); cacheSet(card.name, card); }
-        } catch (e) { /* leave unresolved, fallback handles basics below */ }
+        } catch (e) { /* leave unresolved */ }
         await new Promise(r => setTimeout(r, 50));
       }
-    } catch (e) {
-      apiFailed = true;
-    }
+    } catch (e) { apiFailed = true; }
   }
   return { results, apiFailed };
+}
+
+/* ---------------------------------------------------------------------
+   2b. EDHREC — best-effort. EDHREC has no official public API; this uses
+   their static per-commander JSON, which many third-party deckbuilding
+   tools also read client-side. If it's ever unreachable or reshaped, this
+   fails silently and every other feature keeps working without it — no
+   EDHREC data should ever be a hard requirement for the app to function.
+   --------------------------------------------------------------------- */
+function slugifyCommanderName(name) {
+  return name.toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // strip accents
+    .replace(/[^a-z0-9\s-]/g, '')
+    .trim().replace(/\s+/g, '-');
+}
+async function fetchEdhrecData(commanderName) {
+  if (!commanderName) return null;
+  const slug = slugifyCommanderName(commanderName);
+  if (!slug) return null;
+  try {
+    const resp = await fetch('https://json.edhrec.com/pages/commanders/' + slug + '.json');
+    if (!resp.ok) return null;
+    const data = await resp.json();
+    const map = new Map();
+    const cardlists = (data && data.container && data.container.json_dict && data.container.json_dict.cardlists) || [];
+    cardlists.forEach(list => {
+      (list.cardviews || []).forEach(cv => {
+        if (!cv || !cv.name) return;
+        let inclusion = null;
+        if (typeof cv.num_decks === 'number' && typeof cv.potential_decks === 'number' && cv.potential_decks > 0) {
+          inclusion = cv.num_decks / cv.potential_decks;
+        } else if (typeof cv.inclusion === 'number') {
+          inclusion = cv.inclusion > 1 ? cv.inclusion / 100 : cv.inclusion;
+        }
+        const synergy = typeof cv.synergy === 'number' ? cv.synergy : null;
+        map.set(cv.name.toLowerCase(), { inclusion, synergy });
+      });
+    });
+    return map.size ? map : null;
+  } catch (e) { return null; }
 }
 
 /* ---------------------------------------------------------------------
@@ -374,13 +364,17 @@ function cardPrice(card) {
   const usd = parseFloat(card.prices.usd || card.prices.usd_foil || 0);
   return isNaN(usd) ? 0 : usd;
 }
-function cardTcgLink(card) {
-  return (card && card.purchase_uris && card.purchase_uris.tcgplayer) || null;
-}
+function cardTcgLink(card) { return (card && card.purchase_uris && card.purchase_uris.tcgplayer) || null; }
 function colorIdentityOf(card) { return (card && card.color_identity) || []; }
 function isSubsetColors(cardColors, deckColors) {
   const set = new Set(deckColors);
   return cardColors.every(c => set.has(c));
+}
+function creatureTypesOf(card) {
+  const type = normalizedType(card);
+  const parts = type.split('—');
+  if (parts.length < 2) return [];
+  return parts[1].trim().split(/\s+/).filter(t => t.length > 1);
 }
 
 const TAG_RULES = [
@@ -392,17 +386,18 @@ const TAG_RULES = [
   ['tutor', /search your library for a card|search your library for (a|an|up to \w+) (creature|artifact|enchantment|instant|sorcery|permanent)/i],
   ['graveyard', /return target creature card from your graveyard|from your graveyard to the battlefield|return .* card from your graveyard/i],
   ['tokens', /create[s]? .*token/i],
+  ['food', /create[s]? (a|an|\d+) food token/i],
   ['sacrifice', /sacrifice a creature|whenever a creature you control dies|sacrifice another creature/i],
   ['lifegain', /you gain life|whenever you gain life|life equal to/i],
   ['counters', /\+1\/\+1 counter/i],
   ['winCon', /extra combat phase|additional combat phase|you win the game|whenever .* deals combat damage to a player,/i],
+  ['tapped', /enters the battlefield tapped/i],
 ];
 
 function tagCard(card) {
   const type = normalizedType(card);
   const oracle = normalizedOracle(card);
   const tags = new Set();
-
   if (/\bLand\b/.test(type)) tags.add('land');
   if (/\bCreature\b/.test(type)) tags.add('creature');
   if (/\bArtifact\b/.test(type)) tags.add('artifact');
@@ -411,16 +406,18 @@ function tagCard(card) {
   if (/\bSorcery\b/.test(type)) tags.add('sorcery');
   if (/\bPlaneswalker\b/.test(type)) tags.add('planeswalker');
   if (/\bBattle\b/.test(type)) tags.add('battle');
-
+  if (/\bEquipment\b/.test(type)) tags.add('equipment');
+  if (/\bAura\b/.test(type)) tags.add('aura');
   for (const [tag, re] of TAG_RULES) if (re.test(oracle) || re.test(type)) tags.add(tag);
-
   if (tags.has('creature') && card.power && parseInt(card.power, 10) >= 6) tags.add('winCon');
-
   return tags;
 }
 
 /* ---------------------------------------------------------------------
    4. RECOMMENDATION CANDIDATE POOL
+   Curated staples tagged by functional role + optional theme. Color
+   legality, price, and (where available) EDHREC signal are resolved
+   live, so nothing here is suggested blind.
    --------------------------------------------------------------------- */
 const CANDIDATES = [
   {n:'Sol Ring', roles:['ramp']}, {n:'Arcane Signet', roles:['ramp']},
@@ -455,8 +452,8 @@ const CANDIDATES = [
   {n:'Austere Command', roles:['wipe']}, {n:'Vandalblast', roles:['wipe']},
   {n:'Farewell', roles:['wipe']},
 
-  {n:'Heroic Intervention', roles:['protection']}, {n:'Swiftfoot Boots', roles:['protection']},
-  {n:'Lightning Greaves', roles:['protection']}, {n:'Teferi\'s Protection', roles:['protection']},
+  {n:'Heroic Intervention', roles:['protection']}, {n:'Swiftfoot Boots', roles:['protection','equipment']},
+  {n:'Lightning Greaves', roles:['protection','equipment']}, {n:'Teferi\'s Protection', roles:['protection']},
   {n:'Flawless Maneuver', roles:['protection']}, {n:'Boros Charm', roles:['protection','removal']},
   {n:'Dauntless Escort', roles:['protection']}, {n:'Tamiyo\'s Safekeeping', roles:['protection']},
 
@@ -466,6 +463,7 @@ const CANDIDATES = [
 
   {n:'Anointed Procession', roles:['tokens']}, {n:'Parallel Lives', roles:['tokens']},
   {n:'Krenko, Mob Boss', roles:['tokens']}, {n:'Bitterblossom', roles:['tokens']},
+  {n:'Academy Manufactor', roles:['tokens','food']}, {n:'Trail of Crumbs', roles:['food','draw']},
 
   {n:'Blood Artist', roles:['sacrifice']}, {n:'Viscera Seer', roles:['sacrifice']},
   {n:'Ashnod\'s Altar', roles:['sacrifice','ramp']}, {n:'Zulaport Cutthroat', roles:['sacrifice']},
@@ -474,13 +472,17 @@ const CANDIDATES = [
   {n:'Eternal Witness', roles:['graveyard','draw']}, {n:'Sun Titan', roles:['graveyard']},
 
   {n:'Well of Lost Dreams', roles:['lifegain','draw']}, {n:'Heliod, Sun-Crowned', roles:['lifegain','counters']},
+  {n:'Rhox Faithmender', roles:['lifegain']},
 
   {n:'Hardened Scales', roles:['counters']}, {n:'Kalonian Hydra', roles:['counters','winCon']},
-  {n:'Doubling Season', roles:['counters','tokens']},
+  {n:'Doubling Season', roles:['counters','tokens']}, {n:'Conclave Mentor', roles:['counters']},
 
   {n:'Avenger of Zendikar', roles:['winCon','tokens']}, {n:'Craterhoof Behemoth', roles:['winCon']},
   {n:'Torment of Hailfire', roles:['winCon']}, {n:'Exsanguinate', roles:['winCon']},
   {n:'Triumph of the Hordes', roles:['winCon']},
+
+  {n:'Sword of Fire and Ice', roles:['equipment','draw','removal']}, {n:'Kaldra Compleat', roles:['equipment','winCon']},
+  {n:'Cavern of Souls', roles:['manabase']},
 
   {n:'Command Tower', roles:['manabase']}, {n:'Exotic Orchard', roles:['manabase']},
   {n:'Path of Ancestry', roles:['manabase']}, {n:'Reliquary Tower', roles:['manabase']},
@@ -489,7 +491,15 @@ const CANDIDATES = [
 const ROLE_LABELS = {
   ramp:'Ramp', draw:'Card Draw', removal:'Removal', wipe:'Board Wipe', protection:'Protection',
   tutor:'Tutor', tokens:'Token Generation', sacrifice:'Sacrifice Value', graveyard:'Graveyard Recursion',
-  lifegain:'Lifegain', counters:'+1/+1 Counters', winCon:'Win Condition', manabase:'Mana Base'
+  lifegain:'Lifegain', counters:'+1/+1 Counters', winCon:'Win Condition', manabase:'Mana Base',
+  food:'Food', equipment:'Equipment/Voltron'
+};
+const ROLE_VERB = {
+  ramp:'ramps your mana', draw:'draws you cards', removal:'answers a threat', wipe:'wipes the board',
+  protection:'protects your board', tutor:'finds any card you need', tokens:'builds a token army',
+  sacrifice:'turns dying creatures into value', graveyard:'recurs cards from your graveyard',
+  lifegain:'gains you life', counters:'grows your +1/+1 counters plan', winCon:'closes out the game',
+  manabase:'fixes your mana', food:'feeds your Food subtheme', equipment:'powers up one creature'
 };
 
 /* ---------------------------------------------------------------------
@@ -508,10 +518,11 @@ function analyzeDeck(commanderCard, deckEntries) {
 
   let totalCards = 0;
   const typeCounts = { land:0, creature:0, artifact:0, enchantment:0, instant:0, sorcery:0, planeswalker:0, battle:0, other:0 };
-  const roleCounts = { ramp:0, draw:0, removal:0, wipe:0, protection:0, tutor:0, tokens:0, sacrifice:0, graveyard:0, lifegain:0, counters:0, winCon:0 };
+  const roleCounts = { ramp:0, draw:0, removal:0, wipe:0, protection:0, tutor:0, tokens:0, sacrifice:0, graveyard:0, lifegain:0, counters:0, winCon:0, food:0, equipment:0 };
   const themeFreq = {};
   const cmcBuckets = { '0-1':0, '2':0, '3':0, '4':0, '5':0, '6+':0 };
-  let totalCMC = 0, nonlandCount = 0, unresolvedCount = 0;
+  const creatureTypeFreq = {};
+  let totalCMC = 0, nonlandCount = 0, unresolvedCount = 0, tappedLandCount = 0;
 
   deckEntries.forEach(e => {
     totalCards += e.quantity;
@@ -524,6 +535,8 @@ function analyzeDeck(commanderCard, deckEntries) {
     if (!matchedMain) typeCounts.other += e.quantity;
 
     for (const role of Object.keys(roleCounts)) if (t.has(role)) { roleCounts[role] += e.quantity; themeFreq[role] = (themeFreq[role]||0) + e.quantity; }
+    if (t.has('land') && t.has('tapped')) tappedLandCount += e.quantity;
+    if (t.has('creature')) creatureTypesOf(e.card).forEach(ct => { creatureTypeFreq[ct] = (creatureTypeFreq[ct]||0) + e.quantity; });
 
     if (!t.has('land') && typeof e.card.cmc === 'number') {
       totalCMC += e.card.cmc * e.quantity;
@@ -541,27 +554,32 @@ function analyzeDeck(commanderCard, deckEntries) {
     if (cmdrTags.has(role)) s += 8;
     weighted[role] = s;
   }
-  const sortedThemes = Object.entries(weighted).filter(([,s]) => s >= 5).sort((a,b)=>b[1]-a[1]).slice(0,4).map(([r])=>r);
+  let topTribe = null, topTribeCount = 0;
+  for (const [type, count] of Object.entries(creatureTypeFreq)) if (count > topTribeCount) { topTribe = type; topTribeCount = count; }
+  if (topTribe && topTribeCount >= 6) weighted.tribal = topTribeCount;
 
+  const sortedThemes = Object.entries(weighted).filter(([,s]) => s >= 5).sort((a,b)=>b[1]-a[1]).slice(0,4).map(([r])=>r);
   const avgCMC = nonlandCount ? totalCMC / nonlandCount : 0;
 
-  return { deckColorIdentity: Array.from(deckColorIdentity), totalCards, typeCounts, roleCounts, sortedThemes, cmcBuckets, avgCMC, nonlandCount, unresolvedCount };
+  return {
+    deckColorIdentity: Array.from(deckColorIdentity), totalCards, typeCounts, roleCounts, sortedThemes,
+    cmcBuckets, avgCMC, nonlandCount, unresolvedCount, tappedLandCount, topTribe, topTribeCount
+  };
 }
+
+const THEME_LABELS = Object.assign({ tribal: 'Tribal' }, ROLE_LABELS);
 
 function computeScores(analysis) {
   const manaScore = Math.round(0.55 * scoreFromCount(analysis.typeCounts.land, 36) + 0.45 * scoreFromCount(analysis.roleCounts.ramp, 10));
   const drawScore = scoreFromCount(analysis.roleCounts.draw, 10);
   const interactionRaw = analysis.roleCounts.removal + analysis.roleCounts.wipe * 1.5;
   const interactionScore = scoreFromCount(interactionRaw, 10);
-
-  const synergyMatches = analysis.sortedThemes.reduce((sum, theme) => sum + (analysis.roleCounts[theme]||0), 0);
+  const synergyMatches = analysis.sortedThemes.reduce((sum, theme) => sum + (theme === 'tribal' ? analysis.topTribeCount : (analysis.roleCounts[theme]||0)), 0);
   const synergyPct = analysis.nonlandCount ? synergyMatches / analysis.nonlandCount : 0;
   const synergyScore = Math.max(0, Math.min(100, Math.round(synergyPct * 250)));
-
   const winConScore = scoreFromCount(analysis.roleCounts.winCon, 3);
   const consistencyRaw = analysis.roleCounts.tutor * 3 + analysis.roleCounts.draw + analysis.roleCounts.ramp * 0.5;
   const consistencyScore = scoreFromCount(consistencyRaw, 16);
-
   let curveScore = Math.max(0, 100 - Math.abs(analysis.avgCMC - 3) * 25);
   const heavyPct = analysis.nonlandCount ? (analysis.cmcBuckets['6+'] || 0) / analysis.nonlandCount : 0;
   if (heavyPct > 0.2) curveScore -= (heavyPct - 0.2) * 150;
@@ -576,20 +594,118 @@ function computeScores(analysis) {
     consistency: { label:'Consistency Score', score: consistencyScore, detail: `${analysis.roleCounts.tutor} tutors, ${analysis.roleCounts.draw} draw effects` },
     curve: { label:'Mana Curve Score', score: curveScore, detail: `avg. nonland mana value ${analysis.avgCMC.toFixed(2)}` },
   };
-
   const overall = Math.round(
     categories.mana.score * 0.18 + categories.draw.score * 0.15 + categories.interaction.score * 0.15 +
     categories.synergy.score * 0.20 + categories.winCon.score * 0.12 + categories.consistency.score * 0.10 +
     categories.curve.score * 0.10
   );
-
-  return { overall, categories };
+  return { overall, categories, synergyMatches };
 }
 
 /* ---------------------------------------------------------------------
-   6. RECOMMENDATIONS
+   5b. RED FLAGS
    --------------------------------------------------------------------- */
-async function buildRecommendations(analysis, deckNameSet, budget) {
+function computeRedFlags(analysis) {
+  const flags = [];
+  if (analysis.typeCounts.land < 34) flags.push(`Only ${analysis.typeCounts.land} lands — most 99-card decks want 34–38.`);
+  if (analysis.typeCounts.land > 42) flags.push(`${analysis.typeCounts.land} lands is on the high side — you may be flooding out.`);
+  if (analysis.roleCounts.ramp < 8) flags.push(`Only ${analysis.roleCounts.ramp} ramp effects — that's thin for hitting your curve on time.`);
+  if (analysis.roleCounts.draw < 8) flags.push(`Only ${analysis.roleCounts.draw} card draw effects — you're likely to run out of gas.`);
+  const interaction = analysis.roleCounts.removal + analysis.roleCounts.wipe;
+  if (interaction < 6) flags.push(`Only ${interaction} total interaction pieces (removal + wipes) — opponents' threats may go unanswered.`);
+  if (analysis.roleCounts.wipe === 0) flags.push(`Zero board wipes — no way to reset if you fall behind on board.`);
+  const heavyPct = analysis.nonlandCount ? (analysis.cmcBuckets['6+']||0) / analysis.nonlandCount : 0;
+  if (heavyPct > 0.22) flags.push(`${Math.round(heavyPct*100)}% of your nonland cards cost 6+ mana — your curve is top-heavy.`);
+  if (analysis.tappedLandCount > 10) flags.push(`${analysis.tappedLandCount} of your lands enter tapped — that can cost you tempo repeatedly.`);
+  if (analysis.roleCounts.winCon < 2) flags.push(`Only ${analysis.roleCounts.winCon} cards read as clear win conditions — you may struggle to close games.`);
+  if (analysis.nonlandCount) {
+    const synergyPct = (analysis.sortedThemes.reduce((s,t)=> s + (t==='tribal'? analysis.topTribeCount : (analysis.roleCounts[t]||0)),0)) / analysis.nonlandCount;
+    if (synergyPct < 0.25) flags.push(`Fewer than 25% of your nonland cards clearly support the deck's detected strategy — a lot of slots are "just okay" instead of on-plan.`);
+  }
+  return flags;
+}
+
+/* ---------------------------------------------------------------------
+   6. PER-CARD SYNERGY SCORING + EXPLANATIONS
+   --------------------------------------------------------------------- */
+function cardSynergyScore(entry, analysis, edhrecMap) {
+  let score = 50;
+  const tagMatches = [];
+  for (const role of Object.keys(analysis.roleCounts)) if (entry.tags.has(role)) tagMatches.push(role);
+  for (const theme of analysis.sortedThemes) {
+    if (theme === 'tribal') {
+      if (entry.card && creatureTypesOf(entry.card).includes(analysis.topTribe)) tagMatches.push('tribal:' + analysis.topTribe);
+    } else if (entry.tags.has(theme) && !tagMatches.includes(theme)) tagMatches.push(theme);
+  }
+  score += Math.min(tagMatches.length, 3) * 14;
+
+  const oracle = normalizedOracle(entry.card);
+  const isVanilla = entry.tags.has('creature') && oracle.trim().length === 0;
+  if (isVanilla) score -= 22;
+  const cmc = typeof entry.card.cmc === 'number' ? entry.card.cmc : 0;
+  if (cmc >= 6 && tagMatches.length === 0) score -= 18;
+  if (cmc <= 2 && tagMatches.length > 0) score += 6;
+
+  let edh = null;
+  if (edhrecMap) edh = edhrecMap.get(entry.name.toLowerCase()) || null;
+  if (edh) {
+    if (typeof edh.synergy === 'number') score += edh.synergy * 100 * 0.3;
+    if (typeof edh.inclusion === 'number') score += edh.inclusion * 100 * 0.15;
+  }
+  score = Math.max(0, Math.min(100, Math.round(score)));
+  return { score, tagMatches, isVanilla, cmc, edh };
+}
+
+function generateCardExplanation(entry, info, analysis, commanderName) {
+  const name = entry.name;
+  const themeLabel = analysis.sortedThemes.length ? (THEME_LABELS[analysis.sortedThemes[0]] || analysis.sortedThemes[0]) : 'your deck\'s plan';
+  const parts = [];
+
+  if (info.isVanilla) {
+    parts.push(`${name} costs ${info.cmc} mana and has no rules text at all`);
+    parts.push(`in a deck built around ${themeLabel.toLowerCase()}, a card that just attacks and blocks isn't pulling its weight`);
+  } else if (info.tagMatches.length === 0) {
+    parts.push(`${name} doesn't ramp, draw, remove, protect, or otherwise connect to ${themeLabel.toLowerCase()}`);
+    if (info.cmc >= 5) parts.push(`and at ${info.cmc} mana it's an expensive slot to spend on something that isn't pulling double duty`);
+  } else if (info.cmc >= 6 && info.tagMatches.length <= 1) {
+    parts.push(`${name} only loosely supports ${themeLabel.toLowerCase()} for a card that costs ${info.cmc} mana`);
+    parts.push(`that's a slow, narrow rate compared to what else is available at this budget`);
+  } else {
+    parts.push(`${name} contributes to your strategy, but only in a limited way relative to stronger options at a similar cost`);
+  }
+
+  if (info.edh && typeof info.edh.inclusion === 'number' && commanderName) {
+    const pct = Math.round(info.edh.inclusion * 100);
+    if (pct < 15) parts.push(`EDHREC shows it in only about ${pct}% of ${commanderName} decks, which lines up with it being a weak fit here`);
+  }
+
+  return parts.join('; ') + '.';
+}
+
+/* ---------------------------------------------------------------------
+   7. RECOMMENDATIONS (role-aware, EDHREC-weighted, budget-aware)
+   --------------------------------------------------------------------- */
+function candidateScore(cand, analysis, edhrecMap, deficientRoleSet) {
+  let score = 0;
+  const roles = cand.roles || [];
+  roles.forEach(r => { if (deficientRoleSet.has(r)) score += 40; });
+  analysis.sortedThemes.forEach(t => { if (roles.includes(t)) score += 20; });
+  const edh = edhrecMap ? edhrecMap.get(cand.n.toLowerCase()) : null;
+  if (edh) {
+    if (typeof edh.synergy === 'number') score += edh.synergy * 100 * 0.35;
+    if (typeof edh.inclusion === 'number') score += edh.inclusion * 100 * 0.2;
+  }
+  return score;
+}
+
+function priorityFromRoleScore(roleScore) {
+  if (roleScore < 20) return { rank:1, label:'Critical' };
+  if (roleScore < 40) return { rank:2, label:'High Priority' };
+  if (roleScore < 70) return { rank:3, label:'High Priority' };
+  return { rank:4, label:'Good Upgrade' };
+}
+
+async function buildRecommendations(analysis, deckNameSet, budget, edhrecMap) {
   const candNames = CANDIDATES.map(c => c.n);
   const { results: candData } = await fetchCollection(candNames);
 
@@ -605,84 +721,135 @@ async function buildRecommendations(analysis, deckNameSet, budget) {
     .map(([role, target]) => ({ role, count: analysis.roleCounts[role], score: scoreFromCount(analysis.roleCounts[role], target) }))
     .filter(r => r.score < 70)
     .sort((a,b) => a.score - b.score);
+  const deficientRoleSet = new Set(deficient.map(d => d.role));
 
   const adds = [];
   const used = new Set();
-  function pushAdds(pool, limit, label, reasonFn) {
+  function pushAdds(pool, limit, label, roleScoreForPriority, reasonFn, verbKey) {
     let picked = 0;
-    for (const cand of pool.sort((a,b) => cardPrice(a.card) - cardPrice(b.card))) {
+    const ranked = pool
+      .map(c => ({ c, score: candidateScore(c, analysis, edhrecMap, deficientRoleSet) }))
+      .sort((a,b) => b.score - a.score || cardPrice(a.c.card) - cardPrice(b.c.card));
+    for (const { c: cand } of ranked) {
       if (picked >= limit) break;
       if (used.has(cand.n.toLowerCase())) continue;
       used.add(cand.n.toLowerCase());
-      adds.push({ name: cand.n, price: cardPrice(cand.card), tcgUrl: cardTcgLink(cand.card), roleLabel: label, why: reasonFn(cand) });
+      const edh = edhrecMap ? edhrecMap.get(cand.n.toLowerCase()) : null;
+      const priority = priorityFromRoleScore(roleScoreForPriority);
+      adds.push({
+        name: cand.n, price: cardPrice(cand.card), tcgUrl: cardTcgLink(cand.card), roleLabel: label,
+        why: reasonFn(cand), doesVerb: ROLE_VERB[verbKey] || 'strengthens your deck', priority, edh,
+        cmc: typeof cand.card.cmc === 'number' ? cand.card.cmc : 0, roles: cand.roles || []
+      });
       picked++;
     }
   }
 
   deficient.forEach(def => {
     const pool = usable.filter(c => (c.roles||[]).includes(def.role));
-    pushAdds(pool, def.score < 40 ? 3 : 2, ROLE_LABELS[def.role],
-      cand => `Your deck currently has ${def.count} ${ROLE_LABELS[def.role].toLowerCase()} effect(s). ${cand.n} strengthens that category directly instead of being a generic "good card."`);
+    pushAdds(pool, def.score < 40 ? 3 : 2, ROLE_LABELS[def.role], def.score,
+      cand => {
+        let s = `Your deck currently has only ${def.count} ${ROLE_LABELS[def.role].toLowerCase()} effect(s). ${cand.n} strengthens that category directly.`;
+        const edh = edhrecMap ? edhrecMap.get(cand.n.toLowerCase()) : null;
+        if (edh && typeof edh.synergy === 'number' && edh.synergy > 0.05) s += ` EDHREC also flags it as an above-average synergy pick for this commander.`;
+        return s;
+      }, def.role);
   });
 
   analysis.sortedThemes.forEach(theme => {
+    if (theme === 'tribal') return; // no curated tribal-specific pool
     const pool = usable.filter(c => (c.roles||[]).includes(theme));
-    pushAdds(pool, 2, ROLE_LABELS[theme] || theme,
-      cand => `Your deck is already leaning on ${ (ROLE_LABELS[theme]||theme).toLowerCase() }. ${cand.n} pushes that same plan further.`);
+    pushAdds(pool, 2, ROLE_LABELS[theme] || theme, 75,
+      cand => {
+        let s = `Your deck is already leaning on ${(ROLE_LABELS[theme]||theme).toLowerCase()}. ${cand.n} pushes that same plan further instead of being a generic "good card."`;
+        const edh = edhrecMap ? edhrecMap.get(cand.n.toLowerCase()) : null;
+        if (edh && typeof edh.inclusion === 'number' && edh.inclusion > 0.3) s += ` It appears in roughly ${Math.round(edh.inclusion*100)}% of decks EDHREC tracks for this commander.`;
+        return s;
+      }, theme);
   });
 
   return adds;
 }
 
-function buildCuts(deckEntries, analysis, adds) {
+function buildCuts(deckEntries, analysis, adds, edhrecMap, commanderName) {
   const STAPLE_GUARD = new Set(['sol ring','arcane signet','command tower','swords to plowshares','path to exile']);
   const scored = deckEntries
     .filter(e => e.card && !e.tags.has('land'))
-    .map(e => {
-      let score = 0;
-      for (const role of Object.keys(analysis.roleCounts)) if (e.tags.has(role)) score += 2;
-      for (const theme of analysis.sortedThemes) if (e.tags.has(theme)) score += 3;
-      const oracle = normalizedOracle(e.card);
-      const isVanilla = e.tags.has('creature') && oracle.trim().length === 0;
-      if (isVanilla) score -= 2;
-      if (typeof e.card.cmc === 'number' && e.card.cmc >= 6 && score <= 0) score -= 1;
-      return { entry: e, score };
-    })
-    .filter(s => !STAPLE_GUARD.has(s.entry.name.toLowerCase()))
-    .sort((a,b) => a.score - b.score);
+    .filter(e => !STAPLE_GUARD.has(e.name.toLowerCase()))
+    .map(e => ({ entry: e, info: cardSynergyScore(e, analysis, edhrecMap) }))
+    .sort((a,b) => a.info.score - b.info.score);
 
-  const weakest = scored.filter(s => s.score <= 0).slice(0, Math.min(8, adds.length || 6));
+  const weakest = scored.filter(s => s.info.score < 55).slice(0, Math.max(8, adds.length || 8));
 
-  return weakest.map((s, i) => {
-    const pairedAdd = adds[i] || null;
-    let reason;
-    if (s.entry.tags.has('creature') && normalizedOracle(s.entry.card).trim().length === 0) {
-      reason = 'it\'s a vanilla creature with no rules text — it doesn\'t ramp, draw, protect, remove, or push your strategy';
-    } else if (s.score < 0) {
-      reason = 'it\'s a high-cost card that doesn\'t support your deck\'s detected strategy or fill an underrepresented role';
-    } else {
-      reason = 'it doesn\'t connect to your deck\'s main strategy and isn\'t filling a role your deck is short on';
-    }
+  const remainingAdds = adds.slice();
+  function pickMatch(entry) {
+    const cutRoles = Array.from(entry.tags);
+    let idx = remainingAdds.findIndex(a => (a.roles||[]).some(r => cutRoles.includes(r)));
+    if (idx === -1) idx = remainingAdds.length ? 0 : -1;
+    if (idx === -1) return null;
+    return remainingAdds.splice(idx, 1)[0];
+  }
+
+  const cuts = weakest.map(({ entry, info }) => {
+    const pairedAdd = pickMatch(entry);
     return {
-      name: s.entry.name, quantity: s.entry.quantity, why: `Low synergy: ${reason}.`, pairedAdd,
-      price: cardPrice(s.entry.card), tcgUrl: cardTcgLink(s.entry.card)
+      name: entry.name, quantity: entry.quantity, entry, info,
+      synergyScore: info.score,
+      why: generateCardExplanation(entry, info, analysis, commanderName),
+      pairedAdd, price: cardPrice(entry.card), tcgUrl: cardTcgLink(entry.card)
     };
   });
+  return cuts;
 }
 
 /* ---------------------------------------------------------------------
-   7. RENDERING
+   7b. PROJECTED SCORE — simulate applying every paired cut/add swap.
+   --------------------------------------------------------------------- */
+function computeProjectedScore(analysis, currentScores, cuts) {
+  const roleCounts = Object.assign({}, analysis.roleCounts);
+  const cmcBuckets = Object.assign({}, analysis.cmcBuckets);
+  let totalCMC = analysis.avgCMC * analysis.nonlandCount;
+  let nonlandCount = analysis.nonlandCount;
+  const changedRoles = new Set();
+
+  cuts.forEach(c => {
+    if (!c.pairedAdd) return;
+    const entry = c.entry;
+    entry.tags.forEach(tag => { if (roleCounts.hasOwnProperty(tag)) { roleCounts[tag] = Math.max(0, roleCounts[tag] - entry.quantity); changedRoles.add(tag); } });
+    if (typeof entry.card.cmc === 'number') {
+      totalCMC -= entry.card.cmc * entry.quantity;
+      nonlandCount -= entry.quantity;
+      const b = entry.card.cmc <= 1 ? '0-1' : entry.card.cmc >= 6 ? '6+' : String(Math.floor(entry.card.cmc));
+      cmcBuckets[b] = Math.max(0, (cmcBuckets[b]||0) - entry.quantity);
+    }
+    (c.pairedAdd.roles||[]).forEach(r => { if (roleCounts.hasOwnProperty(r)) { roleCounts[r] += 1; changedRoles.add(r); } });
+    totalCMC += c.pairedAdd.cmc || 0;
+    nonlandCount += 1;
+    const b2 = (c.pairedAdd.cmc||0) <= 1 ? '0-1' : (c.pairedAdd.cmc||0) >= 6 ? '6+' : String(Math.floor(c.pairedAdd.cmc||0));
+    cmcBuckets[b2] = (cmcBuckets[b2]||0) + 1;
+  });
+
+  const projectedAnalysis = Object.assign({}, analysis, {
+    roleCounts, cmcBuckets, nonlandCount,
+    avgCMC: nonlandCount ? totalCMC / nonlandCount : 0
+  });
+  const projectedScores = computeScores(projectedAnalysis);
+
+  const notes = [];
+  Object.keys(currentScores.categories).forEach(key => {
+    const before = currentScores.categories[key].score;
+    const after = projectedScores.categories[key].score;
+    if (after - before >= 5) notes.push(`<b>${currentScores.categories[key].label}</b> improves from ${before} to ${after}.`);
+  });
+  return { projectedScores, notes };
+}
+
+/* ---------------------------------------------------------------------
+   8. RENDERING
    --------------------------------------------------------------------- */
 function escapeHtml(str) {
   return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
-// Thumbnails are built straight from Scryfall's image-redirect endpoint by
-// card name, rather than from the image_uris field on the JSON we already
-// fetched. This is deliberate: it means a card's thumbnail can never go
-// missing just because our earlier fetch/cache logic dropped or reshaped
-// that field — the <img> tag resolves its own image independently.
-// A hidden, higher-res "normal" version sits alongside the small thumbnail;
-// CSS (.up-thumb-large) reveals it on hover for a bigger, sharper preview.
 function cardThumb(name) {
   const small = 'https://api.scryfall.com/cards/named?format=image&version=small&exact=' + encodeURIComponent(name);
   const large = 'https://api.scryfall.com/cards/named?format=image&version=normal&exact=' + encodeURIComponent(name);
@@ -694,25 +861,30 @@ function cardThumb(name) {
 }
 function priceLine(price, tcgUrl) {
   const priceText = price ? `$${price.toFixed(2)}` : 'price n/a';
-  const inner = tcgUrl
-    ? `<a href="${tcgUrl}" target="_blank" rel="noopener">${priceText} on TCGplayer ↗</a>`
-    : `${priceText} (TCGplayer)`;
+  const inner = tcgUrl ? `<a href="${tcgUrl}" target="_blank" rel="noopener">${priceText} on TCGplayer ↗</a>` : `${priceText} (TCGplayer)`;
   return `<div class="up-price">${inner}</div>`;
 }
+function edhBadge(edh) {
+  if (!edh) return '';
+  const bits = [];
+  if (typeof edh.inclusion === 'number') bits.push(Math.round(edh.inclusion*100) + '% incl.');
+  if (typeof edh.synergy === 'number') bits.push((edh.synergy>=0?'+':'') + Math.round(edh.synergy*100) + '% syn.');
+  return bits.length ? `<span class="edh-tag">EDHREC ${bits.join(' / ')}</span>` : '';
+}
 
-function render(commanderCard, analysis, scores, cuts, adds, unresolvedNames, apiFailed) {
+function render(commanderCard, analysis, scores, cuts, adds, unresolvedNames, apiFailed, edhrecMap, budget, commanderNameForReport) {
   const results = document.getElementById('results');
   results.style.display = 'block';
   const s = scores;
   const overallColor = statusColor(statusOf(s.overall));
-
   let html = '';
 
   html += `<div class="card score-hero" style="--pct:${s.overall}">
     <div class="score-circle"><div class="score-circle-inner"><div class="num" style="color:${overallColor}">${s.overall}</div><div class="lbl">Deck Score</div></div></div>
     <div class="meta">
       <div class="commander-name">${commanderCard ? commanderCard.name : 'Commander not identified'}</div>
-      <div class="commander-sub">${analysis.totalCards} cards analyzed &middot; color identity: ${analysis.deckColorIdentity.length ? analysis.deckColorIdentity.join('') : 'Colorless'}</div>
+      <div class="commander-sub">${analysis.totalCards} cards analyzed &middot; color identity: ${analysis.deckColorIdentity.length ? analysis.deckColorIdentity.join('') : 'Colorless'} &middot; budget: ${budget===0?'no limit':'$'+budget}</div>
+      <div>${analysis.sortedThemes.map(t => `<span class="theme-tag">${THEME_LABELS[t]||t}</span>`).join('')}${analysis.topTribe && analysis.topTribeCount>=6 ? `<span class="theme-tag">${analysis.topTribe} Tribal</span>` : ''}</div>
     </div>
   </div>`;
 
@@ -722,86 +894,134 @@ function render(commanderCard, analysis, scores, cuts, adds, unresolvedNames, ap
     <div class="stat-box"><div class="n">${analysis.typeCounts.creature}</div><div class="l">Creatures Detected</div></div>
     <div class="stat-box"><div class="n">${analysis.avgCMC.toFixed(2)}</div><div class="l">Avg. Nonland MV</div></div>
   </div>`;
-  if (analysis.unresolvedCount > 0) {
-    html += `<div class="confidence-note">${analysis.unresolvedCount} card${analysis.unresolvedCount===1?'':'s'} couldn't be matched to card data, so this analysis is based on the remaining ${analysis.totalCards - analysis.unresolvedCount} cards. Treat scores as directional, not exact.</div>`;
-  }
-  if (apiFailed) {
-    html += `<div class="confidence-note">Scryfall couldn't be reached for some cards — this analysis may be incomplete. Try again when your connection is stable.</div>`;
-  }
+  if (analysis.unresolvedCount > 0) html += `<div class="confidence-note">${analysis.unresolvedCount} card(s) couldn't be matched to card data; scores are based on the remaining ${analysis.totalCards - analysis.unresolvedCount} cards. Treat scores as directional.</div>`;
+  if (apiFailed) html += `<div class="confidence-note">Scryfall couldn't be reached for some cards — this analysis may be incomplete.</div>`;
+  if (!edhrecMap) html += `<div class="confidence-note">EDHREC data wasn't available for this commander this time (their public JSON endpoint is unofficial and can be blocked or reshaped without notice) — recommendations below rely on deck composition alone.</div>`;
   html += `</div>`;
+
+  const comp = [
+    ['Lands', analysis.typeCounts.land], ['Ramp', analysis.roleCounts.ramp], ['Draw', analysis.roleCounts.draw],
+    ['Interaction', analysis.roleCounts.removal + analysis.roleCounts.wipe], ['Protection', analysis.roleCounts.protection],
+    ['Synergy/Payoffs', s.synergyMatches], ['Tutors', analysis.roleCounts.tutor]
+  ];
+  const compMax = Math.max(...comp.map(c => c[1]), 1);
+  html += `<div class="card"><h2>Deck Composition Breakdown</h2>`;
+  comp.forEach(([label, val]) => {
+    html += `<div class="comp-row"><div class="comp-label">${label}</div><div class="comp-track"><div class="comp-fill" style="width:${Math.min(100,(val/compMax)*100)}%"></div></div><div class="comp-num">${val}</div></div>`;
+  });
+  html += `<div class="confidence-note">Categories overlap — a card can count toward more than one role (e.g. a ramp creature is both "Ramp" and part of "Creatures").</div></div>`;
 
   html += `<div class="card"><h2>Category Scores</h2><div class="category-grid">`;
   Object.values(s.categories).forEach(cat => {
     const st = statusOf(cat.score);
-    html += `<div class="cat-box">
-      <div class="cat-head"><span class="cat-name">${cat.label}</span><span class="cat-score" style="color:${statusColor(st)}">${cat.score}</span></div>
+    html += `<div class="cat-box"><div class="cat-head"><span class="cat-name">${cat.label}</span><span class="cat-score" style="color:${statusColor(st)}">${cat.score}</span></div>
       <div class="bar-track"><div class="bar-fill" style="width:${cat.score}%;background:${statusColor(st)}"></div></div>
-      <div class="cat-detail">${cat.detail}</div>
-    </div>`;
+      <div class="cat-detail">${cat.detail}</div></div>`;
   });
   html += `</div></div>`;
 
+  const flags = computeRedFlags(analysis);
+  html += `<div class="card"><h2>Red Flags</h2>`;
+  if (flags.length) {
+    html += `<ul class="flag-list">${flags.map(f => `<li>${f}</li>`).join('')}</ul>`;
+  } else {
+    html += `<ul class="flag-list ok"><li>No major red flags detected — the deck's fundamentals look reasonably healthy.</li></ul>`;
+  }
+  html += `</div>`;
+
   const weakestCat = Object.values(s.categories).sort((a,b) => a.score - b.score)[0];
-  html += `<div class="card"><h2>Biggest Weakness</h2><div class="weakness-box">
-    <b>${weakestCat.label}</b> is this deck's weakest area (score: ${weakestCat.score}/100) — ${weakestCat.detail}.
-  </div></div>`;
-
   const strongestCat = Object.values(s.categories).sort((a,b) => b.score - a.score)[0];
-  const themeText = analysis.sortedThemes.length
-    ? analysis.sortedThemes.map(t => (ROLE_LABELS[t]||t).toLowerCase()).join(', ')
-    : 'no single dominant theme — this reads as a goodstuff/value build';
-  html += `<div class="card"><h2>Coach's Advice</h2><div class="advice-box">
-    This deck's detected strategy leans on <b>${themeText}</b>. Its strongest area is <b>${strongestCat.label}</b> (${strongestCat.score}/100),
-    while <b>${weakestCat.label}</b> is holding it back the most. Prioritize the "Add" cards below that target ${weakestCat.label.toLowerCase()} before chasing more synergy pieces —
-    a deck that can't draw cards or answer threats won't get to use its synergy anyway.
-  </div></div>`;
+  html += `<div class="card"><h2>Biggest Weakness</h2><div class="weakness-box"><b>${weakestCat.label}</b> is this deck's weakest area (score: ${weakestCat.score}/100) — ${weakestCat.detail}.</div></div>`;
 
-  html += `<div class="card"><h2>Suggested Focus</h2><div class="focus-box">
-    ${analysis.sortedThemes.length ? `Lean further into <b>${(ROLE_LABELS[analysis.sortedThemes[0]]||analysis.sortedThemes[0])}</b> — it's already the deck's clearest identity.` : `Establish a clearer identity — right now the deck reads as generically "good stuff" rather than built around one plan.`}
-    Fix <b>${weakestCat.label.toLowerCase()}</b> first; it's the biggest thing capping the deck's overall score.
-  </div></div>`;
+  const themeText = analysis.sortedThemes.length ? analysis.sortedThemes.map(t => (THEME_LABELS[t]||t).toLowerCase()).join(', ') : 'no single dominant theme — this reads as a goodstuff/value build';
+  html += `<div class="card"><h2>Coach's Advice</h2><div class="advice-box">This deck's detected strategy leans on <b>${themeText}</b>. Its strongest area is <b>${strongestCat.label}</b> (${strongestCat.score}/100), while <b>${weakestCat.label}</b> is holding it back the most. Prioritize the Critical and High Priority adds below before chasing more synergy pieces — a deck that can't draw cards or answer threats won't get to use its synergy anyway.</div></div>`;
+
+  const allScored = cuts.slice().sort((a,b) => a.synergyScore - b.synergyScore).slice(0, 10);
+  if (allScored.length) {
+    html += `<div class="card"><h2>Top ${allScored.length} Cards Holding Your Deck Back</h2>`;
+    allScored.forEach((c, i) => {
+      html += `<div class="weak-rank"><div class="rk">#${i+1}</div><div class="wn">${c.name}${edhBadge(c.info.edh)}</div><div class="ws">${c.synergyScore}/100 Synergy</div></div>`;
+    });
+    html += `</div>`;
+  }
 
   html += `<div class="card"><h2>Recommended Upgrades (${cuts.length} paired swap${cuts.length===1?'':'s'})</h2>`;
-  if (cuts.length === 0) {
-    html += `<p style="color:var(--muted);font-size:14px;">No clear low-synergy cards stood out to cut. That's a good sign — the deck's cards mostly connect to its strategy or fill needed roles.</p>`;
-  }
+  if (cuts.length === 0) html += `<p style="color:var(--muted);font-size:14px;">No clear low-synergy cards stood out to cut — the deck's cards mostly connect to its strategy or fill needed roles.</p>`;
   cuts.forEach(c => {
-    html += `<div class="upgrade-row">
-      <div class="up-col cut">${cardThumb(c.name)}<div class="up-body"><div class="up-tag cut">Cut</div><div class="up-name">${c.name}${c.quantity>1?` ×${c.quantity}`:''}</div>
-        ${priceLine(c.price, c.tcgUrl)}<div class="up-why">${c.why}</div></div></div>`;
+    const pr = c.pairedAdd ? c.pairedAdd.priority : { rank:5, label:'Optional' };
+    html += `<div class="upgrade-block">
+      <div class="upgrade-head"><span class="priority-badge p${pr.rank}">#${pr.rank} ${pr.label}</span><span style="color:var(--muted);font-size:12px;">Synergy: ${c.synergyScore}/100</span></div>
+      <div class="upgrade-row">
+        <div class="up-col cut">${cardThumb(c.name)}<div class="up-body"><div class="up-tag cut">Cut</div><div class="up-name">${c.name}${c.quantity>1?` ×${c.quantity}`:''}</div>${priceLine(c.price, c.tcgUrl)}<div class="up-why">${c.why}</div></div></div>`;
     if (c.pairedAdd) {
       const a = c.pairedAdd;
-      html += `<div class="up-col add">${cardThumb(a.name)}<div class="up-body"><div class="up-tag add">Add</div><div class="up-name">${a.name}</div>
-        ${priceLine(a.price, a.tcgUrl)}<div class="up-why">${a.roleLabel} &middot; ${a.why}</div></div></div>`;
+      html += `<div class="up-col add">${cardThumb(a.name)}<div class="up-body"><div class="up-tag add">Add</div><div class="up-name">${a.name}${edhBadge(a.edh)}</div>${priceLine(a.price, a.tcgUrl)}<div class="up-why">${a.roleLabel} &middot; ${a.why}</div></div></div></div>`;
+      html += `<div class="compare-band">
+        <div class="cl"><b>${c.name}:</b> ${c.info.isVanilla ? 'no notable effect beyond its stats' : (c.info.tagMatches.length ? 'partial support for your strategy' : 'doesn\'t connect to your deck\'s plan')}.</div>
+        <div class="cl"><b>${a.name}:</b> ${a.doesVerb}.</div>
+        <div class="cl"><b>Why it matters:</b> ${a.why}</div>
+      </div>`;
+      html += `</div>`; // closes .upgrade-block (opened before .upgrade-row, which line 970 already closed)
     } else {
-      html += `<div class="up-col add"><div class="up-body"><div class="up-tag add">Add</div><div class="up-name">— deck is otherwise stocked here</div></div></div>`;
+      html += `<div class="up-col add"><div class="up-body"><div class="up-tag add">Add</div><div class="up-name">— deck is otherwise stocked here</div></div></div></div></div>`;
     }
-    html += `</div>`;
   });
+
   const pairedNames = new Set(cuts.map(c => c.pairedAdd && c.pairedAdd.name).filter(Boolean));
-  const extraAdds = adds.filter(a => !pairedNames.has(a.name));
+  const extraAdds = adds.filter(a => !pairedNames.has(a.name)).sort((a,b) => a.priority.rank - b.priority.rank);
   if (extraAdds.length) {
     html += `<h2 style="margin-top:20px;">Additional Cards To Add</h2>`;
     extraAdds.forEach(a => {
-      html += `<div class="solo-add">${cardThumb(a.name)}<div class="up-body"><div class="up-tag add">Add</div><div class="up-name">${a.name}</div>
-        ${priceLine(a.price, a.tcgUrl)}<div class="up-why">${a.roleLabel} &middot; ${a.why}</div></div></div>`;
+      html += `<div class="solo-add">${cardThumb(a.name)}<div class="up-body"><span class="priority-badge p${a.priority.rank}">#${a.priority.rank} ${a.priority.label}</span> <div class="up-tag add" style="margin-top:6px;">Add</div><div class="up-name">${a.name}${edhBadge(a.edh)}</div>${priceLine(a.price, a.tcgUrl)}<div class="up-why">${a.roleLabel} &middot; ${a.why}</div></div></div>`;
     });
   }
   html += `</div>`;
 
-  if (unresolvedNames.length) {
-    html += `<div class="card"><h2>Unmatched Cards</h2><p style="color:var(--muted);font-size:13.5px;">
-      These names couldn't be matched to card data (typos, DFC naming, or an unreachable API) and were excluded from scoring:
-      ${unresolvedNames.slice(0,15).join(', ')}${unresolvedNames.length>15?'…':''}</p></div>`;
+  if (cuts.some(c => c.pairedAdd)) {
+    const proj = computeProjectedScore(analysis, s, cuts);
+    html += `<div class="card"><h2>What Happens If You Make These Changes?</h2>
+      <div class="projected-box">
+        <div class="proj-score current"><div class="n">${s.overall}</div><div class="l">Current Score</div></div>
+        <div class="proj-arrow">→</div>
+        <div class="proj-score projected"><div class="n">${proj.projectedScores.overall}</div><div class="l">Projected Score</div></div>
+      </div>`;
+    if (proj.notes.length) html += `<ul class="proj-notes">${proj.notes.map(n => `<li>${n}</li>`).join('')}</ul>`;
+    html += `<div class="confidence-note">This is a same-count approximation (each swap assumed 1-for-1) based on the roles the new cards fill — treat it as directional, not exact.</div></div>`;
   }
+
+  const lowSynergyCount = cuts.length;
+  html += `<div class="card"><h2>Personalized Upgrade Report</h2><div class="report-box">
+    <p>Your deck is built around <b>${themeText}</b>${commanderCard ? ` with ${commanderCard.name} at the helm` : ''}.</p>
+    <p>Your biggest weakness is <b>${weakestCat.label.toLowerCase()}</b> (${weakestCat.score}/100) — ${weakestCat.detail}.</p>
+    <p>You have ${analysis.typeCounts.land} lands and ${analysis.roleCounts.ramp} ramp pieces, so your mana is ${statusOf(s.categories.mana.score)==='good' ? 'in good shape' : statusOf(s.categories.mana.score)==='ok' ? 'passable but could be smoother' : 'a real concern'}.</p>
+    <p>${lowSynergyCount > 0 ? `${lowSynergyCount} card${lowSynergyCount===1?'':'s'} scored below 55/100 on synergy with your strategy and ${lowSynergyCount===1?'is':'are'} flagged above for replacement.` : 'No cards scored low enough on synergy to flag for replacement — nice and tight already.'}</p>
+    ${adds.length ? `<p>Our first recommendation: <b>add ${adds.slice().sort((a,b)=>a.priority.rank-b.priority.rank)[0].name}</b> — ${adds.slice().sort((a,b)=>a.priority.rank-b.priority.rank)[0].why}</p>` : ''}
+  </div></div>`;
+
+  if (unresolvedNames.length) {
+    html += `<div class="card"><h2>Unmatched Cards</h2><p style="color:var(--muted);font-size:13.5px;">These names couldn't be matched to card data and were excluded from scoring: ${unresolvedNames.slice(0,15).join(', ')}${unresolvedNames.length>15?'…':''}</p></div>`;
+  }
+
+  html += `<div class="card"><div class="limitation-note">
+    <b>Known limitations, honestly stated:</b> EDHREC signal (inclusion %, synergy %) comes from their unofficial public JSON and is only used when available for the identified commander — it's one input among several, never the sole reason a card is recommended. EDHREC's separate "cards cut/added when upgrading this precon" data isn't included, because reliably identifying which exact precon product a pasted decklist came from (versus a heavily modified version of one) isn't something this tool can do without a maintained precon-to-decklist database — if you tell me which precon this is, that's a feature I can add with a targeted diff against that decklist specifically.
+  </div></div>`;
 
   results.innerHTML = html;
   results.scrollIntoView({ behavior:'smooth', block:'start' });
 }
 
 /* ---------------------------------------------------------------------
-   8. WIRING
+   9. WIRING
    --------------------------------------------------------------------- */
+let selectedBudget = 50;
+document.querySelectorAll('.budget-chip').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.budget-chip').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    selectedBudget = parseInt(btn.dataset.budget, 10);
+  });
+});
+
 document.getElementById('sampleBtn').addEventListener('click', () => {
   document.getElementById('decklistInput').value =
 `Commander: Ghired, Conclave Exile
@@ -839,11 +1059,7 @@ async function runAnalysis() {
   errBox.style.display = 'none';
   document.getElementById('results').style.display = 'none';
 
-  if (!text.trim()) {
-    errBox.textContent = 'Paste a decklist first.';
-    errBox.style.display = 'block';
-    return;
-  }
+  if (!text.trim()) { errBox.textContent = 'Paste a decklist first.'; errBox.style.display = 'block'; return; }
 
   btn.disabled = true;
   statusLine.textContent = 'Parsing decklist…';
@@ -852,10 +1068,7 @@ async function runAnalysis() {
     const { commanderNames, mainCards } = parseDecklist(text);
     const override = document.getElementById('commanderOverride').value.trim();
     let finalCommanderNames = override ? [override] : commanderNames;
-
-    if (mainCards.length === 0 && finalCommanderNames.length === 0) {
-      throw new Error('Couldn\'t find any card lines in that text. Check the format and try again.');
-    }
+    if (mainCards.length === 0 && finalCommanderNames.length === 0) throw new Error('Couldn\'t find any card lines in that text. Check the format and try again.');
 
     statusLine.textContent = 'Fetching card data (cached where possible)…';
     const allNames = Array.from(new Set([...finalCommanderNames, ...mainCards.map(c => c.name)]));
@@ -866,9 +1079,7 @@ async function runAnalysis() {
     if (!commanderCard) {
       for (const entry of mainCards) {
         const card = cardData.get(entry.name.toLowerCase());
-        if (card && /Legendary/.test(normalizedType(card)) && (/Creature/.test(normalizedType(card)) || /Planeswalker/.test(normalizedType(card)))) {
-          commanderCard = card; break;
-        }
+        if (card && /Legendary/.test(normalizedType(card)) && (/Creature/.test(normalizedType(card)) || /Planeswalker/.test(normalizedType(card)))) { commanderCard = card; break; }
       }
     }
     const commanderKey = commanderCard ? commanderCard.name.toLowerCase() : null;
@@ -883,24 +1094,24 @@ async function runAnalysis() {
         const tags = card ? tagCard(card) : new Set();
         return { name: c.name, quantity: c.quantity, card, tags };
       });
-
     const unresolvedNames = deckEntries.filter(e => !e.card).map(e => e.name);
 
     statusLine.textContent = 'Analyzing strategy and deck health…';
     const analysis = analyzeDeck(commanderCard, deckEntries);
     const scores = computeScores(analysis);
 
+    statusLine.textContent = 'Checking EDHREC for commander synergy data…';
+    const edhrecMap = commanderCard ? await fetchEdhrecData(commanderCard.name) : null;
+
     statusLine.textContent = 'Finding upgrade candidates…';
     const deckNameSet = new Set(deckEntries.map(e => e.name.toLowerCase()));
     if (commanderCard) deckNameSet.add(commanderCard.name.toLowerCase());
-    const adds = await buildRecommendations(analysis, deckNameSet, 100);
-    const cuts = buildCuts(deckEntries, analysis, adds);
+    const adds = await buildRecommendations(analysis, deckNameSet, selectedBudget, edhrecMap);
+    const cuts = buildCuts(deckEntries, analysis, adds, edhrecMap, commanderCard ? commanderCard.name : null);
 
-    render(commanderCard, analysis, scores, cuts, adds, unresolvedNames, apiFailed);
+    render(commanderCard, analysis, scores, cuts, adds, unresolvedNames, apiFailed, edhrecMap, selectedBudget, commanderCard ? commanderCard.name : null);
 
-    statusLine.textContent = unresolvedNames.length
-      ? `Done. ${unresolvedNames.length} card name(s) couldn't be matched.`
-      : 'Done.';
+    statusLine.textContent = unresolvedNames.length ? `Done. ${unresolvedNames.length} card name(s) couldn't be matched.` : 'Done.';
   } catch (err) {
     console.error(err);
     errBox.textContent = 'Something went wrong: ' + err.message + '. If this keeps happening, check that this page can reach api.scryfall.com.';
