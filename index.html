@@ -3,1124 +3,6767 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Precon Upgrade Coach</title>
+
 <style>
 :root{
-  --bg:#0f1115; --panel:#181b22; --panel2:#1f232c; --border:#2a2f3a;
-  --text:#e8e9ee; --muted:#9298a8; --orange:#ff8a2b; --orange-dark:#e0741a;
-  --good:#3ecf7e; --ok:#ffbf4d; --bad:#ff5c5c; --purple:#b48cff;
+  --bg:#0f1115;
+  --panel:#181b22;
+  --panel2:#1f232c;
+  --border:#2a2f3a;
+  --text:#e8e9ee;
+  --muted:#9298a8;
+  --orange:#ff8a2b;
+  --orange-dark:#e0741a;
+  --good:#3ecf7e;
+  --ok:#ffbf4d;
+  --bad:#ff5c5c;
+  --purple:#b48cff;
 }
-*{box-sizing:border-box;}
-body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.5;}
-.wrap{max-width:1040px;margin:0 auto;padding:32px 20px 100px;}
-header{text-align:center;margin-bottom:28px;}
-h1{font-size:34px;margin:0 0 6px;color:var(--orange);letter-spacing:-0.5px;}
-header p{color:var(--muted);margin:0;font-size:15px;}
-.card{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:20px;}
-.card h2{margin:0 0 12px;font-size:18px;color:var(--text);}
-.card h3{margin:0 0 8px;font-size:15px;color:var(--text);}
-textarea{width:100%;min-height:260px;background:#0c0e12;border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:13px;padding:12px;resize:vertical;}
-.controls-row{display:flex;gap:12px;margin-top:12px;flex-wrap:wrap;align-items:center;}
-.controls-row label{font-size:13px;color:var(--muted);}
-input[type=text]{background:#0c0e12;border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;flex:1;min-width:200px;}
-.budget-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
-.budget-chip{padding:8px 14px;border-radius:20px;border:1px solid var(--border);font-size:12.5px;cursor:pointer;color:var(--muted);background:transparent;font-family:inherit;}
-.budget-chip.active{background:var(--orange);border-color:var(--orange);color:#1a1105;font-weight:700;}
-button#analyzeBtn{background:var(--orange);color:#1a1105;border:none;font-weight:700;font-size:15px;padding:12px 22px;border-radius:8px;cursor:pointer;margin-top:14px;width:100%;}
-button#analyzeBtn:hover:not(:disabled){background:var(--orange-dark);}
-button#analyzeBtn:disabled{opacity:.55;cursor:progress;}
-.sample-link{background:none;border:none;color:var(--orange);font-size:12.5px;cursor:pointer;text-decoration:underline;padding:0;margin-top:8px;}
-#statusLine{margin-top:10px;font-size:13px;color:var(--muted);min-height:18px;}
-#errorBox{display:none;margin-top:12px;padding:12px 14px;border-radius:8px;background:rgba(255,92,92,0.12);border:1px solid rgba(255,92,92,0.4);color:#ffb3b3;font-size:13.5px;}
-#results{display:none;}
 
-.score-hero{display:flex;align-items:center;gap:24px;flex-wrap:wrap;}
-.score-circle{width:110px;height:110px;border-radius:50%;background:conic-gradient(var(--orange) calc(var(--pct,0)*1%), #2a2f3a 0);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.score-circle-inner{width:88px;height:88px;border-radius:50%;background:var(--panel);display:flex;flex-direction:column;align-items:center;justify-content:center;}
-.score-circle-inner .num{font-size:28px;font-weight:800;}
-.score-circle-inner .lbl{font-size:10px;color:var(--muted);text-transform:uppercase;}
-.score-hero .meta{flex:1;min-width:200px;}
-.score-hero .commander-name{font-size:20px;font-weight:700;}
-.score-hero .commander-sub{color:var(--muted);font-size:13px;margin-top:2px;}
-.theme-tag{display:inline-block;background:var(--panel2);border:1px solid var(--border);padding:4px 11px;border-radius:20px;font-size:12px;margin:4px 6px 0 0;color:var(--orange);}
+*{
+  box-sizing:border-box;
+}
 
-.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px;}
-@media (max-width:700px){.stat-grid{grid-template-columns:repeat(2,1fr);}}
-.stat-box{background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center;}
-.stat-box .n{font-size:22px;font-weight:800;color:var(--orange);}
-.stat-box .l{font-size:11px;color:var(--muted);text-transform:uppercase;margin-top:2px;}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Helvetica,
+    Arial,
+    sans-serif;
+  line-height:1.5;
+}
 
-.comp-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;font-size:13px;}
-.comp-label{width:140px;flex-shrink:0;color:var(--muted);}
-.comp-track{flex:1;height:10px;background:#2a2f3a;border-radius:5px;overflow:hidden;}
-.comp-fill{height:100%;border-radius:5px;background:var(--orange);}
-.comp-num{width:34px;text-align:right;font-weight:700;flex-shrink:0;}
+.wrap{
+  max-width:1080px;
+  margin:0 auto;
+  padding:32px 20px 100px;
+}
 
-.category-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:6px;}
-@media (max-width:700px){.category-grid{grid-template-columns:1fr;}}
-.cat-box{background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:14px;}
-.cat-box .cat-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
-.cat-box .cat-name{font-weight:700;font-size:14px;}
-.cat-box .cat-score{font-weight:800;font-size:15px;}
-.bar-track{height:7px;border-radius:4px;background:#2a2f3a;overflow:hidden;}
-.bar-fill{height:100%;border-radius:4px;}
-.cat-box .cat-detail{font-size:12px;color:var(--muted);margin-top:6px;}
+header{
+  text-align:center;
+  margin-bottom:28px;
+}
 
-.weakness-box{background:rgba(255,92,92,0.08);border:1px solid rgba(255,92,92,0.35);border-radius:8px;padding:14px 16px;font-size:14px;}
-.advice-box{background:rgba(255,138,43,0.08);border:1px solid rgba(255,138,43,0.35);border-radius:8px;padding:14px 16px;font-size:14px;}
-.focus-box{background:rgba(62,207,126,0.08);border:1px solid rgba(62,207,126,0.35);border-radius:8px;padding:14px 16px;font-size:14px;}
-.report-box{background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:16px 18px;font-size:14.5px;}
-.report-box p{margin:0 0 10px;}
-.report-box p:last-child{margin-bottom:0;}
+h1{
+  font-size:34px;
+  margin:0 0 6px;
+  color:var(--orange);
+  letter-spacing:-.5px;
+}
 
-.flag-list{list-style:none;margin:0;padding:0;}
-.flag-list li{padding:9px 0;border-top:1px dashed var(--border);font-size:13.5px;display:flex;gap:8px;}
-.flag-list li:first-child{border-top:none;}
-.flag-list li::before{content:"🚩";flex-shrink:0;}
-.flag-list.ok li::before{content:"✅";}
+header p{
+  color:var(--muted);
+  margin:0;
+  font-size:15px;
+}
 
-.weak-rank{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px dashed var(--border);}
-.weak-rank:first-child{border-top:none;}
-.weak-rank .rk{width:26px;height:26px;border-radius:50%;background:var(--panel2);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:var(--orange);flex-shrink:0;}
-.weak-rank .wn{flex:1;font-weight:600;font-size:14px;}
-.weak-rank .ws{font-family:ui-monospace,monospace;font-size:13px;color:var(--bad);font-weight:700;}
+.card{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:20px;
+  margin-bottom:20px;
+}
 
-.priority-badge{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;padding:3px 9px;border-radius:20px;display:inline-block;}
-.p1{background:rgba(255,92,92,0.2);color:#ff8f8f;border:1px solid rgba(255,92,92,0.5);}
-.p2{background:rgba(255,191,77,0.2);color:var(--ok);border:1px solid rgba(255,191,77,0.5);}
-.p3{background:rgba(255,138,43,0.18);color:var(--orange);border:1px solid rgba(255,138,43,0.45);}
-.p4{background:rgba(62,207,126,0.18);color:var(--good);border:1px solid rgba(62,207,126,0.45);}
-.p5{background:rgba(180,140,255,0.18);color:var(--purple);border:1px solid rgba(180,140,255,0.45);}
+.card h2{
+  margin:0 0 12px;
+  font-size:18px;
+}
 
-.upgrade-block{border:1px solid var(--border);border-radius:10px;margin-bottom:16px;overflow:visible;}
-.upgrade-head{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;background:var(--panel2);border-bottom:1px solid var(--border);border-radius:10px 10px 0 0;}
-.upgrade-row{display:grid;grid-template-columns:1fr 1fr;gap:0;}
-@media (max-width:700px){.upgrade-row{grid-template-columns:1fr;}}
-.up-col{padding:14px 16px;display:flex;gap:12px;align-items:flex-start;}
-.up-col.cut{background:rgba(255,92,92,0.06);border-right:1px solid var(--border);}
-.up-col.add{background:rgba(62,207,126,0.06);}
-@media (max-width:700px){.up-col.cut{border-right:none;border-bottom:1px solid var(--border);}}
-.up-body{flex:1;min-width:0;}
-.up-thumb-wrap{position:relative;display:inline-block;flex-shrink:0;}
-.up-thumb{width:64px;height:89px;object-fit:cover;border-radius:6px;flex-shrink:0;border:1px solid var(--border);background:#0c0e12;display:block;}
-.up-thumb-large{display:none;position:absolute;top:50%;left:76px;transform:translateY(-50%);width:260px;border-radius:12px;border:2px solid var(--orange);box-shadow:0 14px 40px rgba(0,0,0,0.65);z-index:100;pointer-events:none;}
-.up-thumb-wrap:hover .up-thumb-large{display:block;}
-.up-col.add .up-thumb-large{left:auto;right:76px;}
-@media (max-width:700px){.up-thumb-large{display:none !important;}}
-.up-tag{font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;font-weight:800;}
-.up-tag.cut{color:#ff8f8f;} .up-tag.add{color:#7fe3ab;}
-.up-name{font-weight:700;font-size:15.5px;margin:3px 0 4px;}
-.up-price{font-size:11.5px;color:var(--orange);margin-bottom:6px;}
-.up-price a{color:var(--orange);text-decoration:none;} .up-price a:hover{text-decoration:underline;}
-.up-why{font-size:13px;color:var(--muted);}
-.edh-tag{display:inline-block;font-size:10.5px;color:var(--purple);border:1px solid rgba(180,140,255,0.4);background:rgba(180,140,255,0.1);padding:1px 7px;border-radius:10px;margin-left:6px;}
-.compare-band{padding:12px 16px;border-top:1px solid var(--border);background:var(--panel2);border-radius:0 0 10px 10px;font-size:13px;}
-.compare-band .cl{margin-bottom:5px;}
-.compare-band b{color:var(--orange);}
-.solo-add{border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:10px;background:rgba(62,207,126,0.05);display:flex;gap:12px;align-items:flex-start;}
+textarea{
+  width:100%;
+  min-height:280px;
+  background:#0c0e12;
+  border:1px solid var(--border);
+  border-radius:8px;
+  color:var(--text);
+  font-family:
+    ui-monospace,
+    SFMono-Regular,
+    Consolas,
+    monospace;
+  font-size:13px;
+  padding:12px;
+  resize:vertical;
+}
 
-.projected-box{display:flex;align-items:center;gap:24px;flex-wrap:wrap;}
-.proj-arrow{font-size:26px;color:var(--muted);}
-.proj-score{text-align:center;}
-.proj-score .n{font-size:30px;font-weight:800;}
-.proj-score .l{font-size:11px;color:var(--muted);text-transform:uppercase;}
-.proj-score.current .n{color:var(--muted);}
-.proj-score.projected .n{color:var(--good);}
-.proj-notes{list-style:none;padding:0;margin:14px 0 0;}
-.proj-notes li{font-size:13px;color:var(--muted);padding:5px 0;}
-.proj-notes li b{color:var(--good);}
+.controls-row{
+  display:flex;
+  gap:12px;
+  margin-top:12px;
+  flex-wrap:wrap;
+  align-items:center;
+}
 
-.confidence-note{font-size:12px;color:var(--muted);margin-top:6px;font-style:italic;}
-.limitation-note{font-size:12px;color:var(--muted);margin-top:10px;padding-top:10px;border-top:1px dashed var(--border);}
-footer{text-align:center;color:#5c6070;font-size:12px;margin-top:40px;}
+.controls-row label{
+  font-size:13px;
+  color:var(--muted);
+}
+
+input[type=text]{
+  background:#0c0e12;
+  border:1px solid var(--border);
+  border-radius:6px;
+  color:var(--text);
+  padding:8px 10px;
+  font-size:13px;
+  flex:1;
+  min-width:200px;
+}
+
+.budget-row{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:10px;
+}
+
+.budget-chip{
+  padding:8px 14px;
+  border-radius:20px;
+  border:1px solid var(--border);
+  font-size:12.5px;
+  cursor:pointer;
+  color:var(--muted);
+  background:transparent;
+  font-family:inherit;
+}
+
+.budget-chip.active{
+  background:var(--orange);
+  border-color:var(--orange);
+  color:#1a1105;
+  font-weight:700;
+}
+
+button#analyzeBtn{
+  background:var(--orange);
+  color:#1a1105;
+  border:none;
+  font-weight:700;
+  font-size:15px;
+  padding:12px 22px;
+  border-radius:8px;
+  cursor:pointer;
+  margin-top:14px;
+  width:100%;
+}
+
+button#analyzeBtn:hover:not(:disabled){
+  background:var(--orange-dark);
+}
+
+button#analyzeBtn:disabled{
+  opacity:.55;
+  cursor:progress;
+}
+
+.sample-link{
+  background:none;
+  border:none;
+  color:var(--orange);
+  font-size:12.5px;
+  cursor:pointer;
+  text-decoration:underline;
+  padding:0;
+  margin-top:8px;
+}
+
+#statusLine{
+  margin-top:10px;
+  font-size:13px;
+  color:var(--muted);
+  min-height:18px;
+}
+
+#errorBox{
+  display:none;
+  margin-top:12px;
+  padding:12px 14px;
+  border-radius:8px;
+  background:rgba(255,92,92,.12);
+  border:1px solid rgba(255,92,92,.4);
+  color:#ffb3b3;
+  font-size:13.5px;
+}
+
+#results{
+  display:none;
+}
+
+.score-hero{
+  display:flex;
+  align-items:center;
+  gap:24px;
+  flex-wrap:wrap;
+}
+
+.score-circle{
+  width:110px;
+  height:110px;
+  border-radius:50%;
+  background:
+    conic-gradient(
+      var(--orange)
+      calc(var(--pct,0)*1%),
+      #2a2f3a 0
+    );
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+}
+
+.score-circle-inner{
+  width:88px;
+  height:88px;
+  border-radius:50%;
+  background:var(--panel);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+}
+
+.score-circle-inner .num{
+  font-size:28px;
+  font-weight:800;
+}
+
+.score-circle-inner .lbl{
+  font-size:10px;
+  color:var(--muted);
+  text-transform:uppercase;
+}
+
+.score-hero .meta{
+  flex:1;
+  min-width:200px;
+}
+
+.commander-name{
+  font-size:20px;
+  font-weight:700;
+}
+
+.commander-sub{
+  color:var(--muted);
+  font-size:13px;
+  margin-top:2px;
+}
+
+.theme-tag{
+  display:inline-block;
+  background:var(--panel2);
+  border:1px solid var(--border);
+  padding:4px 11px;
+  border-radius:20px;
+  font-size:12px;
+  margin:4px 6px 0 0;
+  color:var(--orange);
+}
+
+.stat-grid{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:10px;
+  margin-top:16px;
+}
+
+@media(max-width:800px){
+  .stat-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+}
+
+.stat-box{
+  background:var(--panel2);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:12px;
+  text-align:center;
+}
+
+.stat-box .n{
+  font-size:22px;
+  font-weight:800;
+  color:var(--orange);
+}
+
+.stat-box .l{
+  font-size:11px;
+  color:var(--muted);
+  text-transform:uppercase;
+  margin-top:2px;
+}
+
+.validation-box{
+  border-radius:8px;
+  padding:14px 16px;
+  margin-top:14px;
+}
+
+.validation-good{
+  background:rgba(62,207,126,.08);
+  border:1px solid rgba(62,207,126,.35);
+}
+
+.validation-bad{
+  background:rgba(255,92,92,.08);
+  border:1px solid rgba(255,92,92,.35);
+}
+
+.validation-warning{
+  background:rgba(255,191,77,.08);
+  border:1px solid rgba(255,191,77,.35);
+}
+
+.validation-item{
+  padding:6px 0;
+  border-top:1px dashed var(--border);
+  font-size:13px;
+}
+
+.validation-item:first-child{
+  border-top:none;
+}
+
+.comp-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:8px;
+  font-size:13px;
+}
+
+.comp-label{
+  width:145px;
+  flex-shrink:0;
+  color:var(--muted);
+}
+
+.comp-track{
+  flex:1;
+  height:10px;
+  background:#2a2f3a;
+  border-radius:5px;
+  overflow:hidden;
+}
+
+.comp-fill{
+  height:100%;
+  border-radius:5px;
+  background:var(--orange);
+}
+
+.comp-num{
+  width:40px;
+  text-align:right;
+  font-weight:700;
+  flex-shrink:0;
+}
+
+.category-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px;
+  margin-top:6px;
+}
+
+@media(max-width:700px){
+  .category-grid{
+    grid-template-columns:1fr;
+  }
+}
+
+.cat-box{
+  background:var(--panel2);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:14px;
+}
+
+.cat-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:6px;
+}
+
+.cat-name{
+  font-weight:700;
+  font-size:14px;
+}
+
+.cat-score{
+  font-weight:800;
+  font-size:15px;
+}
+
+.bar-track{
+  height:7px;
+  border-radius:4px;
+  background:#2a2f3a;
+  overflow:hidden;
+}
+
+.bar-fill{
+  height:100%;
+  border-radius:4px;
+}
+
+.cat-detail{
+  font-size:12px;
+  color:var(--muted);
+  margin-top:6px;
+}
+
+.weakness-box{
+  background:rgba(255,92,92,.08);
+  border:1px solid rgba(255,92,92,.35);
+  border-radius:8px;
+  padding:14px 16px;
+  font-size:14px;
+}
+
+.advice-box{
+  background:rgba(255,138,43,.08);
+  border:1px solid rgba(255,138,43,.35);
+  border-radius:8px;
+  padding:14px 16px;
+  font-size:14px;
+}
+
+.focus-box{
+  background:rgba(62,207,126,.08);
+  border:1px solid rgba(62,207,126,.35);
+  border-radius:8px;
+  padding:14px 16px;
+  font-size:14px;
+}
+
+.report-box{
+  background:var(--panel2);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:16px 18px;
+  font-size:14.5px;
+}
+
+.report-box p{
+  margin:0 0 10px;
+}
+
+.report-box p:last-child{
+  margin-bottom:0;
+}
+
+.flag-list{
+  list-style:none;
+  margin:0;
+  padding:0;
+}
+
+.flag-list li{
+  padding:9px 0;
+  border-top:1px dashed var(--border);
+  font-size:13.5px;
+  display:flex;
+  gap:8px;
+}
+
+.flag-list li:first-child{
+  border-top:none;
+}
+
+.flag-list li::before{
+  content:"🚩";
+  flex-shrink:0;
+}
+
+.flag-list.ok li::before{
+  content:"✅";
+}
+
+.priority-badge{
+  font-size:10px;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+  padding:3px 9px;
+  border-radius:20px;
+  display:inline-block;
+}
+
+.p1{
+  background:rgba(255,92,92,.2);
+  color:#ff8f8f;
+  border:1px solid rgba(255,92,92,.5);
+}
+
+.p2{
+  background:rgba(255,191,77,.2);
+  color:var(--ok);
+  border:1px solid rgba(255,191,77,.5);
+}
+
+.p3{
+  background:rgba(255,138,43,.18);
+  color:var(--orange);
+  border:1px solid rgba(255,138,43,.45);
+}
+
+.p4{
+  background:rgba(62,207,126,.18);
+  color:var(--good);
+  border:1px solid rgba(62,207,126,.45);
+}
+
+.p5{
+  background:rgba(180,140,255,.18);
+  color:var(--purple);
+  border:1px solid rgba(180,140,255,.45);
+}
+
+.upgrade-block{
+  border:1px solid var(--border);
+  border-radius:10px;
+  margin-bottom:16px;
+  overflow:hidden;
+}
+
+.upgrade-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:10px 16px;
+  background:var(--panel2);
+  border-bottom:1px solid var(--border);
+}
+
+.upgrade-row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+}
+
+@media(max-width:700px){
+  .upgrade-row{
+    grid-template-columns:1fr;
+  }
+}
+
+.up-col{
+  padding:14px 16px;
+  display:flex;
+  gap:12px;
+  align-items:flex-start;
+}
+
+.up-col.cut{
+  background:rgba(255,92,92,.06);
+  border-right:1px solid var(--border);
+}
+
+.up-col.add{
+  background:rgba(62,207,126,.06);
+}
+
+@media(max-width:700px){
+  .up-col.cut{
+    border-right:none;
+    border-bottom:1px solid var(--border);
+  }
+}
+
+.up-body{
+  flex:1;
+  min-width:0;
+}
+
+.up-thumb{
+  width:64px;
+  height:89px;
+  object-fit:cover;
+  border-radius:6px;
+  border:1px solid var(--border);
+  background:#0c0e12;
+  flex-shrink:0;
+}
+
+.up-tag{
+  font-size:10.5px;
+  text-transform:uppercase;
+  letter-spacing:.05em;
+  font-weight:800;
+}
+
+.up-tag.cut{
+  color:#ff8f8f;
+}
+
+.up-tag.add{
+  color:#7fe3ab;
+}
+
+.up-name{
+  font-weight:700;
+  font-size:15.5px;
+  margin:3px 0 4px;
+}
+
+.up-price{
+  font-size:11.5px;
+  color:var(--orange);
+  margin-bottom:6px;
+}
+
+.up-price a{
+  color:var(--orange);
+  text-decoration:none;
+}
+
+.up-price a:hover{
+  text-decoration:underline;
+}
+
+.up-why{
+  font-size:13px;
+  color:var(--muted);
+}
+
+.edh-tag{
+  display:inline-block;
+  font-size:10.5px;
+  color:var(--purple);
+  border:1px solid rgba(180,140,255,.4);
+  background:rgba(180,140,255,.1);
+  padding:1px 7px;
+  border-radius:10px;
+  margin-left:6px;
+}
+
+.compare-band{
+  padding:12px 16px;
+  border-top:1px solid var(--border);
+  background:var(--panel2);
+  font-size:13px;
+}
+
+.compare-band .cl{
+  margin-bottom:5px;
+}
+
+.compare-band b{
+  color:var(--orange);
+}
+
+.budget-summary{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+}
+
+@media(max-width:700px){
+  .budget-summary{
+    grid-template-columns:repeat(2,1fr);
+  }
+}
+
+.budget-stat{
+  background:var(--panel2);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:13px;
+  text-align:center;
+}
+
+.budget-stat .n{
+  font-size:21px;
+  font-weight:800;
+  color:var(--orange);
+}
+
+.budget-stat .l{
+  font-size:10px;
+  color:var(--muted);
+  text-transform:uppercase;
+}
+
+.projected-box{
+  display:flex;
+  align-items:center;
+  gap:24px;
+  flex-wrap:wrap;
+}
+
+.proj-arrow{
+  font-size:26px;
+  color:var(--muted);
+}
+
+.proj-score{
+  text-align:center;
+}
+
+.proj-score .n{
+  font-size:30px;
+  font-weight:800;
+}
+
+.proj-score .l{
+  font-size:11px;
+  color:var(--muted);
+  text-transform:uppercase;
+}
+
+.proj-score.current .n{
+  color:var(--muted);
+}
+
+.proj-score.projected .n{
+  color:var(--good);
+}
+
+.proj-notes{
+  list-style:none;
+  padding:0;
+  margin:14px 0 0;
+}
+
+.proj-notes li{
+  font-size:13px;
+  color:var(--muted);
+  padding:5px 0;
+}
+
+.checklist{
+  background:var(--panel2);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:12px 14px;
+}
+
+.check-row{
+  display:flex;
+  gap:10px;
+  padding:8px 0;
+  border-top:1px dashed var(--border);
+  font-size:13px;
+}
+
+.check-row:first-child{
+  border-top:none;
+}
+
+.notes-area{
+  width:100%;
+  min-height:130px;
+  margin-top:12px;
+}
+
+.save-btn{
+  background:var(--good);
+  color:#07170e;
+  border:none;
+  padding:9px 15px;
+  border-radius:7px;
+  font-weight:700;
+  cursor:pointer;
+  margin-top:9px;
+}
+
+.confidence-note{
+  font-size:12px;
+  color:var(--muted);
+  margin-top:8px;
+  font-style:italic;
+}
+
+.limitation-note{
+  font-size:12px;
+  color:var(--muted);
+  padding-top:10px;
+  border-top:1px dashed var(--border);
+}
+
+footer{
+  text-align:center;
+  color:#5c6070;
+  font-size:12px;
+  margin-top:40px;
+}
 </style>
 </head>
-<body>
-<div class="wrap">
-  <header>
-    <h1>Precon Upgrade Coach</h1>
-    <p>Paste any Commander decklist. Get an analysis built from the actual cards you're running — not a guide for one specific deck.</p>
-  </header>
 
-  <div class="card">
-    <h2>Paste your decklist</h2>
-    <textarea id="decklistInput" placeholder="1 Sol Ring&#10;1 Arcane Signet&#10;4 Swamp&#10;10 Forest&#10;1 Swords to Plowshares&#10;..."></textarea>
-    <div class="controls-row">
-      <label for="commanderOverride">Commander (optional, auto-detected otherwise):</label>
-      <input type="text" id="commanderOverride" placeholder="Leave blank to auto-detect">
-    </div>
-    <label style="display:block;font-size:12.5px;color:var(--muted);margin-top:14px;">Upgrade budget</label>
-    <div class="budget-row" id="budgetRow">
-      <button class="budget-chip" data-budget="10">$10</button>
-      <button class="budget-chip" data-budget="25">$25</button>
-      <button class="budget-chip active" data-budget="50">$50</button>
-      <button class="budget-chip" data-budget="100">$100</button>
-      <button class="budget-chip" data-budget="0">No Budget</button>
-    </div>
-    <button id="analyzeBtn">Analyze Deck</button>
-    <button class="sample-link" id="sampleBtn">Use a sample decklist instead</button>
-    <div id="statusLine"></div>
-    <div id="errorBox"></div>
+<body>
+
+<div class="wrap">
+
+<header>
+  <h1>Precon Upgrade Coach</h1>
+  <p>
+    Upgrade your Commander deck without wasting money.
+    The Coach counts every copy, checks legality, identifies weaknesses,
+    and builds recommendations from the deck you actually pasted.
+  </p>
+</header>
+
+<div class="card">
+
+  <h2>Paste your decklist</h2>
+
+  <textarea
+    id="decklistInput"
+    placeholder="Commander: Ghired, Conclave Exile&#10;1 Sol Ring&#10;1 Arcane Signet&#10;1 Cultivate&#10;1 Swords to Plowshares&#10;...&#10;17 Forest"
+  ></textarea>
+
+  <div class="controls-row">
+
+    <label for="commanderOverride">
+      Commander override:
+    </label>
+
+    <input
+      type="text"
+      id="commanderOverride"
+      placeholder="Leave blank to auto-detect"
+    >
+
   </div>
 
-  <div id="results"></div>
+  <div class="confidence-note">
+    If you use a Moxfield export, paste the export directly.
+    The parser understands commander sections, quantities, set codes,
+    collector numbers, sideboards and common quantity formats.
+  </div>
 
-  <footer>Card data & prices via the Scryfall API (USD prices sourced from TCGplayer). Strategy signal from EDHREC's public commander pages, used best-effort. Cached in your browser. Not affiliated with Wizards of the Coast, Scryfall, or EDHREC.</footer>
+  <label
+    style="display:block;font-size:12.5px;color:var(--muted);margin-top:14px;"
+  >
+    Upgrade budget
+  </label>
+
+  <div class="budget-row" id="budgetRow">
+
+    <button class="budget-chip" data-budget="10">
+      $10
+    </button>
+
+    <button class="budget-chip" data-budget="25">
+      $25
+    </button>
+
+    <button class="budget-chip active" data-budget="50">
+      $50
+    </button>
+
+    <button class="budget-chip" data-budget="100">
+      $100
+    </button>
+
+    <button class="budget-chip" data-budget="0">
+      No Budget
+    </button>
+
+  </div>
+
+  <button id="analyzeBtn">
+    Analyze Deck
+  </button>
+
+  <button class="sample-link" id="sampleBtn">
+    Use sample decklist
+  </button>
+
+  <div id="statusLine"></div>
+
+  <div id="errorBox"></div>
+
+</div>
+
+<div id="results"></div>
+
+<footer>
+  Card identity, Commander legality, color identity and prices are resolved
+  from Scryfall. EDHREC is optional secondary strategy data.
+  Strategy scores are heuristic estimates, not objective measures of deck power.
+  Not affiliated with Wizards of the Coast, Scryfall or EDHREC.
+</footer>
+
 </div>
 
 <script>
-/* =====================================================================
-   PRECON UPGRADE COACH — generic Commander deck analyzer.
-   Every count, tag, score, and recommendation is derived from the cards
-   the user actually pastes in, resolved live against Scryfall (and,
-   best-effort, EDHREC). Nothing here is keyed to a specific precon,
-   commander, or set — see the CANDIDATES pool and TAG_RULES below.
-   ===================================================================== */
 
-/* ---------------------------------------------------------------------
-   1. DECKLIST PARSER (Moxfield-oriented, but tolerant of variants)
-   --------------------------------------------------------------------- */
-function parseDecklist(rawText) {
-  const lines = rawText.split(/\r?\n/);
-  const mainCards = new Map();
-  const commanderNames = [];
-  let section = 'main';
+/* ================================================================
+   PRECON UPGRADE COACH
+   ================================================================
 
-  const cmdrHeaderRe = /^\s*(commander|command\s*zone)s?\s*:?\s*$/i;
-  const deckHeaderRe = /^\s*(deck|deckl?ist|mainboard|maindeck|library|nonland|lands?)\s*:?\s*$/i;
-  const sideHeaderRe = /^\s*(sideboard|maybeboard|considering|token(s)?|cuts?)\s*:?\s*$/i;
-  const inlineCmdrRe = /^\s*commander\s*:\s*(.+)$/i;
+   DESIGN RULES
 
-  for (const raw of lines) {
-    let line = raw.trim();
-    if (!line) continue;
-    if (line.startsWith('//') || line.startsWith('#')) continue;
-    // Moxfield "SB: 1 Card Name" sideboard prefix — skip those lines entirely.
-    if (/^SB:\s*/i.test(line)) continue;
+   HARD FACTS:
+   - Card names
+   - Card quantities
+   - Commander identity
+   - Commander legality
+   - Color identity legality
+   - Current Scryfall data
+   - Deck size
+   - Singleton violations
+   - Budget arithmetic
 
-    const inlineMatch = line.match(inlineCmdrRe);
-    if (inlineMatch) { commanderNames.push(cleanName(inlineMatch[1])); continue; }
-    if (cmdrHeaderRe.test(line)) { section = 'commander'; continue; }
-    if (deckHeaderRe.test(line)) { section = 'main'; continue; }
-    if (sideHeaderRe.test(line)) { section = 'ignore'; continue; }
-    if (section === 'ignore') continue;
+   HEURISTICS:
+   - Strategy detection
+   - Deck score
+   - Weakness detection
+   - Card synergy
+   - Upgrade ranking
 
-    let isCmdrLine = false;
-    let work = line;
-    if (/\*\s*cmdr\s*\*$/i.test(work)) { isCmdrLine = true; work = work.replace(/\*\s*cmdr\s*\*$/i, '').trim(); }
+   The program deliberately does NOT pretend the heuristic layer
+   is an objective truth about Magic.
+================================================================ */
 
-    const parsed = parseCardLine(work);
-    if (!parsed) continue;
 
-    if (section === 'commander' || isCmdrLine) {
-      for (let i = 0; i < parsed.quantity; i++) commanderNames.push(parsed.name);
-      continue;
-    }
-    const key = parsed.name.toLowerCase();
-    if (mainCards.has(key)) mainCards.get(key).quantity += parsed.quantity;
-    else mainCards.set(key, { name: parsed.name, quantity: parsed.quantity });
-  }
-  return { commanderNames, mainCards: Array.from(mainCards.values()) };
-}
+/* ================================================================
+   GLOBAL STATE
+================================================================ */
 
-function parseCardLine(line) {
-  let text = line;
-  text = text.replace(/\s*\*[fF]\*\s*$/, '');
-  // Trailing set code + collector number, e.g. "Sol Ring (C21) 263"
-  text = text.replace(/\s*\([A-Za-z0-9]{2,5}\)\s*[A-Za-z0-9\-★]*\s*$/, '');
-  // Trailing tab-separated extra columns some exports include after the name.
-  text = text.split('\t')[0] + (text.includes('\t') ? '' : '');
-  if (line.includes('\t')) {
-    // Tab-delimited exports: "1\tCard Name\t..." — take count + name columns only.
-    const cols = line.split('\t');
-    if (cols.length >= 2 && /^\d+$/.test(cols[0].trim())) {
-      return { quantity: parseInt(cols[0].trim(), 10), name: cleanName(cols[1]) };
-    }
-  }
-
-  let m = text.match(/^\s*(\d+)\s*[xX]?\s+(.+?)\s*$/);
-  if (m) return { quantity: parseInt(m[1], 10), name: cleanName(m[2]) };
-  m = text.match(/^(.+?)\s*[xX]\s*(\d+)\s*$/);
-  if (m) return { quantity: parseInt(m[2], 10), name: cleanName(m[1]) };
-  if (text.trim().length > 0) return { quantity: 1, name: cleanName(text) };
-  return null;
-}
-function cleanName(name) { return name.replace(/\s+/g, ' ').trim(); }
-
-/* ---------------------------------------------------------------------
-   2. CARD DATA — Scryfall, with localStorage caching + graceful failure.
-   --------------------------------------------------------------------- */
-const CACHE_PREFIX = 'puc_card_v2_';
+const CACHE_PREFIX = "puc_final_card_";
 const CACHE_TTL_MS = 14 * 24 * 60 * 60 * 1000;
 
-function cacheGet(name) {
-  try {
-    const raw = localStorage.getItem(CACHE_PREFIX + name.toLowerCase());
-    if (!raw) return null;
-    const parsed = JSON.parse(raw);
-    if (Date.now() - parsed.ts > CACHE_TTL_MS) return null;
-    return parsed.card;
-  } catch (e) { return null; }
-}
-function cacheSet(name, card) {
-  try { localStorage.setItem(CACHE_PREFIX + name.toLowerCase(), JSON.stringify({ ts: Date.now(), card })); }
-  catch (e) { /* storage full/unavailable — safe to ignore */ }
-}
+let selectedBudget = 50;
+let currentAnalysis = null;
 
-const FALLBACK_LANDS = new Set([
-  'forest','island','swamp','mountain','plains','wastes',
-  'command tower','path of ancestry','exotic orchard','terramorphic expanse',
-  'evolving wilds','myriad landscape','reliquary tower','war room','rogue\'s passage'
+
+/* ================================================================
+   BASIC LANDS / COPY RULES
+================================================================ */
+
+const BASIC_LANDS = new Set([
+  "plains",
+  "island",
+  "swamp",
+  "mountain",
+  "forest",
+  "wastes",
+
+  "snow-covered plains",
+  "snow-covered island",
+  "snow-covered swamp",
+  "snow-covered mountain",
+  "snow-covered forest"
 ]);
 
-async function fetchCollection(names) {
-  const results = new Map();
-  const toFetch = [];
-  for (const n of names) {
-    const cached = cacheGet(n);
-    if (cached) results.set(n.toLowerCase(), cached);
-    else toFetch.push(n);
+
+/*
+  Some cards explicitly allow any number of copies.
+
+  We do not hard-code every such card here.
+
+  Instead, the program checks the card's own Oracle text:
+  "A deck can have any number of cards named..."
+*/
+function cardAllowsMultipleCopies(card){
+
+  if (!card){
+    return false;
   }
-  let apiFailed = false;
-  for (let i = 0; i < toFetch.length; i += 75) {
-    const batch = toFetch.slice(i, i + 75);
-    try {
-      const resp = await fetch('https://api.scryfall.com/cards/collection', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ identifiers: batch.map(n => ({ name: n })) })
-      });
-      if (!resp.ok) throw new Error('status ' + resp.status);
-      const data = await resp.json();
-      (data.data || []).forEach(card => { results.set(card.name.toLowerCase(), card); cacheSet(card.name, card); });
-      for (const nf of (data.not_found || [])) {
-        try {
-          const r = await fetch('https://api.scryfall.com/cards/named?fuzzy=' + encodeURIComponent(nf.name));
-          if (r.ok) { const card = await r.json(); results.set(nf.name.toLowerCase(), card); cacheSet(card.name, card); }
-        } catch (e) { /* leave unresolved */ }
-        await new Promise(r => setTimeout(r, 50));
-      }
-    } catch (e) { apiFailed = true; }
+
+  const name = normalizeName(card.name);
+
+  if (BASIC_LANDS.has(name)){
+    return true;
   }
-  return { results, apiFailed };
-}
 
-/* ---------------------------------------------------------------------
-   2b. EDHREC — best-effort. EDHREC has no official public API; this uses
-   their static per-commander JSON, which many third-party deckbuilding
-   tools also read client-side. If it's ever unreachable or reshaped, this
-   fails silently and every other feature keeps working without it — no
-   EDHREC data should ever be a hard requirement for the app to function.
-   --------------------------------------------------------------------- */
-function slugifyCommanderName(name) {
-  return name.toLowerCase()
-    .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // strip accents
-    .replace(/[^a-z0-9\s-]/g, '')
-    .trim().replace(/\s+/g, '-');
-}
-async function fetchEdhrecData(commanderName) {
-  if (!commanderName) return null;
-  const slug = slugifyCommanderName(commanderName);
-  if (!slug) return null;
-  try {
-    const resp = await fetch('https://json.edhrec.com/pages/commanders/' + slug + '.json');
-    if (!resp.ok) return null;
-    const data = await resp.json();
-    const map = new Map();
-    const cardlists = (data && data.container && data.container.json_dict && data.container.json_dict.cardlists) || [];
-    cardlists.forEach(list => {
-      (list.cardviews || []).forEach(cv => {
-        if (!cv || !cv.name) return;
-        let inclusion = null;
-        if (typeof cv.num_decks === 'number' && typeof cv.potential_decks === 'number' && cv.potential_decks > 0) {
-          inclusion = cv.num_decks / cv.potential_decks;
-        } else if (typeof cv.inclusion === 'number') {
-          inclusion = cv.inclusion > 1 ? cv.inclusion / 100 : cv.inclusion;
-        }
-        const synergy = typeof cv.synergy === 'number' ? cv.synergy : null;
-        map.set(cv.name.toLowerCase(), { inclusion, synergy });
-      });
-    });
-    return map.size ? map : null;
-  } catch (e) { return null; }
-}
-
-/* ---------------------------------------------------------------------
-   3. TYPE / TAG HELPERS
-   --------------------------------------------------------------------- */
-function normalizedType(card) {
-  if (!card) return '';
-  if (card.type_line) return card.type_line.split(' // ')[0];
-  if (card.card_faces && card.card_faces[0]) return card.card_faces[0].type_line || '';
-  return '';
-}
-function normalizedOracle(card) {
-  if (!card) return '';
-  if (card.oracle_text) return card.oracle_text;
-  if (card.card_faces) return card.card_faces.map(f => f.oracle_text || '').join(' \n ');
-  return '';
-}
-function cardPrice(card) {
-  if (!card || !card.prices) return 0;
-  const usd = parseFloat(card.prices.usd || card.prices.usd_foil || 0);
-  return isNaN(usd) ? 0 : usd;
-}
-function cardTcgLink(card) { return (card && card.purchase_uris && card.purchase_uris.tcgplayer) || null; }
-function colorIdentityOf(card) { return (card && card.color_identity) || []; }
-function isSubsetColors(cardColors, deckColors) {
-  const set = new Set(deckColors);
-  return cardColors.every(c => set.has(c));
-}
-function creatureTypesOf(card) {
-  const type = normalizedType(card);
-  const parts = type.split('—');
-  if (parts.length < 2) return [];
-  return parts[1].trim().split(/\s+/).filter(t => t.length > 1);
-}
-
-const TAG_RULES = [
-  ['ramp', /search your library for a .*land|create[s]? a treasure token|add one mana of any (color|type)|additional land|\{T\}: Add \{/i],
-  ['draw', /draws? (a|an|two|three|\d+|that many) cards?|whenever .* draw a card/i],
-  ['removal', /destroy target|exile target|deals? \d+ damage to target creature|return target (nonland )?(permanent|creature) .* to (its|their) owner'?s hand|-\d\/-\d until end of turn/i],
-  ['wipe', /destroy all creatures|each creature gets -\d\/-\d|deals? \d+ damage to each creature|exile all creatures/i],
-  ['protection', /hexproof|indestructible|protection from|counter target spell|prevent all damage|ward \{/i],
-  ['tutor', /search your library for a card|search your library for (a|an|up to \w+) (creature|artifact|enchantment|instant|sorcery|permanent)/i],
-  ['graveyard', /return target creature card from your graveyard|from your graveyard to the battlefield|return .* card from your graveyard/i],
-  ['tokens', /create[s]? .*token/i],
-  ['food', /create[s]? (a|an|\d+) food token/i],
-  ['sacrifice', /sacrifice a creature|whenever a creature you control dies|sacrifice another creature/i],
-  ['lifegain', /you gain life|whenever you gain life|life equal to/i],
-  ['counters', /\+1\/\+1 counter/i],
-  ['winCon', /extra combat phase|additional combat phase|you win the game|whenever .* deals combat damage to a player,/i],
-  ['tapped', /enters the battlefield tapped/i],
-];
-
-function tagCard(card) {
-  const type = normalizedType(card);
   const oracle = normalizedOracle(card);
-  const tags = new Set();
-  if (/\bLand\b/.test(type)) tags.add('land');
-  if (/\bCreature\b/.test(type)) tags.add('creature');
-  if (/\bArtifact\b/.test(type)) tags.add('artifact');
-  if (/\bEnchantment\b/.test(type)) tags.add('enchantment');
-  if (/\bInstant\b/.test(type)) tags.add('instant');
-  if (/\bSorcery\b/.test(type)) tags.add('sorcery');
-  if (/\bPlaneswalker\b/.test(type)) tags.add('planeswalker');
-  if (/\bBattle\b/.test(type)) tags.add('battle');
-  if (/\bEquipment\b/.test(type)) tags.add('equipment');
-  if (/\bAura\b/.test(type)) tags.add('aura');
-  for (const [tag, re] of TAG_RULES) if (re.test(oracle) || re.test(type)) tags.add(tag);
-  if (tags.has('creature') && card.power && parseInt(card.power, 10) >= 6) tags.add('winCon');
-  return tags;
+
+  return /a deck can have any number of cards named/i.test(oracle);
 }
 
-/* ---------------------------------------------------------------------
-   4. RECOMMENDATION CANDIDATE POOL
-   Curated staples tagged by functional role + optional theme. Color
-   legality, price, and (where available) EDHREC signal are resolved
-   live, so nothing here is suggested blind.
-   --------------------------------------------------------------------- */
-const CANDIDATES = [
-  {n:'Sol Ring', roles:['ramp']}, {n:'Arcane Signet', roles:['ramp']},
-  {n:'Fellwar Stone', roles:['ramp']}, {n:'Mind Stone', roles:['ramp','draw']},
-  {n:'Commander\'s Sphere', roles:['ramp','draw']}, {n:'Cultivate', roles:['ramp']},
-  {n:'Kodama\'s Reach', roles:['ramp']}, {n:'Rampant Growth', roles:['ramp']},
-  {n:'Farseek', roles:['ramp']}, {n:'Nature\'s Lore', roles:['ramp']},
-  {n:'Wayfarer\'s Bauble', roles:['ramp']}, {n:'Solemn Simulacrum', roles:['ramp','draw']},
-  {n:'Chromatic Lantern', roles:['ramp']}, {n:'Dockside Extortionist', roles:['ramp']},
-  {n:'Burnished Hart', roles:['ramp']}, {n:'Skyshroud Claim', roles:['ramp']},
 
-  {n:'Rhystic Study', roles:['draw']}, {n:'Mystic Remora', roles:['draw']},
-  {n:'Phyrexian Arena', roles:['draw']}, {n:'Sylvan Library', roles:['draw']},
-  {n:'Night\'s Whisper', roles:['draw']}, {n:'Sign in Blood', roles:['draw']},
-  {n:'Read the Bones', roles:['draw']}, {n:'Fact or Fiction', roles:['draw']},
-  {n:'Harmonize', roles:['draw']}, {n:'Divination', roles:['draw']},
-  {n:'Esper Sentinel', roles:['draw']}, {n:'Guardian Project', roles:['draw']},
-  {n:'Beast Whisperer', roles:['draw']}, {n:'Skullclamp', roles:['draw']},
-
-  {n:'Swords to Plowshares', roles:['removal']}, {n:'Path to Exile', roles:['removal']},
-  {n:'Beast Within', roles:['removal']}, {n:'Chaos Warp', roles:['removal']},
-  {n:'Generous Gift', roles:['removal']}, {n:'Vindicate', roles:['removal']},
-  {n:'Anguished Unmaking', roles:['removal']}, {n:'Utter End', roles:['removal']},
-  {n:'Assassin\'s Trophy', roles:['removal']}, {n:'Pongify', roles:['removal']},
-  {n:'Rapid Hybridization', roles:['removal']}, {n:'Cyclonic Rift', roles:['removal','wipe']},
-  {n:'Counterspell', roles:['protection','removal']}, {n:'Lightning Bolt', roles:['removal']},
-  {n:'Doom Blade', roles:['removal']}, {n:'Murder', roles:['removal']},
-  {n:'Ravenous Chupacabra', roles:['removal']}, {n:'Hero\'s Downfall', roles:['removal']},
-
-  {n:'Wrath of God', roles:['wipe']}, {n:'Damnation', roles:['wipe']},
-  {n:'Toxic Deluge', roles:['wipe']}, {n:'Blasphemous Act', roles:['wipe']},
-  {n:'Austere Command', roles:['wipe']}, {n:'Vandalblast', roles:['wipe']},
-  {n:'Farewell', roles:['wipe']},
-
-  {n:'Heroic Intervention', roles:['protection']}, {n:'Swiftfoot Boots', roles:['protection','equipment']},
-  {n:'Lightning Greaves', roles:['protection','equipment']}, {n:'Teferi\'s Protection', roles:['protection']},
-  {n:'Flawless Maneuver', roles:['protection']}, {n:'Boros Charm', roles:['protection','removal']},
-  {n:'Dauntless Escort', roles:['protection']}, {n:'Tamiyo\'s Safekeeping', roles:['protection']},
-
-  {n:'Demonic Tutor', roles:['tutor']}, {n:'Vampiric Tutor', roles:['tutor']},
-  {n:'Enlightened Tutor', roles:['tutor']}, {n:'Worldly Tutor', roles:['tutor']},
-  {n:'Diabolic Tutor', roles:['tutor']}, {n:'Eladamri\'s Call', roles:['tutor']},
-
-  {n:'Anointed Procession', roles:['tokens']}, {n:'Parallel Lives', roles:['tokens']},
-  {n:'Krenko, Mob Boss', roles:['tokens']}, {n:'Bitterblossom', roles:['tokens']},
-  {n:'Academy Manufactor', roles:['tokens','food']}, {n:'Trail of Crumbs', roles:['food','draw']},
-
-  {n:'Blood Artist', roles:['sacrifice']}, {n:'Viscera Seer', roles:['sacrifice']},
-  {n:'Ashnod\'s Altar', roles:['sacrifice','ramp']}, {n:'Zulaport Cutthroat', roles:['sacrifice']},
-
-  {n:'Animate Dead', roles:['graveyard']}, {n:'Reanimate', roles:['graveyard']},
-  {n:'Eternal Witness', roles:['graveyard','draw']}, {n:'Sun Titan', roles:['graveyard']},
-
-  {n:'Well of Lost Dreams', roles:['lifegain','draw']}, {n:'Heliod, Sun-Crowned', roles:['lifegain','counters']},
-  {n:'Rhox Faithmender', roles:['lifegain']},
-
-  {n:'Hardened Scales', roles:['counters']}, {n:'Kalonian Hydra', roles:['counters','winCon']},
-  {n:'Doubling Season', roles:['counters','tokens']}, {n:'Conclave Mentor', roles:['counters']},
-
-  {n:'Avenger of Zendikar', roles:['winCon','tokens']}, {n:'Craterhoof Behemoth', roles:['winCon']},
-  {n:'Torment of Hailfire', roles:['winCon']}, {n:'Exsanguinate', roles:['winCon']},
-  {n:'Triumph of the Hordes', roles:['winCon']},
-
-  {n:'Sword of Fire and Ice', roles:['equipment','draw','removal']}, {n:'Kaldra Compleat', roles:['equipment','winCon']},
-  {n:'Cavern of Souls', roles:['manabase']},
-
-  {n:'Command Tower', roles:['manabase']}, {n:'Exotic Orchard', roles:['manabase']},
-  {n:'Path of Ancestry', roles:['manabase']}, {n:'Reliquary Tower', roles:['manabase']},
-];
+/* ================================================================
+   ROLE LABELS
+================================================================ */
 
 const ROLE_LABELS = {
-  ramp:'Ramp', draw:'Card Draw', removal:'Removal', wipe:'Board Wipe', protection:'Protection',
-  tutor:'Tutor', tokens:'Token Generation', sacrifice:'Sacrifice Value', graveyard:'Graveyard Recursion',
-  lifegain:'Lifegain', counters:'+1/+1 Counters', winCon:'Win Condition', manabase:'Mana Base',
-  food:'Food', equipment:'Equipment/Voltron'
-};
-const ROLE_VERB = {
-  ramp:'ramps your mana', draw:'draws you cards', removal:'answers a threat', wipe:'wipes the board',
-  protection:'protects your board', tutor:'finds any card you need', tokens:'builds a token army',
-  sacrifice:'turns dying creatures into value', graveyard:'recurs cards from your graveyard',
-  lifegain:'gains you life', counters:'grows your +1/+1 counters plan', winCon:'closes out the game',
-  manabase:'fixes your mana', food:'feeds your Food subtheme', equipment:'powers up one creature'
+
+  ramp:"Ramp",
+
+  draw:"Card Draw",
+
+  removal:"Spot Removal",
+
+  wipe:"Board Wipe",
+
+  protection:"Protection",
+
+  tutor:"Tutor",
+
+  tokens:"Token Generation",
+
+  sacrifice:"Sacrifice Value",
+
+  graveyard:"Graveyard Recursion",
+
+  lifegain:"Lifegain",
+
+  counters:"+1/+1 Counters",
+
+  winCon:"Win Condition",
+
+  food:"Food",
+
+  equipment:"Equipment"
+
 };
 
-/* ---------------------------------------------------------------------
-   5. DECK ANALYSIS
-   --------------------------------------------------------------------- */
-function scoreFromCount(count, target) {
-  if (target <= 0) return 100;
-  return Math.max(0, Math.min(100, Math.round((count / target) * 100)));
+
+const ROLE_VERBS = {
+
+  ramp:"ramps your mana",
+
+  draw:"adds card advantage",
+
+  removal:"answers a threat",
+
+  wipe:"resets the board",
+
+  protection:"protects your board",
+
+  tutor:"finds cards you need",
+
+  tokens:"builds your token plan",
+
+  sacrifice:"turns sacrifice into value",
+
+  graveyard:"recurs cards",
+
+  lifegain:"supports your lifegain plan",
+
+  counters:"supports your counters plan",
+
+  winCon:"helps close games",
+
+  food:"supports your Food plan",
+
+  equipment:"supports your equipment plan"
+
+};
+
+
+/* ================================================================
+   CURATED RECOMMENDATION POOL
+================================================================ */
+
+const CANDIDATES = [
+
+  {name:"Sol Ring",roles:["ramp"]},
+  {name:"Arcane Signet",roles:["ramp"]},
+  {name:"Fellwar Stone",roles:["ramp"]},
+  {name:"Mind Stone",roles:["ramp","draw"]},
+  {name:"Thought Vessel",roles:["ramp","draw"]},
+  {name:"Wayfarer's Bauble",roles:["ramp"]},
+  {name:"Solemn Simulacrum",roles:["ramp","draw"]},
+  {name:"Cultivate",roles:["ramp"]},
+  {name:"Kodama's Reach",roles:["ramp"]},
+  {name:"Rampant Growth",roles:["ramp"]},
+  {name:"Farseek",roles:["ramp"]},
+  {name:"Nature's Lore",roles:["ramp"]},
+  {name:"Three Visits",roles:["ramp"]},
+  {name:"Skyshroud Claim",roles:["ramp"]},
+
+  {name:"Rhystic Study",roles:["draw"]},
+  {name:"Mystic Remora",roles:["draw"]},
+  {name:"Phyrexian Arena",roles:["draw"]},
+  {name:"Sylvan Library",roles:["draw"]},
+  {name:"Esper Sentinel",roles:["draw"]},
+  {name:"Skullclamp",roles:["draw"]},
+  {name:"Guardian Project",roles:["draw"]},
+  {name:"Beast Whisperer",roles:["draw"]},
+  {name:"Harmonize",roles:["draw"]},
+  {name:"Night's Whisper",roles:["draw"]},
+  {name:"Read the Bones",roles:["draw"]},
+  {name:"Sign in Blood",roles:["draw"]},
+  {name:"Fact or Fiction",roles:["draw"]},
+  {name:"Reconnaissance Mission",roles:["draw"]},
+
+  {name:"Swords to Plowshares",roles:["removal"]},
+  {name:"Path to Exile",roles:["removal"]},
+  {name:"Beast Within",roles:["removal"]},
+  {name:"Generous Gift",roles:["removal"]},
+  {name:"Anguished Unmaking",roles:["removal"]},
+  {name:"Assassin's Trophy",roles:["removal"]},
+  {name:"Utter End",roles:["removal"]},
+  {name:"Vindicate",roles:["removal"]},
+  {name:"Chaos Warp",roles:["removal"]},
+  {name:"Pongify",roles:["removal"]},
+  {name:"Rapid Hybridization",roles:["removal"]},
+  {name:"Cyclonic Rift",roles:["removal","wipe"]},
+  {name:"Counterspell",roles:["removal","protection"]},
+  {name:"Return to Nature",roles:["removal"]},
+  {name:"Krosan Grip",roles:["removal"]},
+
+  {name:"Wrath of God",roles:["wipe"]},
+  {name:"Damnation",roles:["wipe"]},
+  {name:"Toxic Deluge",roles:["wipe"]},
+  {name:"Blasphemous Act",roles:["wipe"]},
+  {name:"Austere Command",roles:["wipe"]},
+  {name:"Farewell",roles:["wipe"]},
+  {name:"Vandalblast",roles:["wipe"]},
+
+  {name:"Heroic Intervention",roles:["protection"]},
+  {name:"Swiftfoot Boots",roles:["protection","equipment"]},
+  {name:"Lightning Greaves",roles:["protection","equipment"]},
+  {name:"Teferi's Protection",roles:["protection"]},
+  {name:"Flawless Maneuver",roles:["protection"]},
+  {name:"Boros Charm",roles:["protection"]},
+  {name:"Tamiyo's Safekeeping",roles:["protection"]},
+
+  {name:"Demonic Tutor",roles:["tutor"]},
+  {name:"Vampiric Tutor",roles:["tutor"]},
+  {name:"Enlightened Tutor",roles:["tutor"]},
+  {name:"Worldly Tutor",roles:["tutor"]},
+  {name:"Diabolic Tutor",roles:["tutor"]},
+  {name:"Eladamri's Call",roles:["tutor"]},
+
+  {name:"Anointed Procession",roles:["tokens"]},
+  {name:"Parallel Lives",roles:["tokens"]},
+  {name:"Doubling Season",roles:["tokens","counters"]},
+  {name:"Academy Manufactor",roles:["tokens","food"]},
+  {name:"Trail of Crumbs",roles:["food","draw"]},
+
+  {name:"Blood Artist",roles:["sacrifice"]},
+  {name:"Viscera Seer",roles:["sacrifice"]},
+  {name:"Ashnod's Altar",roles:["sacrifice","ramp"]},
+  {name:"Zulaport Cutthroat",roles:["sacrifice"]},
+
+  {name:"Animate Dead",roles:["graveyard"]},
+  {name:"Reanimate",roles:["graveyard"]},
+  {name:"Eternal Witness",roles:["graveyard"]},
+  {name:"Victimize",roles:["graveyard"]},
+  {name:"Sun Titan",roles:["graveyard"]},
+
+  {name:"Well of Lost Dreams",roles:["lifegain","draw"]},
+  {name:"Heliod, Sun-Crowned",roles:["lifegain","counters"]},
+  {name:"Rhox Faithmender",roles:["lifegain"]},
+
+  {name:"Hardened Scales",roles:["counters"]},
+  {name:"Kalonian Hydra",roles:["counters","winCon"]},
+  {name:"Conclave Mentor",roles:["counters"]},
+
+  {name:"Avenger of Zendikar",roles:["winCon","tokens"]},
+  {name:"Craterhoof Behemoth",roles:["winCon"]},
+  {name:"Torment of Hailfire",roles:["winCon"]},
+  {name:"Exsanguinate",roles:["winCon"]},
+  {name:"Triumph of the Hordes",roles:["winCon"]},
+
+  {name:"Sword of Fire and Ice",roles:["equipment","draw"]},
+  {name:"Kaldra Compleat",roles:["equipment","winCon"]}
+
+];
+
+
+/* ================================================================
+   TAG RULES
+================================================================ */
+
+const TAG_RULES = {
+
+  ramp:[
+    /search your library for .*land/i,
+    /put .* land card .* battlefield/i,
+    /add (one|two|three|four|\d+) mana/i,
+    /create .* treasure token/i,
+    /additional land/i
+  ],
+
+  draw:[
+    /draw (a|an|two|three|four|\d+|that many) cards?/i,
+    /whenever .* draw a card/i,
+    /look at the top .* cards?.*put .* into your hand/i
+  ],
+
+  removal:[
+    /destroy target/i,
+    /exile target/i,
+    /return target .* to .* owner's hand/i,
+    /deals? .* damage to target/i,
+    /-\d+\/-\d+/i,
+    /counter target spell/i
+  ],
+
+  wipe:[
+    /destroy all/i,
+    /exile all/i,
+    /each creature gets -\d+\/-\d+/i,
+    /deals? .* damage to each creature/i
+  ],
+
+  protection:[
+    /hexproof/i,
+    /indestructible/i,
+    /protection from/i,
+    /prevent all damage/i,
+    /ward/i,
+    /counter target spell/i
+  ],
+
+  tutor:[
+    /search your library for/i
+  ],
+
+  graveyard:[
+    /return .* from your graveyard/i,
+    /from your graveyard to the battlefield/i,
+    /cast .* from your graveyard/i
+  ],
+
+  tokens:[
+    /create .* token/i
+  ],
+
+  food:[
+    /create .* food token/i
+  ],
+
+  sacrifice:[
+    /sacrifice (a|an|another|\d+)/i,
+    /whenever .* creature .* you control dies/i
+  ],
+
+  lifegain:[
+    /you gain life/i,
+    /whenever you gain life/i
+  ],
+
+  counters:[
+    /\+1\/\+1 counter/i
+  ],
+
+  winCon:[
+    /you win the game/i,
+    /extra combat phase/i,
+    /additional combat phase/i,
+    /whenever .* deals combat damage to a player/i
+  ],
+
+  equipment:[
+    /\bequip\b/i
+  ]
+
+};
+
+
+/* ================================================================
+   NORMALIZATION
+================================================================ */
+
+function normalizeName(name){
+
+  return String(name)
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g,"")
+    .replace(/[’‘]/g,"'")
+    .replace(/[^a-z0-9'\s]/g,"")
+    .replace(/\s+/g," ")
+    .trim();
+
 }
-function statusOf(score) { return score >= 70 ? 'good' : score >= 40 ? 'ok' : 'bad'; }
-function statusColor(status) { return status === 'good' ? 'var(--good)' : status === 'ok' ? 'var(--ok)' : 'var(--bad)'; }
 
-function analyzeDeck(commanderCard, deckEntries) {
-  const deckColorIdentity = new Set(commanderCard ? colorIdentityOf(commanderCard) : []);
-  deckEntries.forEach(e => colorIdentityOf(e.card).forEach(c => deckColorIdentity.add(c)));
 
-  let totalCards = 0;
-  const typeCounts = { land:0, creature:0, artifact:0, enchantment:0, instant:0, sorcery:0, planeswalker:0, battle:0, other:0 };
-  const roleCounts = { ramp:0, draw:0, removal:0, wipe:0, protection:0, tutor:0, tokens:0, sacrifice:0, graveyard:0, lifegain:0, counters:0, winCon:0, food:0, equipment:0 };
-  const themeFreq = {};
-  const cmcBuckets = { '0-1':0, '2':0, '3':0, '4':0, '5':0, '6+':0 };
-  const creatureTypeFreq = {};
-  let totalCMC = 0, nonlandCount = 0, unresolvedCount = 0, tappedLandCount = 0;
+function cleanName(name){
 
-  deckEntries.forEach(e => {
-    totalCards += e.quantity;
-    if (!e.card) { unresolvedCount += e.quantity; return; }
-    const t = e.tags;
-    let matchedMain = false;
-    for (const key of ['land','creature','artifact','enchantment','instant','sorcery','planeswalker','battle']) {
-      if (t.has(key)) { typeCounts[key] += e.quantity; matchedMain = true; break; }
+  return String(name)
+    .replace(/\s+/g," ")
+    .replace(/\s*\*\s*(?:cmdr|commander)\s*\*?$/i,"")
+    .trim();
+
+}
+
+
+/* ================================================================
+   DECKLIST PARSER
+================================================================ */
+
+function parseDecklist(rawText){
+
+  const lines = rawText.split(/\r?\n/);
+
+  const mainCards = new Map();
+
+  const commanderNames = [];
+
+  let section = "main";
+
+  const inlineCommander =
+    /^\s*commander\s*:\s*(.+)$/i;
+
+  const commanderHeader =
+    /^\s*(commander|command\s*zone)s?\s*:?\s*$/i;
+
+  const mainHeader =
+    /^\s*(deck|decklist|mainboard|maindeck|library)\s*:?\s*$/i;
+
+  const ignoreHeader =
+    /^\s*(sideboard|maybeboard|considering|tokens?|cuts?)\s*:?\s*$/i;
+
+
+  for(const rawLine of lines){
+
+    let line = rawLine.trim();
+
+    if(!line){
+      continue;
     }
-    if (!matchedMain) typeCounts.other += e.quantity;
 
-    for (const role of Object.keys(roleCounts)) if (t.has(role)) { roleCounts[role] += e.quantity; themeFreq[role] = (themeFreq[role]||0) + e.quantity; }
-    if (t.has('land') && t.has('tapped')) tappedLandCount += e.quantity;
-    if (t.has('creature')) creatureTypesOf(e.card).forEach(ct => { creatureTypeFreq[ct] = (creatureTypeFreq[ct]||0) + e.quantity; });
-
-    if (!t.has('land') && typeof e.card.cmc === 'number') {
-      totalCMC += e.card.cmc * e.quantity;
-      nonlandCount += e.quantity;
-      const cmc = e.card.cmc;
-      const bucket = cmc <= 1 ? '0-1' : cmc >= 6 ? '6+' : String(Math.floor(cmc));
-      cmcBuckets[bucket] = (cmcBuckets[bucket]||0) + e.quantity;
+    if(line.startsWith("//") || line.startsWith("#")){
+      continue;
     }
-  });
 
-  const cmdrTags = commanderCard ? tagCard(commanderCard) : new Set();
-  const weighted = {};
-  for (const role of Object.keys(roleCounts)) {
-    let s = themeFreq[role] || 0;
-    if (cmdrTags.has(role)) s += 8;
-    weighted[role] = s;
+    if(/^SB:\s*/i.test(line)){
+      continue;
+    }
+
+
+    const inline = line.match(inlineCommander);
+
+    if(inline){
+
+      commanderNames.push(
+        cleanName(inline[1])
+      );
+
+      continue;
+    }
+
+
+    if(commanderHeader.test(line)){
+
+      section = "commander";
+
+      continue;
+    }
+
+
+    if(mainHeader.test(line)){
+
+      section = "main";
+
+      continue;
+    }
+
+
+    if(ignoreHeader.test(line)){
+
+      section = "ignore";
+
+      continue;
+    }
+
+
+    if(section === "ignore"){
+
+      continue;
+    }
+
+
+    let isCommanderLine = false;
+
+    let working = line;
+
+    if(/\*\s*cmdr\s*\*$/i.test(working)){
+
+      isCommanderLine = true;
+
+      working = working
+        .replace(/\*\s*cmdr\s*\*$/i,"")
+        .trim();
+
+    }
+
+
+    const parsed = parseCardLine(working);
+
+    if(!parsed){
+      continue;
+    }
+
+
+    if(section === "commander" || isCommanderLine){
+
+      for(let i=0;i<parsed.quantity;i++){
+
+        commanderNames.push(
+          parsed.name
+        );
+
+      }
+
+      continue;
+    }
+
+
+    const key = normalizeName(parsed.name);
+
+    if(mainCards.has(key)){
+
+      mainCards.get(key).quantity +=
+        parsed.quantity;
+
+    }else{
+
+      mainCards.set(
+        key,
+        {
+          name:parsed.name,
+          quantity:parsed.quantity
+        }
+      );
+
+    }
+
   }
-  let topTribe = null, topTribeCount = 0;
-  for (const [type, count] of Object.entries(creatureTypeFreq)) if (count > topTribeCount) { topTribe = type; topTribeCount = count; }
-  if (topTribe && topTribeCount >= 6) weighted.tribal = topTribeCount;
 
-  const sortedThemes = Object.entries(weighted).filter(([,s]) => s >= 5).sort((a,b)=>b[1]-a[1]).slice(0,4).map(([r])=>r);
-  const avgCMC = nonlandCount ? totalCMC / nonlandCount : 0;
 
   return {
-    deckColorIdentity: Array.from(deckColorIdentity), totalCards, typeCounts, roleCounts, sortedThemes,
-    cmcBuckets, avgCMC, nonlandCount, unresolvedCount, tappedLandCount, topTribe, topTribeCount
+
+    commanderNames:[
+      ...new Set(
+        commanderNames
+          .map(cleanName)
+          .filter(Boolean)
+      )
+    ],
+
+    mainCards:[
+      ...mainCards.values()
+    ]
+
   };
+
 }
 
-const THEME_LABELS = Object.assign({ tribal: 'Tribal' }, ROLE_LABELS);
 
-function computeScores(analysis) {
-  const manaScore = Math.round(0.55 * scoreFromCount(analysis.typeCounts.land, 36) + 0.45 * scoreFromCount(analysis.roleCounts.ramp, 10));
-  const drawScore = scoreFromCount(analysis.roleCounts.draw, 10);
-  const interactionRaw = analysis.roleCounts.removal + analysis.roleCounts.wipe * 1.5;
-  const interactionScore = scoreFromCount(interactionRaw, 10);
-  const synergyMatches = analysis.sortedThemes.reduce((sum, theme) => sum + (theme === 'tribal' ? analysis.topTribeCount : (analysis.roleCounts[theme]||0)), 0);
-  const synergyPct = analysis.nonlandCount ? synergyMatches / analysis.nonlandCount : 0;
-  const synergyScore = Math.max(0, Math.min(100, Math.round(synergyPct * 250)));
-  const winConScore = scoreFromCount(analysis.roleCounts.winCon, 3);
-  const consistencyRaw = analysis.roleCounts.tutor * 3 + analysis.roleCounts.draw + analysis.roleCounts.ramp * 0.5;
-  const consistencyScore = scoreFromCount(consistencyRaw, 16);
-  let curveScore = Math.max(0, 100 - Math.abs(analysis.avgCMC - 3) * 25);
-  const heavyPct = analysis.nonlandCount ? (analysis.cmcBuckets['6+'] || 0) / analysis.nonlandCount : 0;
-  if (heavyPct > 0.2) curveScore -= (heavyPct - 0.2) * 150;
-  curveScore = Math.max(0, Math.min(100, Math.round(curveScore)));
+/* ================================================================
+   CARD LINE PARSER
+================================================================ */
+
+function parseCardLine(line){
+
+  let text = line.trim();
+
+  if(!text){
+    return null;
+  }
+
+
+  if(/\t/.test(text)){
+
+    const columns =
+      text.split("\t");
+
+    if(
+      columns.length >= 2 &&
+      /^\d+$/.test(columns[0].trim())
+    ){
+
+      return {
+
+        quantity:
+          parseInt(columns[0].trim(),10),
+
+        name:
+          cleanName(columns[1])
+
+      };
+
+    }
+
+  }
+
+
+  /*
+    Remove Moxfield-style set information:
+
+    Sol Ring (C21) 263
+  */
+
+  text = text.replace(
+    /\s*\([A-Za-z0-9]{2,6}\)\s*[A-Za-z0-9\-★]+\s*$/,
+    ""
+  );
+
+
+  /*
+    "1 Sol Ring"
+  */
+
+  let match =
+    text.match(
+      /^\s*(\d+)\s*[xX]?\s+(.+?)\s*$/
+    );
+
+  if(match){
+
+    return {
+
+      quantity:
+        parseInt(match[1],10),
+
+      name:
+        cleanName(match[2])
+
+    };
+
+  }
+
+
+  /*
+    "Sol Ring x1"
+  */
+
+  match =
+    text.match(
+      /^(.+?)\s*[xX]\s*(\d+)\s*$/
+    );
+
+  if(match){
+
+    return {
+
+      quantity:
+        parseInt(match[2],10),
+
+      name:
+        cleanName(match[1])
+
+    };
+
+  }
+
+
+  /*
+    Plain card name = one copy.
+  */
+
+  return {
+
+    quantity:1,
+
+    name:cleanName(text)
+
+  };
+
+}
+
+
+/* ================================================================
+   SCRYFALL CACHE
+================================================================ */
+
+function cacheGet(name){
+
+  try{
+
+    const raw =
+      localStorage.getItem(
+        CACHE_PREFIX +
+        normalizeName(name)
+      );
+
+    if(!raw){
+      return null;
+    }
+
+    const parsed =
+      JSON.parse(raw);
+
+    if(
+      !parsed ||
+      !parsed.timestamp ||
+      Date.now() - parsed.timestamp >
+        CACHE_TTL_MS
+    ){
+
+      return null;
+
+    }
+
+    return parsed.card;
+
+  }catch{
+
+    return null;
+
+  }
+
+}
+
+
+function cacheSet(name,card){
+
+  try{
+
+    localStorage.setItem(
+
+      CACHE_PREFIX +
+      normalizeName(name),
+
+      JSON.stringify({
+
+        timestamp:Date.now(),
+
+        card
+
+      })
+
+    );
+
+  }catch{
+
+    /*
+      localStorage may be full or disabled.
+      The application still works without it.
+    */
+
+  }
+
+}
+
+
+/* ================================================================
+   SCRYFALL DATA
+================================================================ */
+
+async function fetchCollection(names){
+
+  const results = new Map();
+
+  const toFetch = [];
+
+
+  for(const name of names){
+
+    const cached =
+      cacheGet(name);
+
+    if(cached){
+
+      results.set(
+        normalizeName(name),
+        cached
+      );
+
+    }else{
+
+      toFetch.push(name);
+
+    }
+
+  }
+
+
+  let apiFailed = false;
+
+
+  /*
+    Scryfall Collection endpoint allows
+    up to 75 identifiers per request.
+  */
+
+  for(
+    let i=0;
+    i<toFetch.length;
+    i+=75
+  ){
+
+    const batch =
+      toFetch.slice(i,i+75);
+
+
+    try{
+
+      const response =
+        await fetch(
+          "https://api.scryfall.com/cards/collection",
+          {
+
+            method:"POST",
+
+            headers:{
+              "Content-Type":
+                "application/json"
+            },
+
+            body:JSON.stringify({
+
+              identifiers:
+                batch.map(name=>({
+                  name
+                }))
+
+            })
+
+          }
+        );
+
+
+      if(!response.ok){
+
+        throw new Error(
+          "Scryfall HTTP " +
+          response.status
+        );
+
+      }
+
+
+      const data =
+        await response.json();
+
+
+      for(const card of data.data || []){
+
+        results.set(
+          normalizeName(card.name),
+          card
+        );
+
+        cacheSet(
+          card.name,
+          card
+        );
+
+      }
+
+
+      /*
+        Fuzzy resolution is only attempted for
+        names Scryfall explicitly failed to match.
+      */
+
+      for(
+        const notFound of
+        data.not_found || []
+      ){
+
+        try{
+
+          const fuzzy =
+            await fetch(
+              "https://api.scryfall.com/cards/named?fuzzy=" +
+              encodeURIComponent(notFound.name)
+            );
+
+
+          if(fuzzy.ok){
+
+            const card =
+              await fuzzy.json();
+
+            results.set(
+              normalizeName(notFound.name),
+              card
+            );
+
+            cacheSet(
+              card.name,
+              card
+            );
+
+          }
+
+        }catch{
+
+          apiFailed = true;
+
+        }
+
+      }
+
+    }catch{
+
+      apiFailed = true;
+
+    }
+
+  }
+
+
+  return {
+    results,
+    apiFailed
+  };
+
+}
+
+
+/* ================================================================
+   CARD HELPERS
+================================================================ */
+
+function normalizedType(card){
+
+  if(!card){
+    return "";
+  }
+
+  if(card.type_line){
+    return card.type_line;
+  }
+
+  if(card.card_faces){
+
+    return card.card_faces
+      .map(face=>face.type_line || "")
+      .join(" // ");
+
+  }
+
+  return "";
+
+}
+
+
+function normalizedOracle(card){
+
+  if(!card){
+    return "";
+  }
+
+  if(card.oracle_text){
+    return card.oracle_text;
+  }
+
+  if(card.card_faces){
+
+    return card.card_faces
+      .map(face=>face.oracle_text || "")
+      .join("\n");
+
+  }
+
+  return "";
+
+}
+
+
+function cardPrice(card){
+
+  if(!card || !card.prices){
+    return 0;
+  }
+
+  const value =
+    parseFloat(
+      card.prices.usd
+    );
+
+  return Number.isFinite(value)
+    ? value
+    : 0;
+
+}
+
+
+function cardTcgLink(card){
+
+  return (
+    card &&
+    card.purchase_uris &&
+    card.purchase_uris.tcgplayer
+  ) || null;
+
+}
+
+
+function colorIdentityOf(card){
+
+  return Array.isArray(card?.color_identity)
+    ? card.color_identity
+    : [];
+
+}
+
+
+function isCommanderLegal(card){
+
+  return (
+    card &&
+    card.legalities &&
+    card.legalities.commander === "legal"
+  );
+
+}
+
+
+function isLand(card){
+
+  return /\bLand\b/.test(
+    normalizedType(card)
+  );
+
+}
+
+
+function isCreature(card){
+
+  return /\bCreature\b/.test(
+    normalizedType(card)
+  );
+
+}
+
+
+function creatureTypesOf(card){
+
+  const typeLine =
+    normalizedType(card);
+
+  const pieces =
+    typeLine.split("—");
+
+  if(pieces.length < 2){
+    return [];
+  }
+
+  return pieces[1]
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+
+}
+
+
+/* ================================================================
+   COLOR IDENTITY
+================================================================ */
+
+function isColorIdentitySubset(
+  cardColors,
+  commanderColors
+){
+
+  const allowed =
+    new Set(commanderColors);
+
+  return cardColors.every(
+    color =>
+      allowed.has(color)
+  );
+
+}
+
+
+/*
+  IMPORTANT:
+
+  Commander color identity is derived ONLY
+  from commander cards.
+
+  We never expand it from cards in the deck.
+*/
+
+function commanderColorIdentity(
+  commanderCards
+){
+
+  const identity =
+    new Set();
+
+  for(const commander of commanderCards){
+
+    for(
+      const color
+      of colorIdentityOf(commander)
+    ){
+
+      identity.add(color);
+
+    }
+
+  }
+
+  return [...identity].sort();
+
+}
+
+
+/* ================================================================
+   ROLE TAGGING
+================================================================ */
+
+function tagCard(card){
+
+  const tags =
+    new Set();
+
+  if(!card){
+    return tags;
+  }
+
+
+  const type =
+    normalizedType(card);
+
+  const oracle =
+    normalizedOracle(card);
+
+
+  if(/\bLand\b/.test(type)){
+    tags.add("land");
+  }
+
+  if(/\bCreature\b/.test(type)){
+    tags.add("creature");
+  }
+
+  if(/\bArtifact\b/.test(type)){
+    tags.add("artifact");
+  }
+
+  if(/\bEnchantment\b/.test(type)){
+    tags.add("enchantment");
+  }
+
+  if(/\bInstant\b/.test(type)){
+    tags.add("instant");
+  }
+
+  if(/\bSorcery\b/.test(type)){
+    tags.add("sorcery");
+  }
+
+  if(/\bPlaneswalker\b/.test(type)){
+    tags.add("planeswalker");
+  }
+
+  if(/\bBattle\b/.test(type)){
+    tags.add("battle");
+  }
+
+  if(/\bEquipment\b/.test(type)){
+    tags.add("equipment");
+  }
+
+
+  for(
+    const [role,patterns]
+    of Object.entries(TAG_RULES)
+  ){
+
+    if(
+      patterns.some(
+        regex =>
+          regex.test(oracle)
+      )
+    ){
+
+      tags.add(role);
+
+    }
+
+  }
+
+
+  /*
+    A high-power creature is only a weak
+    heuristic win-condition signal.
+
+    It is never treated as proof that the
+    card is actually a win condition.
+  */
+
+  if(
+    isCreature(card) &&
+    card.power !== undefined &&
+    Number(card.power) >= 6
+  ){
+
+    tags.add("winCon");
+
+  }
+
+
+  return tags;
+
+}
+
+
+/* ================================================================
+   DECK ANALYSIS
+================================================================ */
+
+function analyzeDeck(
+  commanderCards,
+  deckEntries
+){
+
+  /*
+    COMMANDER COLOR IDENTITY
+
+    This intentionally does NOT inspect deck cards.
+  */
+
+  const deckColorIdentity =
+    commanderColorIdentity(
+      commanderCards
+    );
+
+
+  let totalCards = 0;
+
+  let landCount = 0;
+
+  let creatureCount = 0;
+
+  let nonlandCount = 0;
+
+  let unresolvedCount = 0;
+
+  let totalCMC = 0;
+
+  let tappedLandCount = 0;
+
+
+  const typeCounts = {
+
+    land:0,
+    creature:0,
+    artifact:0,
+    enchantment:0,
+    instant:0,
+    sorcery:0,
+    planeswalker:0,
+    battle:0,
+    other:0
+
+  };
+
+
+  const roleCounts = {
+
+    ramp:0,
+    draw:0,
+    removal:0,
+    wipe:0,
+    protection:0,
+    tutor:0,
+    tokens:0,
+    sacrifice:0,
+    graveyard:0,
+    lifegain:0,
+    counters:0,
+    winCon:0,
+    food:0,
+    equipment:0
+
+  };
+
+
+  const manaCurve = {
+
+    "0-1":0,
+    "2":0,
+    "3":0,
+    "4":0,
+    "5":0,
+    "6+":0
+
+  };
+
+
+  const themeFrequency = {};
+
+  const creatureTypeFrequency = {};
+
+
+  for(const entry of deckEntries){
+
+    totalCards +=
+      entry.quantity;
+
+
+    if(!entry.card){
+
+      unresolvedCount +=
+        entry.quantity;
+
+      continue;
+
+    }
+
+
+    const tags =
+      entry.tags;
+
+
+    /*
+      Type counts
+    */
+
+    if(tags.has("land")){
+
+      landCount +=
+        entry.quantity;
+
+    }else{
+
+      nonlandCount +=
+        entry.quantity;
+
+      totalCMC +=
+        (Number(entry.card.cmc) || 0) *
+        entry.quantity;
+
+
+      const cmc =
+        Number(entry.card.cmc) || 0;
+
+
+      let bucket;
+
+      if(cmc <= 1){
+        bucket = "0-1";
+      }else if(cmc >= 6){
+        bucket = "6+";
+      }else{
+        bucket = String(
+          Math.floor(cmc)
+        );
+      }
+
+
+      manaCurve[bucket] +=
+        entry.quantity;
+
+    }
+
+
+    if(tags.has("creature")){
+
+      creatureCount +=
+        entry.quantity;
+
+      for(
+        const creatureType
+        of creatureTypesOf(entry.card)
+      ){
+
+        creatureTypeFrequency[
+          creatureType
+        ] =
+          (
+            creatureTypeFrequency[
+              creatureType
+            ] || 0
+          ) +
+          entry.quantity;
+
+      }
+
+    }
+
+
+    for(
+      const role
+      of Object.keys(roleCounts)
+    ){
+
+      if(tags.has(role)){
+
+        roleCounts[role] +=
+          entry.quantity;
+
+        themeFrequency[role] =
+          (
+            themeFrequency[role] || 0
+          ) +
+          entry.quantity;
+
+      }
+
+    }
+
+
+    if(
+      tags.has("land") &&
+      /enters the battlefield tapped/i.test(
+        normalizedOracle(entry.card)
+      )
+    ){
+
+      tappedLandCount +=
+        entry.quantity;
+
+    }
+
+  }
+
+
+  const avgCMC =
+    nonlandCount > 0
+      ? totalCMC / nonlandCount
+      : 0;
+
+
+  const sortedThemes =
+    Object.entries(themeFrequency)
+      .filter(
+        ([role,count]) =>
+          ROLE_LABELS[role] &&
+          count >= 3
+      )
+      .sort(
+        (a,b)=>b[1]-a[1]
+      )
+      .slice(0,4)
+      .map(
+        ([role])=>role
+      );
+
+
+  let topTribe = null;
+
+  let topTribeCount = 0;
+
+
+  for(
+    const [type,count]
+    of Object.entries(
+      creatureTypeFrequency
+    )
+  ){
+
+    if(count > topTribeCount){
+
+      topTribe = type;
+
+      topTribeCount =
+        count;
+
+    }
+
+  }
+
+
+  return {
+
+    deckColorIdentity,
+
+    totalCards,
+
+    landCount,
+
+    creatureCount,
+
+    nonlandCount,
+
+    unresolvedCount,
+
+    totalCMC,
+
+    avgCMC,
+
+    tappedLandCount,
+
+    typeCounts,
+
+    roleCounts,
+
+    manaCurve,
+
+    sortedThemes,
+
+    topTribe,
+
+    topTribeCount
+
+  };
+
+}
+
+
+/* ================================================================
+   SCORE SYSTEM
+================================================================ */
+
+function scoreFromCount(
+  count,
+  target
+){
+
+  if(target <= 0){
+    return 100;
+  }
+
+  return Math.max(
+    0,
+    Math.min(
+      100,
+      Math.round(
+        count / target * 100
+      )
+    )
+  );
+
+}
+
+
+function statusOf(score){
+
+  if(score >= 70){
+    return "good";
+  }
+
+  if(score >= 40){
+    return "ok";
+  }
+
+  return "bad";
+
+}
+
+
+function statusColor(status){
+
+  if(status === "good"){
+    return "var(--good)";
+  }
+
+  if(status === "ok"){
+    return "var(--ok)";
+  }
+
+  return "var(--bad)";
+
+}
+
+
+/*
+  These scores are deliberately called
+  HEURISTIC scores.
+
+  They are not rules-engine outputs.
+*/
+
+function computeScores(analysis){
+
+  const manaScore =
+    Math.round(
+      scoreFromCount(
+        analysis.landCount,
+        36
+      ) * .55 +
+
+      scoreFromCount(
+        analysis.roleCounts.ramp,
+        10
+      ) * .45
+    );
+
+
+  const drawScore =
+    scoreFromCount(
+      analysis.roleCounts.draw,
+      10
+    );
+
+
+  const interactionRaw =
+    analysis.roleCounts.removal +
+    analysis.roleCounts.wipe * 1.5;
+
+
+  const interactionScore =
+    scoreFromCount(
+      interactionRaw,
+      10
+    );
+
+
+  const synergyMatches =
+    analysis.sortedThemes.reduce(
+      (sum,theme)=>
+        sum +
+        (
+          analysis.roleCounts[theme] || 0
+        ),
+      0
+    );
+
+
+  const synergyScore =
+    analysis.nonlandCount > 0
+      ? Math.max(
+          0,
+          Math.min(
+            100,
+            Math.round(
+              synergyMatches /
+              analysis.nonlandCount *
+              250
+            )
+          )
+        )
+      : 0;
+
+
+  const winConScore =
+    scoreFromCount(
+      analysis.roleCounts.winCon,
+      3
+    );
+
+
+  const consistencyRaw =
+    analysis.roleCounts.tutor * 3 +
+    analysis.roleCounts.draw +
+    analysis.roleCounts.ramp * .5;
+
+
+  const consistencyScore =
+    scoreFromCount(
+      consistencyRaw,
+      16
+    );
+
+
+  let curveScore =
+    100 -
+    Math.abs(
+      analysis.avgCMC - 3
+    ) * 25;
+
+
+  const heavyPercentage =
+    analysis.nonlandCount > 0
+      ? (
+          analysis.manaCurve["6+"] ||
+          0
+        ) /
+        analysis.nonlandCount
+      : 0;
+
+
+  if(heavyPercentage > .20){
+
+    curveScore -=
+      (
+        heavyPercentage - .20
+      ) * 150;
+
+  }
+
+
+  curveScore =
+    Math.max(
+      0,
+      Math.min(
+        100,
+        Math.round(curveScore)
+      )
+    );
+
 
   const categories = {
-    mana: { label:'Mana Score', score: manaScore, detail: `${analysis.typeCounts.land} lands, ${analysis.roleCounts.ramp} ramp effects` },
-    draw: { label:'Card Advantage Score', score: drawScore, detail: `${analysis.roleCounts.draw} card draw effects` },
-    interaction: { label:'Interaction Score', score: interactionScore, detail: `${analysis.roleCounts.removal} removal, ${analysis.roleCounts.wipe} board wipes` },
-    synergy: { label:'Synergy Score', score: synergyScore, detail: `${synergyMatches} of ${analysis.nonlandCount} nonland cards support the detected strategy` },
-    winCon: { label:'Win Conditions Score', score: winConScore, detail: `${analysis.roleCounts.winCon} cards read as win conditions` },
-    consistency: { label:'Consistency Score', score: consistencyScore, detail: `${analysis.roleCounts.tutor} tutors, ${analysis.roleCounts.draw} draw effects` },
-    curve: { label:'Mana Curve Score', score: curveScore, detail: `avg. nonland mana value ${analysis.avgCMC.toFixed(2)}` },
+
+    mana:{
+      label:"Mana",
+      score:manaScore,
+      detail:
+        `${analysis.landCount} lands, ` +
+        `${analysis.roleCounts.ramp} ramp effects`
+    },
+
+    draw:{
+      label:"Card Advantage",
+      score:drawScore,
+      detail:
+        `${analysis.roleCounts.draw} ` +
+        `draw effects`
+    },
+
+    interaction:{
+      label:"Interaction",
+      score:interactionScore,
+      detail:
+        `${analysis.roleCounts.removal} removal, ` +
+        `${analysis.roleCounts.wipe} wipes`
+    },
+
+    synergy:{
+      label:"Synergy",
+      score:synergyScore,
+      detail:
+        `${synergyMatches} detected role matches`
+    },
+
+    winCon:{
+      label:"Win Conditions",
+      score:winConScore,
+      detail:
+        `${analysis.roleCounts.winCon} likely closers`
+    },
+
+    consistency:{
+      label:"Consistency",
+      score:consistencyScore,
+      detail:
+        `${analysis.roleCounts.tutor} tutors, ` +
+        `${analysis.roleCounts.draw} draw effects`
+    },
+
+    curve:{
+      label:"Mana Curve",
+      score:curveScore,
+      detail:
+        `Average nonland MV ` +
+        `${analysis.avgCMC.toFixed(2)}`
+    }
+
   };
-  const overall = Math.round(
-    categories.mana.score * 0.18 + categories.draw.score * 0.15 + categories.interaction.score * 0.15 +
-    categories.synergy.score * 0.20 + categories.winCon.score * 0.12 + categories.consistency.score * 0.10 +
-    categories.curve.score * 0.10
-  );
-  return { overall, categories, synergyMatches };
+
+
+  const overall =
+    Math.round(
+
+      categories.mana.score * .18 +
+
+      categories.draw.score * .15 +
+
+      categories.interaction.score * .15 +
+
+      categories.synergy.score * .20 +
+
+      categories.winCon.score * .12 +
+
+      categories.consistency.score * .10 +
+
+      categories.curve.score * .10
+
+    );
+
+
+  return {
+
+    overall,
+
+    categories,
+
+    synergyMatches
+
+  };
+
 }
 
-/* ---------------------------------------------------------------------
-   5b. RED FLAGS
-   --------------------------------------------------------------------- */
-function computeRedFlags(analysis) {
+
+/* ================================================================
+   HARD VALIDATION
+================================================================ */
+
+function validateDeck(
+  commanderCards,
+  commanderNames,
+  deckEntries
+){
+
+  const errors = [];
+
+  const warnings = [];
+
+
+  /*
+    Commander count
+  */
+
+  if(commanderCards.length === 0){
+
+    errors.push(
+      "No commander was successfully resolved."
+    );
+
+  }
+
+
+  if(commanderCards.length > 2){
+
+    errors.push(
+      "More than two commanders were supplied. " +
+      "The Coach will not assume a legal command zone."
+    );
+
+  }
+
+
+  /*
+    Commander legality
+  */
+
+  for(const commander of commanderCards){
+
+    if(!isCommanderLegal(commander)){
+
+      errors.push(
+        `${commander.name} is not currently marked ` +
+        `Commander-legal by Scryfall.`
+      );
+
+    }
+
+  }
+
+
+  /*
+    Exactly 100 cards INCLUDING commander(s)
+  */
+
+  const mainCount =
+    deckEntries.reduce(
+      (sum,entry)=>
+        sum + entry.quantity,
+      0
+    );
+
+
+  const totalCount =
+    mainCount +
+    commanderCards.length;
+
+
+  if(totalCount !== 100){
+
+    errors.push(
+      `Deck contains ${totalCount} total cards. ` +
+      `Commander requires exactly 100 cards including commander(s).`
+    );
+
+  }
+
+
+  /*
+    Commander color identity
+  */
+
+  const commanderColors =
+    commanderColorIdentity(
+      commanderCards
+    );
+
+  const commanderColorSet =
+    new Set(
+      commanderColors
+    );
+
+
+  /*
+    Commander legality + color identity
+  */
+
+  for(const entry of deckEntries){
+
+    if(!entry.card){
+
+      continue;
+
+    }
+
+
+    if(!isCommanderLegal(entry.card)){
+
+      errors.push(
+        `${entry.name} is not currently marked ` +
+        `Commander-legal by Scryfall.`
+      );
+
+    }
+
+
+    if(
+      !isColorIdentitySubset(
+        colorIdentityOf(entry.card),
+        commanderColors
+      )
+    ){
+
+      errors.push(
+        `${entry.name} is outside the commander's ` +
+        `color identity (${commanderColors.join("") || "Colorless"}).`
+      );
+
+    }
+
+  }
+
+
+  /*
+    Singleton rule.
+
+    This checks the ACTUAL accumulated quantity.
+
+    It does not just check whether a name occurs once
+    in the Map.
+  */
+
+  for(const entry of deckEntries){
+
+    if(entry.quantity <= 1){
+
+      continue;
+
+    }
+
+
+    if(
+      cardAllowsMultipleCopies(
+        entry.card
+      )
+    ){
+
+      continue;
+
+    }
+
+
+    errors.push(
+      `${entry.name} appears ${entry.quantity} times. ` +
+      `Commander is singleton for this card.`
+    );
+
+  }
+
+
+  /*
+    Unresolved cards are warnings rather than silently
+    being considered legal.
+  */
+
+  for(const entry of deckEntries){
+
+    if(!entry.card){
+
+      warnings.push(
+        `${entry.name} could not be resolved by Scryfall.`
+      );
+
+    }
+
+  }
+
+
+  /*
+    If a commander name was supplied but couldn't be
+    resolved, make that explicit.
+  */
+
+  for(const name of commanderNames){
+
+    if(
+      !commanderCards.some(
+        card =>
+          normalizeName(card.name) ===
+          normalizeName(name)
+      )
+    ){
+
+      errors.push(
+        `Commander "${name}" could not be resolved.`
+      );
+
+    }
+
+  }
+
+
+  return {
+
+    errors,
+
+    warnings,
+
+    isValid:
+      errors.length === 0,
+
+    totalCount,
+
+    mainCount,
+
+    commanderColors
+
+  };
+
+}
+
+
+/* ================================================================
+   RED FLAGS
+================================================================ */
+
+function computeRedFlags(
+  analysis,
+  validation
+){
+
   const flags = [];
-  if (analysis.typeCounts.land < 34) flags.push(`Only ${analysis.typeCounts.land} lands — most 99-card decks want 34–38.`);
-  if (analysis.typeCounts.land > 42) flags.push(`${analysis.typeCounts.land} lands is on the high side — you may be flooding out.`);
-  if (analysis.roleCounts.ramp < 8) flags.push(`Only ${analysis.roleCounts.ramp} ramp effects — that's thin for hitting your curve on time.`);
-  if (analysis.roleCounts.draw < 8) flags.push(`Only ${analysis.roleCounts.draw} card draw effects — you're likely to run out of gas.`);
-  const interaction = analysis.roleCounts.removal + analysis.roleCounts.wipe;
-  if (interaction < 6) flags.push(`Only ${interaction} total interaction pieces (removal + wipes) — opponents' threats may go unanswered.`);
-  if (analysis.roleCounts.wipe === 0) flags.push(`Zero board wipes — no way to reset if you fall behind on board.`);
-  const heavyPct = analysis.nonlandCount ? (analysis.cmcBuckets['6+']||0) / analysis.nonlandCount : 0;
-  if (heavyPct > 0.22) flags.push(`${Math.round(heavyPct*100)}% of your nonland cards cost 6+ mana — your curve is top-heavy.`);
-  if (analysis.tappedLandCount > 10) flags.push(`${analysis.tappedLandCount} of your lands enter tapped — that can cost you tempo repeatedly.`);
-  if (analysis.roleCounts.winCon < 2) flags.push(`Only ${analysis.roleCounts.winCon} cards read as clear win conditions — you may struggle to close games.`);
-  if (analysis.nonlandCount) {
-    const synergyPct = (analysis.sortedThemes.reduce((s,t)=> s + (t==='tribal'? analysis.topTribeCount : (analysis.roleCounts[t]||0)),0)) / analysis.nonlandCount;
-    if (synergyPct < 0.25) flags.push(`Fewer than 25% of your nonland cards clearly support the deck's detected strategy — a lot of slots are "just okay" instead of on-plan.`);
+
+
+  if(validation.errors.length){
+
+    flags.push(
+      `${validation.errors.length} hard deck-construction ` +
+      `issue(s) need attention before treating the deck as legal.`
+    );
+
   }
+
+
+  if(
+    analysis.landCount < 34
+  ){
+
+    flags.push(
+      `Only ${analysis.landCount} lands detected.`
+    );
+
+  }
+
+
+  if(
+    analysis.landCount > 42
+  ){
+
+    flags.push(
+      `${analysis.landCount} lands detected. ` +
+      `That is unusually land-heavy for many Commander decks.`
+    );
+
+  }
+
+
+  if(
+    analysis.roleCounts.ramp < 8
+  ){
+
+    flags.push(
+      `Only ${analysis.roleCounts.ramp} ramp effects detected.`
+    );
+
+  }
+
+
+  if(
+    analysis.roleCounts.draw < 8
+  ){
+
+    flags.push(
+      `Only ${analysis.roleCounts.draw} card-draw effects detected.`
+    );
+
+  }
+
+
+  const interaction =
+    analysis.roleCounts.removal +
+    analysis.roleCounts.wipe;
+
+
+  if(interaction < 6){
+
+    flags.push(
+      `Only ${interaction} interaction effects detected.`
+    );
+
+  }
+
+
+  if(
+    analysis.roleCounts.winCon < 2
+  ){
+
+    flags.push(
+      `Only ${analysis.roleCounts.winCon} likely ` +
+      `win-condition cards detected.`
+    );
+
+  }
+
+
+  const heavyPercentage =
+    analysis.nonlandCount > 0
+      ? (
+          analysis.manaCurve["6+"] ||
+          0
+        ) /
+        analysis.nonlandCount
+      : 0;
+
+
+  if(
+    heavyPercentage > .22
+  ){
+
+    flags.push(
+      `${Math.round(
+        heavyPercentage * 100
+      )}% of nonlands cost 6+ mana.`
+    );
+
+  }
+
+
+  if(
+    analysis.tappedLandCount > 10
+  ){
+
+    flags.push(
+      `${analysis.tappedLandCount} lands appear to ` +
+      `enter tapped.`
+    );
+
+  }
+
+
+  if(
+    analysis.unresolvedCount > 0
+  ){
+
+    flags.push(
+      `${analysis.unresolvedCount} card copies ` +
+      `could not be resolved and are excluded ` +
+      `from card-role scoring.`
+    );
+
+  }
+
+
   return flags;
+
 }
 
-/* ---------------------------------------------------------------------
-   6. PER-CARD SYNERGY SCORING + EXPLANATIONS
-   --------------------------------------------------------------------- */
-function cardSynergyScore(entry, analysis, edhrecMap) {
-  let score = 50;
-  const tagMatches = [];
-  for (const role of Object.keys(analysis.roleCounts)) if (entry.tags.has(role)) tagMatches.push(role);
-  for (const theme of analysis.sortedThemes) {
-    if (theme === 'tribal') {
-      if (entry.card && creatureTypesOf(entry.card).includes(analysis.topTribe)) tagMatches.push('tribal:' + analysis.topTribe);
-    } else if (entry.tags.has(theme) && !tagMatches.includes(theme)) tagMatches.push(theme);
-  }
-  score += Math.min(tagMatches.length, 3) * 14;
 
-  const oracle = normalizedOracle(entry.card);
-  const isVanilla = entry.tags.has('creature') && oracle.trim().length === 0;
-  if (isVanilla) score -= 22;
-  const cmc = typeof entry.card.cmc === 'number' ? entry.card.cmc : 0;
-  if (cmc >= 6 && tagMatches.length === 0) score -= 18;
-  if (cmc <= 2 && tagMatches.length > 0) score += 6;
+/* ================================================================
+   EDHREC
+================================================================ */
+
+function slugifyCommanderName(name){
+
+  return normalizeName(name)
+    .replace(/[^a-z0-9\s-]/g,"")
+    .trim()
+    .replace(/\s+/g,"-");
+
+}
+
+
+async function fetchEdhrecData(
+  commanderName
+){
+
+  if(!commanderName){
+    return null;
+  }
+
+
+  const slug =
+    slugifyCommanderName(
+      commanderName
+    );
+
+
+  if(!slug){
+    return null;
+  }
+
+
+  try{
+
+    const response =
+      await fetch(
+        "https://json.edhrec.com/pages/commanders/" +
+        slug +
+        ".json"
+      );
+
+
+    if(!response.ok){
+      return null;
+    }
+
+
+    const data =
+      await response.json();
+
+
+    const map =
+      new Map();
+
+
+    const lists =
+      data &&
+      data.container &&
+      data.container.json_dict &&
+      data.container.json_dict.cardlists;
+
+
+    if(!Array.isArray(lists)){
+      return null;
+    }
+
+
+    for(const list of lists){
+
+      for(
+        const view
+        of list.cardviews || []
+      ){
+
+        if(!view || !view.name){
+          continue;
+        }
+
+
+        let inclusion = null;
+
+
+        if(
+          Number.isFinite(
+            view.num_decks
+          ) &&
+          Number.isFinite(
+            view.potential_decks
+          ) &&
+          view.potential_decks > 0
+        ){
+
+          inclusion =
+            view.num_decks /
+            view.potential_decks;
+
+        }else if(
+          Number.isFinite(
+            view.inclusion
+          )
+        ){
+
+          inclusion =
+            view.inclusion > 1
+              ? view.inclusion / 100
+              : view.inclusion;
+
+        }
+
+
+        const synergy =
+          Number.isFinite(view.synergy)
+            ? view.synergy
+            : null;
+
+
+        map.set(
+
+          normalizeName(view.name),
+
+          {
+            inclusion,
+            synergy
+          }
+
+        );
+
+      }
+
+    }
+
+
+    return map.size
+      ? map
+      : null;
+
+  }catch{
+
+    return null;
+
+  }
+
+}
+
+
+/* ================================================================
+   PER-CARD SYNERGY
+================================================================ */
+
+function cardSynergyScore(
+  entry,
+  analysis,
+  edhrecMap
+){
+
+  if(!entry.card){
+
+    return {
+      score:0,
+      tagMatches:[],
+      edh:null
+    };
+
+  }
+
+
+  let score = 50;
+
+  const tagMatches = [];
+
+
+  for(
+    const role
+    of Object.keys(
+      analysis.roleCounts
+    )
+  ){
+
+    if(
+      entry.tags.has(role)
+    ){
+
+      tagMatches.push(role);
+
+    }
+
+  }
+
+
+  for(
+    const theme
+    of analysis.sortedThemes
+  ){
+
+    if(
+      entry.tags.has(theme) &&
+      !tagMatches.includes(theme)
+    ){
+
+      tagMatches.push(theme);
+
+    }
+
+  }
+
+
+  score +=
+    Math.min(
+      tagMatches.length,
+      3
+    ) * 14;
+
+
+  const oracle =
+    normalizedOracle(
+      entry.card
+    );
+
+
+  const isVanilla =
+    entry.tags.has("creature") &&
+    oracle.trim().length === 0;
+
+
+  if(isVanilla){
+
+    score -= 22;
+
+  }
+
+
+  const cmc =
+    Number(entry.card.cmc) || 0;
+
+
+  if(
+    cmc >= 6 &&
+    tagMatches.length === 0
+  ){
+
+    score -= 18;
+
+  }
+
+
+  if(
+    cmc <= 2 &&
+    tagMatches.length > 0
+  ){
+
+    score += 6;
+
+  }
+
 
   let edh = null;
-  if (edhrecMap) edh = edhrecMap.get(entry.name.toLowerCase()) || null;
-  if (edh) {
-    if (typeof edh.synergy === 'number') score += edh.synergy * 100 * 0.3;
-    if (typeof edh.inclusion === 'number') score += edh.inclusion * 100 * 0.15;
+
+
+  if(edhrecMap){
+
+    edh =
+      edhrecMap.get(
+        normalizeName(entry.name)
+      ) || null;
+
   }
-  score = Math.max(0, Math.min(100, Math.round(score)));
-  return { score, tagMatches, isVanilla, cmc, edh };
+
+
+  if(edh){
+
+    if(
+      typeof edh.synergy === "number"
+    ){
+
+      score +=
+        edh.synergy *
+        100 *
+        .30;
+
+    }
+
+
+    if(
+      typeof edh.inclusion === "number"
+    ){
+
+      score +=
+        edh.inclusion *
+        100 *
+        .15;
+
+    }
+
+  }
+
+
+  score =
+    Math.max(
+      0,
+      Math.min(
+        100,
+        Math.round(score)
+      )
+    );
+
+
+  return {
+
+    score,
+
+    tagMatches,
+
+    isVanilla,
+
+    cmc,
+
+    edh
+
+  };
+
 }
 
-function generateCardExplanation(entry, info, analysis, commanderName) {
-  const name = entry.name;
-  const themeLabel = analysis.sortedThemes.length ? (THEME_LABELS[analysis.sortedThemes[0]] || analysis.sortedThemes[0]) : 'your deck\'s plan';
+
+/* ================================================================
+   CARD EXPLANATION
+================================================================ */
+
+function generateCardExplanation(
+  entry,
+  info,
+  analysis
+){
+
+  const theme =
+    analysis.sortedThemes.length
+      ? (
+          ROLE_LABELS[
+            analysis.sortedThemes[0]
+          ] ||
+          analysis.sortedThemes[0]
+        )
+      : "your deck's plan";
+
+
   const parts = [];
 
-  if (info.isVanilla) {
-    parts.push(`${name} costs ${info.cmc} mana and has no rules text at all`);
-    parts.push(`in a deck built around ${themeLabel.toLowerCase()}, a card that just attacks and blocks isn't pulling its weight`);
-  } else if (info.tagMatches.length === 0) {
-    parts.push(`${name} doesn't ramp, draw, remove, protect, or otherwise connect to ${themeLabel.toLowerCase()}`);
-    if (info.cmc >= 5) parts.push(`and at ${info.cmc} mana it's an expensive slot to spend on something that isn't pulling double duty`);
-  } else if (info.cmc >= 6 && info.tagMatches.length <= 1) {
-    parts.push(`${name} only loosely supports ${themeLabel.toLowerCase()} for a card that costs ${info.cmc} mana`);
-    parts.push(`that's a slow, narrow rate compared to what else is available at this budget`);
-  } else {
-    parts.push(`${name} contributes to your strategy, but only in a limited way relative to stronger options at a similar cost`);
-  }
 
-  if (info.edh && typeof info.edh.inclusion === 'number' && commanderName) {
-    const pct = Math.round(info.edh.inclusion * 100);
-    if (pct < 15) parts.push(`EDHREC shows it in only about ${pct}% of ${commanderName} decks, which lines up with it being a weak fit here`);
-  }
+  if(info.isVanilla){
 
-  return parts.join('; ') + '.';
-}
+    parts.push(
+      `${entry.name} has no rules text`
+    );
 
-/* ---------------------------------------------------------------------
-   7. RECOMMENDATIONS (role-aware, EDHREC-weighted, budget-aware)
-   --------------------------------------------------------------------- */
-function candidateScore(cand, analysis, edhrecMap, deficientRoleSet) {
-  let score = 0;
-  const roles = cand.roles || [];
-  roles.forEach(r => { if (deficientRoleSet.has(r)) score += 40; });
-  analysis.sortedThemes.forEach(t => { if (roles.includes(t)) score += 20; });
-  const edh = edhrecMap ? edhrecMap.get(cand.n.toLowerCase()) : null;
-  if (edh) {
-    if (typeof edh.synergy === 'number') score += edh.synergy * 100 * 0.35;
-    if (typeof edh.inclusion === 'number') score += edh.inclusion * 100 * 0.2;
-  }
-  return score;
-}
+    parts.push(
+      `so it provides little functional value ` +
+      `to a strategy-focused Commander deck`
+    );
 
-function priorityFromRoleScore(roleScore) {
-  if (roleScore < 20) return { rank:1, label:'Critical' };
-  if (roleScore < 40) return { rank:2, label:'High Priority' };
-  if (roleScore < 70) return { rank:3, label:'High Priority' };
-  return { rank:4, label:'Good Upgrade' };
-}
+  }else if(
+    info.tagMatches.length === 0
+  ){
 
-async function buildRecommendations(analysis, deckNameSet, budget, edhrecMap) {
-  const candNames = CANDIDATES.map(c => c.n);
-  const { results: candData } = await fetchCollection(candNames);
+    parts.push(
+      `${entry.name} did not match the Coach's ` +
+      `detected ${theme.toLowerCase()} roles`
+    );
 
-  const usable = CANDIDATES
-    .map(c => ({ ...c, card: candData.get(c.n.toLowerCase()) }))
-    .filter(c => c.card)
-    .filter(c => isSubsetColors(colorIdentityOf(c.card), analysis.deckColorIdentity))
-    .filter(c => !deckNameSet.has(c.n.toLowerCase()))
-    .filter(c => budget === 0 || cardPrice(c.card) <= budget || cardPrice(c.card) === 0);
+    if(info.cmc >= 5){
 
-  const roleTargets = { ramp:10, draw:10, removal:8, wipe:2, protection:4, tutor:4 };
-  const deficient = Object.entries(roleTargets)
-    .map(([role, target]) => ({ role, count: analysis.roleCounts[role], score: scoreFromCount(analysis.roleCounts[role], target) }))
-    .filter(r => r.score < 70)
-    .sort((a,b) => a.score - b.score);
-  const deficientRoleSet = new Set(deficient.map(d => d.role));
+      parts.push(
+        `and its ${info.cmc} mana value makes the ` +
+        `slot especially expensive`
+      );
 
-  const adds = [];
-  const used = new Set();
-  function pushAdds(pool, limit, label, roleScoreForPriority, reasonFn, verbKey) {
-    let picked = 0;
-    const ranked = pool
-      .map(c => ({ c, score: candidateScore(c, analysis, edhrecMap, deficientRoleSet) }))
-      .sort((a,b) => b.score - a.score || cardPrice(a.c.card) - cardPrice(b.c.card));
-    for (const { c: cand } of ranked) {
-      if (picked >= limit) break;
-      if (used.has(cand.n.toLowerCase())) continue;
-      used.add(cand.n.toLowerCase());
-      const edh = edhrecMap ? edhrecMap.get(cand.n.toLowerCase()) : null;
-      const priority = priorityFromRoleScore(roleScoreForPriority);
-      adds.push({
-        name: cand.n, price: cardPrice(cand.card), tcgUrl: cardTcgLink(cand.card), roleLabel: label,
-        why: reasonFn(cand), doesVerb: ROLE_VERB[verbKey] || 'strengthens your deck', priority, edh,
-        cmc: typeof cand.card.cmc === 'number' ? cand.card.cmc : 0, roles: cand.roles || []
-      });
-      picked++;
     }
+
+  }else if(
+    info.cmc >= 6 &&
+    info.tagMatches.length <= 1
+  ){
+
+    parts.push(
+      `${entry.name} only has limited detected ` +
+      `support for the deck's plan`
+    );
+
+    parts.push(
+      `while costing ${info.cmc} mana`
+    );
+
+  }else{
+
+    parts.push(
+      `${entry.name} contributes to the deck, ` +
+      `but the Coach sees stronger opportunities ` +
+      `for this slot`
+    );
+
   }
 
-  deficient.forEach(def => {
-    const pool = usable.filter(c => (c.roles||[]).includes(def.role));
-    pushAdds(pool, def.score < 40 ? 3 : 2, ROLE_LABELS[def.role], def.score,
-      cand => {
-        let s = `Your deck currently has only ${def.count} ${ROLE_LABELS[def.role].toLowerCase()} effect(s). ${cand.n} strengthens that category directly.`;
-        const edh = edhrecMap ? edhrecMap.get(cand.n.toLowerCase()) : null;
-        if (edh && typeof edh.synergy === 'number' && edh.synergy > 0.05) s += ` EDHREC also flags it as an above-average synergy pick for this commander.`;
-        return s;
-      }, def.role);
-  });
 
-  analysis.sortedThemes.forEach(theme => {
-    if (theme === 'tribal') return; // no curated tribal-specific pool
-    const pool = usable.filter(c => (c.roles||[]).includes(theme));
-    pushAdds(pool, 2, ROLE_LABELS[theme] || theme, 75,
-      cand => {
-        let s = `Your deck is already leaning on ${(ROLE_LABELS[theme]||theme).toLowerCase()}. ${cand.n} pushes that same plan further instead of being a generic "good card."`;
-        const edh = edhrecMap ? edhrecMap.get(cand.n.toLowerCase()) : null;
-        if (edh && typeof edh.inclusion === 'number' && edh.inclusion > 0.3) s += ` It appears in roughly ${Math.round(edh.inclusion*100)}% of decks EDHREC tracks for this commander.`;
-        return s;
-      }, theme);
-  });
+  return (
+    parts.join("; ") +
+    "."
+  );
 
-  return adds;
 }
 
-function buildCuts(deckEntries, analysis, adds, edhrecMap, commanderName) {
-  const STAPLE_GUARD = new Set(['sol ring','arcane signet','command tower','swords to plowshares','path to exile']);
-  const scored = deckEntries
-    .filter(e => e.card && !e.tags.has('land'))
-    .filter(e => !STAPLE_GUARD.has(e.name.toLowerCase()))
-    .map(e => ({ entry: e, info: cardSynergyScore(e, analysis, edhrecMap) }))
-    .sort((a,b) => a.info.score - b.info.score);
 
-  const weakest = scored.filter(s => s.info.score < 55).slice(0, Math.max(8, adds.length || 8));
+/* ================================================================
+   RECOMMENDATION PRIORITY
+================================================================ */
 
-  const remainingAdds = adds.slice();
-  function pickMatch(entry) {
-    const cutRoles = Array.from(entry.tags);
-    let idx = remainingAdds.findIndex(a => (a.roles||[]).some(r => cutRoles.includes(r)));
-    if (idx === -1) idx = remainingAdds.length ? 0 : -1;
-    if (idx === -1) return null;
-    return remainingAdds.splice(idx, 1)[0];
-  }
+function priorityFromScore(
+  score
+){
 
-  const cuts = weakest.map(({ entry, info }) => {
-    const pairedAdd = pickMatch(entry);
+  if(score < 40){
+
     return {
-      name: entry.name, quantity: entry.quantity, entry, info,
-      synergyScore: info.score,
-      why: generateCardExplanation(entry, info, analysis, commanderName),
-      pairedAdd, price: cardPrice(entry.card), tcgUrl: cardTcgLink(entry.card)
+      rank:1,
+      label:"Critical"
     };
-  });
-  return cuts;
+
+  }
+
+
+  if(score < 70){
+
+    return {
+      rank:2,
+      label:"High Priority"
+    };
+
+  }
+
+
+  return {
+    rank:3,
+    label:"Good Upgrade"
+  };
+
 }
 
-/* ---------------------------------------------------------------------
-   7b. PROJECTED SCORE — simulate applying every paired cut/add swap.
-   --------------------------------------------------------------------- */
-function computeProjectedScore(analysis, currentScores, cuts) {
-  const roleCounts = Object.assign({}, analysis.roleCounts);
-  const cmcBuckets = Object.assign({}, analysis.cmcBuckets);
-  let totalCMC = analysis.avgCMC * analysis.nonlandCount;
-  let nonlandCount = analysis.nonlandCount;
-  const changedRoles = new Set();
 
-  cuts.forEach(c => {
-    if (!c.pairedAdd) return;
-    const entry = c.entry;
-    entry.tags.forEach(tag => { if (roleCounts.hasOwnProperty(tag)) { roleCounts[tag] = Math.max(0, roleCounts[tag] - entry.quantity); changedRoles.add(tag); } });
-    if (typeof entry.card.cmc === 'number') {
-      totalCMC -= entry.card.cmc * entry.quantity;
-      nonlandCount -= entry.quantity;
-      const b = entry.card.cmc <= 1 ? '0-1' : entry.card.cmc >= 6 ? '6+' : String(Math.floor(entry.card.cmc));
-      cmcBuckets[b] = Math.max(0, (cmcBuckets[b]||0) - entry.quantity);
+/* ================================================================
+   RECOMMENDATION SCORING
+================================================================ */
+
+function candidateScore(
+  candidate,
+  analysis,
+  edh
+){
+
+  let score = 0;
+
+
+  const roleTargets = {
+
+    ramp:10,
+    draw:10,
+    removal:8,
+    wipe:2,
+    protection:4,
+    tutor:4
+
+  };
+
+
+  for(
+    const role
+    of candidate.roles
+  ){
+
+    const target =
+      roleTargets[role];
+
+
+    if(
+      target &&
+      analysis.roleCounts[role] < target
+    ){
+
+      score += 40;
+
     }
-    (c.pairedAdd.roles||[]).forEach(r => { if (roleCounts.hasOwnProperty(r)) { roleCounts[r] += 1; changedRoles.add(r); } });
-    totalCMC += c.pairedAdd.cmc || 0;
-    nonlandCount += 1;
-    const b2 = (c.pairedAdd.cmc||0) <= 1 ? '0-1' : (c.pairedAdd.cmc||0) >= 6 ? '6+' : String(Math.floor(c.pairedAdd.cmc||0));
-    cmcBuckets[b2] = (cmcBuckets[b2]||0) + 1;
-  });
 
-  const projectedAnalysis = Object.assign({}, analysis, {
-    roleCounts, cmcBuckets, nonlandCount,
-    avgCMC: nonlandCount ? totalCMC / nonlandCount : 0
-  });
-  const projectedScores = computeScores(projectedAnalysis);
+  }
+
+
+  for(
+    const theme
+    of analysis.sortedThemes
+  ){
+
+    if(
+      candidate.roles.includes(theme)
+    ){
+
+      score += 20;
+
+    }
+
+  }
+
+
+  if(edh){
+
+    if(
+      typeof edh.synergy === "number"
+    ){
+
+      score +=
+        edh.synergy *
+        100 *
+        .35;
+
+    }
+
+
+    if(
+      typeof edh.inclusion === "number"
+    ){
+
+      score +=
+        edh.inclusion *
+        100 *
+        .20;
+
+    }
+
+  }
+
+
+  return score;
+
+}
+
+
+/* ================================================================
+   RECOMMENDATIONS
+================================================================ */
+
+async function buildRecommendations(
+  analysis,
+  deckNameSet,
+  edhrecMap
+){
+
+  const candidateNames =
+    CANDIDATES.map(
+      candidate =>
+        candidate.name
+    );
+
+
+  const {
+    results:candidateData
+  } =
+    await fetchCollection(
+      candidateNames
+    );
+
+
+  const commanderColors =
+    new Set(
+      analysis.deckColorIdentity
+    );
+
+
+  /*
+    HARD FILTERS FIRST.
+
+    A recommendation cannot enter the ranking
+    unless it passes all of these.
+  */
+
+  const usable =
+    CANDIDATES
+
+      .map(candidate => ({
+
+        ...candidate,
+
+        card:
+          candidateData.get(
+            normalizeName(
+              candidate.name
+            )
+          )
+
+      }))
+
+      .filter(
+        candidate =>
+          !!candidate.card
+      )
+
+      .filter(
+        candidate =>
+          isCommanderLegal(
+            candidate.card
+          )
+      )
+
+      .filter(
+        candidate =>
+          isColorIdentitySubset(
+            colorIdentityOf(
+              candidate.card
+            ),
+            analysis.deckColorIdentity
+          )
+      )
+
+      .filter(
+        candidate =>
+          !deckNameSet.has(
+            normalizeName(
+              candidate.name
+            )
+          )
+      );
+
+
+  const ranked =
+    usable
+      .map(candidate => {
+
+        const edh =
+          edhrecMap
+            ? edhrecMap.get(
+                normalizeName(
+                  candidate.name
+                )
+              ) || null
+            : null;
+
+
+        return {
+
+          ...candidate,
+
+          edh,
+
+          score:
+            candidateScore(
+              candidate,
+              analysis,
+              edh
+            )
+
+        };
+
+      })
+
+      .sort(
+        (a,b)=>
+          b.score - a.score ||
+          cardPrice(a.card) -
+          cardPrice(b.card)
+      );
+
+
+  /*
+    Determine actual deficiencies.
+  */
+
+  const targets = {
+
+    ramp:10,
+    draw:10,
+    removal:8,
+    wipe:2,
+    protection:4,
+    tutor:4
+
+  };
+
+
+  const deficiencies =
+    Object.entries(targets)
+
+      .map(
+        ([role,target]) => ({
+
+          role,
+
+          count:
+            analysis.roleCounts[role],
+
+          score:
+            scoreFromCount(
+              analysis.roleCounts[role],
+              target
+            )
+
+        })
+      )
+
+      .filter(
+        item =>
+          item.score < 70
+      )
+
+      .sort(
+        (a,b)=>
+          a.score - b.score
+      );
+
+
+  const recommendations = [];
+
+  const used = new Set();
+
+
+  /*
+    First priority:
+    fix actual structural weaknesses.
+  */
+
+  for(
+    const deficiency
+    of deficiencies
+  ){
+
+    const candidates =
+      ranked.filter(
+        candidate =>
+          candidate.roles.includes(
+            deficiency.role
+          )
+      );
+
+
+    for(
+      const candidate
+      of candidates
+    ){
+
+      const key =
+        normalizeName(
+          candidate.name
+        );
+
+
+      if(used.has(key)){
+        continue;
+      }
+
+
+      used.add(key);
+
+
+      recommendations.push({
+
+        name:
+          candidate.name,
+
+        card:
+          candidate.card,
+
+        roles:
+          candidate.roles,
+
+        price:
+          cardPrice(
+            candidate.card
+          ),
+
+        tcgUrl:
+          cardTcgLink(
+            candidate.card
+          ),
+
+        edh:
+          candidate.edh,
+
+        score:
+          candidate.score,
+
+        priority:
+          priorityFromScore(
+            deficiency.score
+          ),
+
+        role:
+          deficiency.role,
+
+        reason:
+          `Your deck currently has ` +
+          `${deficiency.count} ` +
+          `${ROLE_LABELS[
+            deficiency.role
+          ].toLowerCase()} effects. ` +
+          `${candidate.name} directly improves ` +
+          `that weak category.`
+
+      });
+
+
+      if(
+        recommendations.length >= 12
+      ){
+
+        break;
+
+      }
+
+    }
+
+
+    if(
+      recommendations.length >= 12
+    ){
+
+      break;
+
+    }
+
+  }
+
+
+  /*
+    Second priority:
+    reinforce the deck's detected strategy.
+  */
+
+  if(
+    recommendations.length < 16
+  ){
+
+    for(
+      const candidate
+      of ranked
+    ){
+
+      if(
+        recommendations.length >= 16
+      ){
+
+        break;
+
+      }
+
+
+      const key =
+        normalizeName(
+          candidate.name
+        );
+
+
+      if(used.has(key)){
+        continue;
+      }
+
+
+      const theme =
+        analysis.sortedThemes.find(
+          role =>
+            candidate.roles.includes(role)
+        );
+
+
+      if(!theme){
+        continue;
+      }
+
+
+      used.add(key);
+
+
+      recommendations.push({
+
+        name:
+          candidate.name,
+
+        card:
+          candidate.card,
+
+        roles:
+          candidate.roles,
+
+        price:
+          cardPrice(
+            candidate.card
+          ),
+
+        tcgUrl:
+          cardTcgLink(
+            candidate.card
+          ),
+
+        edh:
+          candidate.edh,
+
+        score:
+          candidate.score,
+
+        priority:{
+          rank:3,
+          label:"Good Upgrade"
+        },
+
+        role:theme,
+
+        reason:
+          `${candidate.name} supports the ` +
+          `deck's detected ` +
+          `${ROLE_LABELS[
+            theme
+          ].toLowerCase()} plan instead of being ` +
+          `a generic recommendation.`
+
+      });
+
+    }
+
+  }
+
+
+  return recommendations;
+
+}
+
+
+/* ================================================================
+   CUT SELECTION
+================================================================ */
+
+function buildCuts(
+  deckEntries,
+  analysis,
+  recommendations,
+  commanderName
+){
+
+  /*
+    These are protected from being suggested as cuts
+    because they are broadly foundational.
+
+    This is a conservative guard, not a claim that
+    they are mathematically optimal in every deck.
+  */
+
+  const STAPLE_GUARD =
+    new Set([
+
+      "sol ring",
+      "arcane signet",
+      "command tower",
+      "swords to plowshares",
+      "path to exile"
+
+    ]);
+
+
+  const scored =
+    deckEntries
+
+      .filter(
+        entry =>
+          entry.card
+      )
+
+      .filter(
+        entry =>
+          !entry.tags.has("land")
+      )
+
+      .filter(
+        entry =>
+          !STAPLE_GUARD.has(
+            normalizeName(
+              entry.name
+            )
+          )
+      )
+
+      .map(entry => ({
+
+        entry,
+
+        info:
+          cardSynergyScore(
+            entry,
+            analysis,
+            null
+          )
+
+      }))
+
+      .sort(
+        (a,b)=>
+          a.info.score -
+          b.info.score
+      );
+
+
+  /*
+    Only genuinely low-synergy cards become
+    cut candidates.
+
+    This prevents the Coach from manufacturing
+    cuts just to fill the page.
+  */
+
+  const weakCards =
+    scored
+      .filter(
+        item =>
+          item.info.score < 55
+      )
+      .slice(
+        0,
+        Math.min(
+          10,
+          recommendations.length
+        )
+      );
+
+
+  const remainingAdds =
+    recommendations.slice();
+
+
+  const cuts = [];
+
+
+  for(
+    const weak
+    of weakCards
+  ){
+
+    let pairedAdd = null;
+
+
+    /*
+      Prefer an add that fills one of the cut's
+      existing functional roles.
+    */
+
+    const matchingIndex =
+      remainingAdds.findIndex(
+        add =>
+          add.roles.some(
+            role =>
+              weak.entry.tags.has(role)
+          )
+      );
+
+
+    if(matchingIndex >= 0){
+
+      pairedAdd =
+        remainingAdds.splice(
+          matchingIndex,
+          1
+        )[0];
+
+    }else if(
+      remainingAdds.length
+    ){
+
+      pairedAdd =
+        remainingAdds.shift();
+
+    }
+
+
+    cuts.push({
+
+      name:
+        weak.entry.name,
+
+      quantity:
+        weak.entry.quantity,
+
+      entry:
+        weak.entry,
+
+      synergyScore:
+        weak.info.score,
+
+      info:
+        weak.info,
+
+      why:
+        generateCardExplanation(
+          weak.entry,
+          weak.info,
+          analysis
+        ),
+
+      pairedAdd,
+
+      price:
+        cardPrice(
+          weak.entry.card
+        ),
+
+      tcgUrl:
+        cardTcgLink(
+          weak.entry.card
+        )
+
+    });
+
+  }
+
+
+  return cuts;
+
+}
+
+
+/* ================================================================
+   BUDGET OPTIMIZATION
+================================================================ */
+
+/*
+  The selected budget is a TOTAL budget.
+
+  We don't simply recommend eight cards that are each
+  under $50.
+
+  We select a basket whose known prices fit inside the
+  total budget.
+
+  Price unavailable = price 0, but it is explicitly
+  marked as unknown rather than pretending it is free.
+*/
+
+function chooseBudgetBasket(
+  recommendations
+){
+
+  if(selectedBudget === 0){
+
+    return {
+
+      selected:
+        recommendations.slice(0,8),
+
+      knownTotal:
+        recommendations
+          .slice(0,8)
+          .reduce(
+            (sum,item)=>
+              sum + item.price,
+            0
+          ),
+
+      remaining:null
+
+    };
+
+  }
+
+
+  const selected = [];
+
+  let remaining =
+    selectedBudget;
+
+
+  /*
+    Recommendations are already ranked.
+
+    We take the strongest recommendation that
+    fits the remaining known budget.
+
+    Unknown-price cards are not automatically treated
+    as free.
+  */
+
+  for(
+    const recommendation
+    of recommendations
+  ){
+
+    const price =
+      recommendation.price;
+
+
+    if(price <= 0){
+
+      continue;
+
+    }
+
+
+    if(price <= remaining){
+
+      selected.push(
+        recommendation
+      );
+
+      remaining -= price;
+
+    }
+
+
+    if(selected.length >= 8){
+      break;
+    }
+
+  }
+
+
+  return {
+
+    selected,
+
+    knownTotal:
+      selected.reduce(
+        (sum,item)=>
+          sum + item.price,
+        0
+      ),
+
+    remaining
+
+  };
+
+}
+
+
+/* ================================================================
+   PROJECTED SCORE
+================================================================ */
+
+function computeProjectedScore(
+  analysis,
+  currentScores,
+  cuts
+){
+
+  /*
+    Important correction:
+
+    A cut quantity of 4 does NOT mean we automatically
+    add 4 copies of the replacement.
+
+    Commander swaps are one card for one card.
+
+    Therefore every paired recommendation represents
+    exactly ONE copy being swapped.
+  */
+
+  const projectedRoles =
+    Object.assign(
+      {},
+      analysis.roleCounts
+    );
+
+
+  let projectedNonland =
+    analysis.nonlandCount;
+
+
+  let projectedTotalCMC =
+    analysis.totalCMC;
+
+
+  for(
+    const cut
+    of cuts
+  ){
+
+    if(!cut.pairedAdd){
+      continue;
+    }
+
+
+    /*
+      Remove ONE copy only.
+    */
+
+    for(
+      const role
+      of Object.keys(projectedRoles)
+    ){
+
+      if(
+        cut.entry.tags.has(role)
+      ){
+
+        projectedRoles[role] =
+          Math.max(
+            0,
+            projectedRoles[role] - 1
+          );
+
+      }
+
+    }
+
+
+    if(
+      !cut.entry.tags.has("land")
+    ){
+
+      projectedTotalCMC -=
+        Number(
+          cut.entry.card.cmc
+        ) || 0;
+
+    }
+
+
+    /*
+      Add ONE copy.
+    */
+
+    for(
+      const role
+      of cut.pairedAdd.roles
+    ){
+
+      if(
+        Object.prototype.hasOwnProperty.call(
+          projectedRoles,
+          role
+        )
+      ){
+
+        projectedRoles[role]++;
+
+      }
+
+    }
+
+
+    projectedTotalCMC +=
+      Number(
+        cut.pairedAdd.card.cmc
+      ) || 0;
+
+  }
+
+
+  const projectedAnalysis =
+    Object.assign(
+      {},
+      analysis,
+      {
+
+        roleCounts:
+          projectedRoles,
+
+        totalCMC:
+          projectedTotalCMC,
+
+        avgCMC:
+          projectedNonland > 0
+            ? projectedTotalCMC /
+              projectedNonland
+            : 0
+
+      }
+    );
+
+
+  const projectedScores =
+    computeScores(
+      projectedAnalysis
+    );
+
 
   const notes = [];
-  Object.keys(currentScores.categories).forEach(key => {
-    const before = currentScores.categories[key].score;
-    const after = projectedScores.categories[key].score;
-    if (after - before >= 5) notes.push(`<b>${currentScores.categories[key].label}</b> improves from ${before} to ${after}.`);
-  });
-  return { projectedScores, notes };
-}
 
-/* ---------------------------------------------------------------------
-   8. RENDERING
-   --------------------------------------------------------------------- */
-function escapeHtml(str) {
-  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
-}
-function cardThumb(name) {
-  const small = 'https://api.scryfall.com/cards/named?format=image&version=small&exact=' + encodeURIComponent(name);
-  const large = 'https://api.scryfall.com/cards/named?format=image&version=normal&exact=' + encodeURIComponent(name);
-  const safeName = escapeHtml(name);
-  return `<span class="up-thumb-wrap">
-    <img class="up-thumb" src="${small}" alt="${safeName}" loading="lazy" onerror="this.style.visibility='hidden'">
-    <img class="up-thumb-large" src="${large}" alt="${safeName}" loading="lazy">
-  </span>`;
-}
-function priceLine(price, tcgUrl) {
-  const priceText = price ? `$${price.toFixed(2)}` : 'price n/a';
-  const inner = tcgUrl ? `<a href="${tcgUrl}" target="_blank" rel="noopener">${priceText} on TCGplayer ↗</a>` : `${priceText} (TCGplayer)`;
-  return `<div class="up-price">${inner}</div>`;
-}
-function edhBadge(edh) {
-  if (!edh) return '';
-  const bits = [];
-  if (typeof edh.inclusion === 'number') bits.push(Math.round(edh.inclusion*100) + '% incl.');
-  if (typeof edh.synergy === 'number') bits.push((edh.synergy>=0?'+':'') + Math.round(edh.synergy*100) + '% syn.');
-  return bits.length ? `<span class="edh-tag">EDHREC ${bits.join(' / ')}</span>` : '';
-}
 
-function render(commanderCard, analysis, scores, cuts, adds, unresolvedNames, apiFailed, edhrecMap, budget, commanderNameForReport) {
-  const results = document.getElementById('results');
-  results.style.display = 'block';
-  const s = scores;
-  const overallColor = statusColor(statusOf(s.overall));
-  let html = '';
+  for(
+    const key
+    of Object.keys(
+      currentScores.categories
+    )
+  ){
 
-  html += `<div class="card score-hero" style="--pct:${s.overall}">
-    <div class="score-circle"><div class="score-circle-inner"><div class="num" style="color:${overallColor}">${s.overall}</div><div class="lbl">Deck Score</div></div></div>
-    <div class="meta">
-      <div class="commander-name">${commanderCard ? commanderCard.name : 'Commander not identified'}</div>
-      <div class="commander-sub">${analysis.totalCards} cards analyzed &middot; color identity: ${analysis.deckColorIdentity.length ? analysis.deckColorIdentity.join('') : 'Colorless'} &middot; budget: ${budget===0?'no limit':'$'+budget}</div>
-      <div>${analysis.sortedThemes.map(t => `<span class="theme-tag">${THEME_LABELS[t]||t}</span>`).join('')}${analysis.topTribe && analysis.topTribeCount>=6 ? `<span class="theme-tag">${analysis.topTribe} Tribal</span>` : ''}</div>
-    </div>
-  </div>`;
+    const before =
+      currentScores
+        .categories[key]
+        .score;
 
-  html += `<div class="card"><h2>Deck Stats</h2><div class="stat-grid">
-    <div class="stat-box"><div class="n">${analysis.totalCards}</div><div class="l">Cards Detected</div></div>
-    <div class="stat-box"><div class="n">${analysis.typeCounts.land}</div><div class="l">Lands Detected</div></div>
-    <div class="stat-box"><div class="n">${analysis.typeCounts.creature}</div><div class="l">Creatures Detected</div></div>
-    <div class="stat-box"><div class="n">${analysis.avgCMC.toFixed(2)}</div><div class="l">Avg. Nonland MV</div></div>
-  </div>`;
-  if (analysis.unresolvedCount > 0) html += `<div class="confidence-note">${analysis.unresolvedCount} card(s) couldn't be matched to card data; scores are based on the remaining ${analysis.totalCards - analysis.unresolvedCount} cards. Treat scores as directional.</div>`;
-  if (apiFailed) html += `<div class="confidence-note">Scryfall couldn't be reached for some cards — this analysis may be incomplete.</div>`;
-  if (!edhrecMap) html += `<div class="confidence-note">EDHREC data wasn't available for this commander this time (their public JSON endpoint is unofficial and can be blocked or reshaped without notice) — recommendations below rely on deck composition alone.</div>`;
-  html += `</div>`;
+    const after =
+      projectedScores
+        .categories[key]
+        .score;
 
-  const comp = [
-    ['Lands', analysis.typeCounts.land], ['Ramp', analysis.roleCounts.ramp], ['Draw', analysis.roleCounts.draw],
-    ['Interaction', analysis.roleCounts.removal + analysis.roleCounts.wipe], ['Protection', analysis.roleCounts.protection],
-    ['Synergy/Payoffs', s.synergyMatches], ['Tutors', analysis.roleCounts.tutor]
-  ];
-  const compMax = Math.max(...comp.map(c => c[1]), 1);
-  html += `<div class="card"><h2>Deck Composition Breakdown</h2>`;
-  comp.forEach(([label, val]) => {
-    html += `<div class="comp-row"><div class="comp-label">${label}</div><div class="comp-track"><div class="comp-fill" style="width:${Math.min(100,(val/compMax)*100)}%"></div></div><div class="comp-num">${val}</div></div>`;
-  });
-  html += `<div class="confidence-note">Categories overlap — a card can count toward more than one role (e.g. a ramp creature is both "Ramp" and part of "Creatures").</div></div>`;
 
-  html += `<div class="card"><h2>Category Scores</h2><div class="category-grid">`;
-  Object.values(s.categories).forEach(cat => {
-    const st = statusOf(cat.score);
-    html += `<div class="cat-box"><div class="cat-head"><span class="cat-name">${cat.label}</span><span class="cat-score" style="color:${statusColor(st)}">${cat.score}</span></div>
-      <div class="bar-track"><div class="bar-fill" style="width:${cat.score}%;background:${statusColor(st)}"></div></div>
-      <div class="cat-detail">${cat.detail}</div></div>`;
-  });
-  html += `</div></div>`;
+    if(after > before){
 
-  const flags = computeRedFlags(analysis);
-  html += `<div class="card"><h2>Red Flags</h2>`;
-  if (flags.length) {
-    html += `<ul class="flag-list">${flags.map(f => `<li>${f}</li>`).join('')}</ul>`;
-  } else {
-    html += `<ul class="flag-list ok"><li>No major red flags detected — the deck's fundamentals look reasonably healthy.</li></ul>`;
-  }
-  html += `</div>`;
+      notes.push(
+        `${currentScores.categories[key].label} ` +
+        `improves from ${before} to ${after}.`
+      );
 
-  const weakestCat = Object.values(s.categories).sort((a,b) => a.score - b.score)[0];
-  const strongestCat = Object.values(s.categories).sort((a,b) => b.score - a.score)[0];
-  html += `<div class="card"><h2>Biggest Weakness</h2><div class="weakness-box"><b>${weakestCat.label}</b> is this deck's weakest area (score: ${weakestCat.score}/100) — ${weakestCat.detail}.</div></div>`;
-
-  const themeText = analysis.sortedThemes.length ? analysis.sortedThemes.map(t => (THEME_LABELS[t]||t).toLowerCase()).join(', ') : 'no single dominant theme — this reads as a goodstuff/value build';
-  html += `<div class="card"><h2>Coach's Advice</h2><div class="advice-box">This deck's detected strategy leans on <b>${themeText}</b>. Its strongest area is <b>${strongestCat.label}</b> (${strongestCat.score}/100), while <b>${weakestCat.label}</b> is holding it back the most. Prioritize the Critical and High Priority adds below before chasing more synergy pieces — a deck that can't draw cards or answer threats won't get to use its synergy anyway.</div></div>`;
-
-  const allScored = cuts.slice().sort((a,b) => a.synergyScore - b.synergyScore).slice(0, 10);
-  if (allScored.length) {
-    html += `<div class="card"><h2>Top ${allScored.length} Cards Holding Your Deck Back</h2>`;
-    allScored.forEach((c, i) => {
-      html += `<div class="weak-rank"><div class="rk">#${i+1}</div><div class="wn">${c.name}${edhBadge(c.info.edh)}</div><div class="ws">${c.synergyScore}/100 Synergy</div></div>`;
-    });
-    html += `</div>`;
-  }
-
-  html += `<div class="card"><h2>Recommended Upgrades (${cuts.length} paired swap${cuts.length===1?'':'s'})</h2>`;
-  if (cuts.length === 0) html += `<p style="color:var(--muted);font-size:14px;">No clear low-synergy cards stood out to cut — the deck's cards mostly connect to its strategy or fill needed roles.</p>`;
-  cuts.forEach(c => {
-    const pr = c.pairedAdd ? c.pairedAdd.priority : { rank:5, label:'Optional' };
-    html += `<div class="upgrade-block">
-      <div class="upgrade-head"><span class="priority-badge p${pr.rank}">#${pr.rank} ${pr.label}</span><span style="color:var(--muted);font-size:12px;">Synergy: ${c.synergyScore}/100</span></div>
-      <div class="upgrade-row">
-        <div class="up-col cut">${cardThumb(c.name)}<div class="up-body"><div class="up-tag cut">Cut</div><div class="up-name">${c.name}${c.quantity>1?` ×${c.quantity}`:''}</div>${priceLine(c.price, c.tcgUrl)}<div class="up-why">${c.why}</div></div></div>`;
-    if (c.pairedAdd) {
-      const a = c.pairedAdd;
-      html += `<div class="up-col add">${cardThumb(a.name)}<div class="up-body"><div class="up-tag add">Add</div><div class="up-name">${a.name}${edhBadge(a.edh)}</div>${priceLine(a.price, a.tcgUrl)}<div class="up-why">${a.roleLabel} &middot; ${a.why}</div></div></div></div>`;
-      html += `<div class="compare-band">
-        <div class="cl"><b>${c.name}:</b> ${c.info.isVanilla ? 'no notable effect beyond its stats' : (c.info.tagMatches.length ? 'partial support for your strategy' : 'doesn\'t connect to your deck\'s plan')}.</div>
-        <div class="cl"><b>${a.name}:</b> ${a.doesVerb}.</div>
-        <div class="cl"><b>Why it matters:</b> ${a.why}</div>
-      </div>`;
-      html += `</div>`; // closes .upgrade-block (opened before .upgrade-row, which line 970 already closed)
-    } else {
-      html += `<div class="up-col add"><div class="up-body"><div class="up-tag add">Add</div><div class="up-name">— deck is otherwise stocked here</div></div></div></div></div>`;
     }
-  });
 
-  const pairedNames = new Set(cuts.map(c => c.pairedAdd && c.pairedAdd.name).filter(Boolean));
-  const extraAdds = adds.filter(a => !pairedNames.has(a.name)).sort((a,b) => a.priority.rank - b.priority.rank);
-  if (extraAdds.length) {
-    html += `<h2 style="margin-top:20px;">Additional Cards To Add</h2>`;
-    extraAdds.forEach(a => {
-      html += `<div class="solo-add">${cardThumb(a.name)}<div class="up-body"><span class="priority-badge p${a.priority.rank}">#${a.priority.rank} ${a.priority.label}</span> <div class="up-tag add" style="margin-top:6px;">Add</div><div class="up-name">${a.name}${edhBadge(a.edh)}</div>${priceLine(a.price, a.tcgUrl)}<div class="up-why">${a.roleLabel} &middot; ${a.why}</div></div></div>`;
-    });
-  }
-  html += `</div>`;
-
-  if (cuts.some(c => c.pairedAdd)) {
-    const proj = computeProjectedScore(analysis, s, cuts);
-    html += `<div class="card"><h2>What Happens If You Make These Changes?</h2>
-      <div class="projected-box">
-        <div class="proj-score current"><div class="n">${s.overall}</div><div class="l">Current Score</div></div>
-        <div class="proj-arrow">→</div>
-        <div class="proj-score projected"><div class="n">${proj.projectedScores.overall}</div><div class="l">Projected Score</div></div>
-      </div>`;
-    if (proj.notes.length) html += `<ul class="proj-notes">${proj.notes.map(n => `<li>${n}</li>`).join('')}</ul>`;
-    html += `<div class="confidence-note">This is a same-count approximation (each swap assumed 1-for-1) based on the roles the new cards fill — treat it as directional, not exact.</div></div>`;
   }
 
-  const lowSynergyCount = cuts.length;
-  html += `<div class="card"><h2>Personalized Upgrade Report</h2><div class="report-box">
-    <p>Your deck is built around <b>${themeText}</b>${commanderCard ? ` with ${commanderCard.name} at the helm` : ''}.</p>
-    <p>Your biggest weakness is <b>${weakestCat.label.toLowerCase()}</b> (${weakestCat.score}/100) — ${weakestCat.detail}.</p>
-    <p>You have ${analysis.typeCounts.land} lands and ${analysis.roleCounts.ramp} ramp pieces, so your mana is ${statusOf(s.categories.mana.score)==='good' ? 'in good shape' : statusOf(s.categories.mana.score)==='ok' ? 'passable but could be smoother' : 'a real concern'}.</p>
-    <p>${lowSynergyCount > 0 ? `${lowSynergyCount} card${lowSynergyCount===1?'':'s'} scored below 55/100 on synergy with your strategy and ${lowSynergyCount===1?'is':'are'} flagged above for replacement.` : 'No cards scored low enough on synergy to flag for replacement — nice and tight already.'}</p>
-    ${adds.length ? `<p>Our first recommendation: <b>add ${adds.slice().sort((a,b)=>a.priority.rank-b.priority.rank)[0].name}</b> — ${adds.slice().sort((a,b)=>a.priority.rank-b.priority.rank)[0].why}</p>` : ''}
-  </div></div>`;
 
-  if (unresolvedNames.length) {
-    html += `<div class="card"><h2>Unmatched Cards</h2><p style="color:var(--muted);font-size:13.5px;">These names couldn't be matched to card data and were excluded from scoring: ${unresolvedNames.slice(0,15).join(', ')}${unresolvedNames.length>15?'…':''}</p></div>`;
-  }
+  return {
 
-  html += `<div class="card"><div class="limitation-note">
-    <b>Known limitations, honestly stated:</b> EDHREC signal (inclusion %, synergy %) comes from their unofficial public JSON and is only used when available for the identified commander — it's one input among several, never the sole reason a card is recommended. EDHREC's separate "cards cut/added when upgrading this precon" data isn't included, because reliably identifying which exact precon product a pasted decklist came from (versus a heavily modified version of one) isn't something this tool can do without a maintained precon-to-decklist database — if you tell me which precon this is, that's a feature I can add with a targeted diff against that decklist specifically.
-  </div></div>`;
+    projectedScores,
 
-  results.innerHTML = html;
-  results.scrollIntoView({ behavior:'smooth', block:'start' });
+    notes
+
+  };
+
 }
 
-/* ---------------------------------------------------------------------
-   9. WIRING
-   --------------------------------------------------------------------- */
-let selectedBudget = 50;
-document.querySelectorAll('.budget-chip').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.budget-chip').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    selectedBudget = parseInt(btn.dataset.budget, 10);
-  });
-});
 
-document.getElementById('sampleBtn').addEventListener('click', () => {
-  document.getElementById('decklistInput').value =
+/* ================================================================
+   HTML SAFETY
+================================================================ */
+
+function escapeHtml(value){
+
+  return String(value)
+
+    .replace(/&/g,"&amp;")
+
+    .replace(/</g,"&lt;")
+
+    .replace(/>/g,"&gt;")
+
+    .replace(/"/g,"&quot;")
+
+    .replace(/'/g,"&#39;");
+
+}
+
+
+/* ================================================================
+   CARD IMAGE
+================================================================ */
+
+function cardImage(card){
+
+  if(!card){
+    return "";
+  }
+
+
+  if(card.image_uris?.small){
+
+    return card.image_uris.small;
+
+  }
+
+
+  if(
+    card.card_faces &&
+    card.card_faces[0] &&
+    card.card_faces[0].image_uris
+  ){
+
+    return card
+      .card_faces[0]
+      .image_uris
+      .small || "";
+
+  }
+
+
+  return "";
+
+}
+
+
+/* ================================================================
+   PRICE HTML
+================================================================ */
+
+function priceLine(
+  price,
+  tcgUrl
+){
+
+  if(price > 0){
+
+    const text =
+      `$${price.toFixed(2)}`;
+
+    if(tcgUrl){
+
+      return `
+        <div class="up-price">
+          <a
+            href="${escapeHtml(tcgUrl)}"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            ${text} on TCGplayer ↗
+          </a>
+        </div>
+      `;
+
+    }
+
+
+    return `
+      <div class="up-price">
+        ${text}
+      </div>
+    `;
+
+  }
+
+
+  return `
+    <div class="up-price">
+      Price unavailable
+    </div>
+  `;
+
+}
+
+
+/* ================================================================
+   EDHREC BADGE
+================================================================ */
+
+function edhBadge(edh){
+
+  if(!edh){
+    return "";
+  }
+
+
+  const pieces = [];
+
+
+  if(
+    typeof edh.inclusion === "number"
+  ){
+
+    pieces.push(
+      Math.round(
+        edh.inclusion * 100
+      ) +
+      "% incl."
+    );
+
+  }
+
+
+  if(
+    typeof edh.synergy === "number"
+  ){
+
+    pieces.push(
+      (
+        edh.synergy >= 0
+          ? "+"
+          : ""
+      ) +
+      Math.round(
+        edh.synergy * 100
+      ) +
+      "% syn."
+    );
+
+  }
+
+
+  if(!pieces.length){
+    return "";
+  }
+
+
+  return `
+    <span class="edh-tag">
+      EDHREC ${pieces.join(" / ")}
+    </span>
+  `;
+
+}
+
+
+/* ================================================================
+   RENDER
+================================================================ */
+
+function render(
+  commanderCards,
+  analysis,
+  scores,
+  validation,
+  cuts,
+  recommendations,
+  apiFailed,
+  edhrecMap,
+  budgetPlan
+){
+
+  const results =
+    document.getElementById(
+      "results"
+    );
+
+
+  results.style.display =
+    "block";
+
+
+  const overallColor =
+    statusColor(
+      statusOf(
+        scores.overall
+      )
+    );
+
+
+  const commanderName =
+    commanderCards.length
+      ? commanderCards
+          .map(card=>card.name)
+          .join(" + ")
+      : "Commander not identified";
+
+
+  const themeTags =
+    analysis.sortedThemes
+      .map(
+        theme =>
+          `<span class="theme-tag">
+            ${escapeHtml(
+              ROLE_LABELS[theme] || theme
+            )}
+          </span>`
+      )
+      .join("");
+
+
+  let html = "";
+
+
+  /* ------------------------------------------------------------
+     SCORE HERO
+  ------------------------------------------------------------ */
+
+  html += `
+
+    <div
+      class="card score-hero"
+      style="--pct:${scores.overall}"
+    >
+
+      <div class="score-circle">
+
+        <div class="score-circle-inner">
+
+          <div
+            class="num"
+            style="color:${overallColor}"
+          >
+            ${scores.overall}
+          </div>
+
+          <div class="lbl">
+            Deck Score
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="meta">
+
+        <div class="commander-name">
+          ${escapeHtml(commanderName)}
+        </div>
+
+        <div class="commander-sub">
+
+          ${analysis.totalCards}
+          main-deck cards ·
+
+          ${commanderCards.length}
+          commander(s) ·
+
+          color identity:
+          ${escapeHtml(
+            analysis.deckColorIdentity.join("") ||
+            "Colorless"
+          )}
+
+        </div>
+
+        <div>
+          ${themeTags}
+        </div>
+
+      </div>
+
+    </div>
+
+  `;
+
+
+  /* ------------------------------------------------------------
+     HARD VALIDATION
+  ------------------------------------------------------------ */
+
+  const validationClass =
+    validation.errors.length
+      ? "validation-bad"
+      : validation.warnings.length
+        ? "validation-warning"
+        : "validation-good";
+
+
+  html += `
+
+    <div class="card">
+
+      <h2>
+        Deck Construction Check
+      </h2>
+
+      <div class="stat-grid">
+
+        <div class="stat-box">
+          <div class="n">
+            ${analysis.totalCards}
+          </div>
+          <div class="l">
+            Main Cards
+          </div>
+        </div>
+
+        <div class="stat-box">
+          <div class="n">
+            ${commanderCards.length}
+          </div>
+          <div class="l">
+            Commanders
+          </div>
+        </div>
+
+        <div class="stat-box">
+          <div class="n">
+            ${validation.totalCount}
+          </div>
+          <div class="l">
+            Total Cards
+          </div>
+        </div>
+
+        <div class="stat-box">
+          <div class="n">
+            ${analysis.landCount}
+          </div>
+          <div class="l">
+            Lands
+          </div>
+        </div>
+
+        <div class="stat-box">
+          <div class="n">
+            ${analysis.unresolvedCount}
+          </div>
+          <div class="l">
+            Unresolved Copies
+          </div>
+        </div>
+
+      </div>
+
+
+      <div
+        class="validation-box ${validationClass}"
+      >
+
+        ${
+          validation.errors.length
+            ? validation.errors
+                .map(
+                  error =>
+                    `<div class="validation-item">
+                      ❌ ${escapeHtml(error)}
+                    </div>`
+                )
+                .join("")
+            : ""
+        }
+
+        ${
+          validation.warnings
+            .map(
+              warning =>
+                `<div class="validation-item">
+                  ⚠️ ${escapeHtml(warning)}
+                </div>`
+            )
+            .join("")
+        }
+
+        ${
+          !validation.errors.length &&
+          !validation.warnings.length
+            ? `
+              <div class="validation-item">
+                ✅ No hard deck-construction errors detected.
+              </div>
+            `
+            : ""
+        }
+
+      </div>
+
+
+      <div class="confidence-note">
+
+        Hard legality and card identity are based on
+        resolved Scryfall data. Strategy scores below
+        are heuristic estimates.
+
+      </div>
+
+    </div>
+
+  `;
+
+
+  /* ------------------------------------------------------------
+     COMPOSITION
+  ------------------------------------------------------------ */
+
+  const composition = [
+
+    [
+      "Lands",
+      analysis.landCount
+    ],
+
+    [
+      "Ramp",
+      analysis.roleCounts.ramp
+    ],
+
+    [
+      "Card Draw",
+      analysis.roleCounts.draw
+    ],
+
+    [
+      "Interaction",
+      analysis.roleCounts.removal +
+      analysis.roleCounts.wipe
+    ],
+
+    [
+      "Protection",
+      analysis.roleCounts.protection
+    ],
+
+    [
+      "Tutors",
+      analysis.roleCounts.tutor
+    ]
+
+  ];
+
+
+  const maxComposition =
+    Math.max(
+      ...composition.map(
+        item=>item[1]
+      ),
+      1
+    );
+
+
+  html += `
+
+    <div class="card">
+
+      <h2>
+        Deck Composition
+      </h2>
+
+      ${
+        composition
+          .map(
+            ([label,value]) => `
+
+              <div class="comp-row">
+
+                <div class="comp-label">
+                  ${label}
+                </div>
+
+                <div class="comp-track">
+
+                  <div
+                    class="comp-fill"
+                    style="
+                      width:${Math.min(
+                        100,
+                        value /
+                        maxComposition *
+                        100
+                      )}%
+                    "
+                  ></div>
+
+                </div>
+
+                <div class="comp-num">
+                  ${value}
+                </div>
+
+              </div>
+
+            `
+          )
+          .join("")
+      }
+
+      <div class="confidence-note">
+
+        Counts include every copy of every resolved
+        card. Categories can overlap.
+
+      </div>
+
+    </div>
+
+  `;
+
+
+  /* ------------------------------------------------------------
+     CATEGORY SCORES
+  ------------------------------------------------------------ */
+
+  html += `
+
+    <div class="card">
+
+      <h2>
+        Category Scores
+      </h2>
+
+      <div class="category-grid">
+
+        ${
+          Object.values(
+            scores.categories
+          )
+            .map(category => {
+
+              const state =
+                statusOf(
+                  category.score
+                );
+
+
+              return `
+
+                <div class="cat-box">
+
+                  <div class="cat-head">
+
+                    <span class="cat-name">
+                      ${category.label}
+                    </span>
+
+                    <span
+                      class="cat-score"
+                      style="
+                        color:${statusColor(state)}
+                      "
+                    >
+                      ${category.score}
+                    </span>
+
+                  </div>
+
+
+                  <div class="bar-track">
+
+                    <div
+                      class="bar-fill"
+                      style="
+                        width:${category.score}%;
+                        background:${statusColor(state)}
+                      "
+                    ></div>
+
+                  </div>
+
+
+                  <div class="cat-detail">
+                    ${category.detail}
+                  </div>
+
+                </div>
+
+              `;
+
+            })
+            .join("")
+        }
+
+      </div>
+
+
+      <div class="confidence-note">
+
+        These scores are decision-support estimates.
+        They are not official Wizards of the Coast,
+        Scryfall or EDHREC ratings.
+
+      </div>
+
+    </div>
+
+  `;
+
+
+  /* ------------------------------------------------------------
+     RED FLAGS
+  ------------------------------------------------------------ */
+
+  const redFlags =
+    computeRedFlags(
+      analysis,
+      validation
+    );
+
+
+  html += `
+
+    <div class="card">
+
+      <h2>
+        Red Flags
+      </h2>
+
+      ${
+        redFlags.length
+
+          ? `
+            <ul class="flag-list">
+
+              ${
+                redFlags
+                  .map(
+                    flag =>
+                      `<li>
+                        ${escapeHtml(flag)}
+                      </li>`
+                  )
+                  .join("")
+              }
+
+            </ul>
+          `
+
+          : `
+            <ul class="flag-list ok">
+
+              <li>
+                No major structural red flags detected.
+              </li>
+
+            </ul>
+          `
+      }
+
+    </div>
+
+  `;
+
+
+  /* ------------------------------------------------------------
+     BIGGEST WEAKNESS
+  ------------------------------------------------------------ */
+
+  const weakestCategory =
+    Object.values(
+      scores.categories
+    )
+      .sort(
+        (a,b)=>
+          a.score -
+          b.score
+      )[0];
+
+
+  const strongestCategory =
+    Object.values(
+      scores.categories
+    )
+      .sort(
+        (a,b)=>
+          b.score -
+          a.score
+      )[0];
+
+
+  html += `
+
+    <div class="card">
+
+      <h2>
+        Biggest Weakness
+      </h2>
+
+      <div class="weakness-box">
+
+        <b>
+          ${weakestCategory.label}
+        </b>
+
+        is currently the weakest area at
+
+        <b>
+          ${weakestCategory.score}/100
+        </b>.
+
+        ${weakestCategory.detail}.
+
+      </div>
+
+    </div>
+
+  `;
+
+
+  /* ------------------------------------------------------------
+     COACH ADVICE
+  ------------------------------------------------------------ */
+
+  const strategyText =
+    analysis.sortedThemes.length
+
+      ? analysis.sortedThemes
+          .map(
+            theme =>
+              (
+                ROLE_LABELS[theme] ||
+                theme
+              ).toLowerCase()
+          )
+          .join(", ")
+
+      : "a mixed-value strategy";
+
+
+  html += `
+
+    <div class="card">
+
+      <h2>
+        Coach's Advice
+      </h2>
+
+      <div class="advice-box">
+
+        This deck currently reads most strongly as
+
+        <b>
+          ${escapeHtml(strategyText)}
+        </b>.
+
+        Its strongest area is
+
+        <b>
+          ${strongestCategory.label}
+        </b>
+
+        at
+
+        <b>
+          ${strongestCategory.score}/100
+        </b>,
+
+        while
+
+        <b>
+          ${weakestCategory.label}
+        </b>
+
+        is the largest structural weakness.
+
+        The Coach therefore prioritizes fixing the
+        weakest fundamentals before adding optional
+        synergy pieces.
+
+      </div>
+
+    </div>
+
+  `;
+
+
+  /* ------------------------------------------------------------
+     LOW-SYNERGY CARDS
+  ------------------------------------------------------------ */
+
+  const lowCards =
+    cuts
+      .slice()
+      .sort(
+        (a,b)=>
+          a.synergyScore -
+          b.synergyScore
+      )
+      .slice(0,10);
+
+
+  if(lowCards.length){
+
+    html += `
+
+      <div class="card">
+
+        <h2>
+          Cards Holding The Deck Back
+        </h2>
+
+        ${
+          lowCards
+            .map(
+              (cut,index) => `
+
+                <div class="validation-item">
+
+                  <b>
+                    #${index + 1}
+                  </b>
+
+                  ${escapeHtml(cut.name)}
+
+                  —
+
+                  <span
+                    style="
+                      color:var(--bad);
+                      font-weight:700;
+                    "
+                  >
+                    ${cut.synergyScore}/100
+                  </span>
+
+                </div>
+
+              `
+            )
+            .join("")
+        }
+
+      </div>
+
+    `;
+
+  }
+
+
+  /* ------------------------------------------------------------
+     BUDGET PLAN
+  ------------------------------------------------------------ */
+
+  const budgetLabel =
+    selectedBudget === 0
+      ? "No limit"
+      : `$${selectedBudget}`;
+
+
+  html += `
+
+    <div class="card">
+
+      <h2>
+        Upgrade Budget
+      </h2>
+
+      <div class="budget-summary">
+
+        <div class="budget-stat">
+
+          <div class="n">
+            ${budgetLabel}
+          </div>
+
+          <div class="l">
+            Total Budget
+          </div>
+
+        </div>
+
+        <div class="budget-stat">
+
+          <div class="n">
+            ${budgetPlan.selected.length}
+          </div>
+
+          <div class="l">
+            Selected Adds
+          </div>
+
+        </div>
+
+        <div class="budget-stat">
+
+          <div class="n">
+            $${budgetPlan.knownTotal.toFixed(2)}
+          </div>
+
+          <div class="l">
+            Known Price Total
+          </div>
+
+        </div>
+
+        <div class="budget-stat">
+
+          <div class="n">
+
+            ${
+              budgetPlan.remaining === null
+                ? "—"
+                : "$" +
+                  budgetPlan.remaining.toFixed(2)
+            }
+
+          </div>
+
+          <div class="l">
+            Remaining
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="confidence-note">
+
+        The budget is a total basket budget.
+        Cards without a current Scryfall USD price
+        are not counted as free.
+
+      </div>
+
+    </div>
+
+  `;
+
+
+  /* ------------------------------------------------------------
+     RECOMMENDED SWAPS
+  ------------------------------------------------------------ */
+
+  html += `
+
+    <div class="card">
+
+      <h2>
+        Recommended Upgrades
+      </h2>
+
+  `;
+
+
+  if(!cuts.length){
+
+    html += `
+
+      <div class="focus-box">
+
+        No card scored low enough to justify
+        an automatic cut.
+
+      </div>
+
+    `;
+
+  }
+
+
+  for(const cut of cuts){
+
+    const paired =
+      cut.pairedAdd;
+
+
+    const priority =
+      paired
+        ? paired.priority
+        : {
+            rank:5,
+            label:"Optional"
+          };
+
+
+    const cutImage =
+      cardImage(
+        cut.entry.card
+      );
+
+
+    const addImage =
+      paired
+        ? cardImage(
+            paired.card
+          )
+        : "";
+
+
+    html += `
+
+      <div class="upgrade-block">
+
+        <div class="upgrade-head">
+
+          <span
+            class="priority-badge p${priority.rank}"
+          >
+            ${priority.label}
+          </span>
+
+          <span
+            style="
+              color:var(--muted);
+              font-size:12px;
+            "
+          >
+            Cut score:
+            ${cut.synergyScore}/100
+          </span>
+
+        </div>
+
+
+        <div class="upgrade-row">
+
+          <div class="up-col cut">
+
+            ${
+              cutImage
+                ? `
+                  <img
+                    class="up-thumb"
+                    src="${escapeHtml(cutImage)}"
+                    alt=""
+                  >
+                `
+                : ""
+            }
+
+
+            <div class="up-body">
+
+              <div class="up-tag cut">
+                CUT
+              </div>
+
+              <div class="up-name">
+                ${escapeHtml(cut.name)}
+
+                ${
+                  cut.quantity > 1
+                    ? ` ×${cut.quantity}`
+                    : ""
+                }
+
+              </div>
+
+              ${priceLine(
+                cut.price,
+                cut.tcgUrl
+              )}
+
+              <div class="up-why">
+
+                ${escapeHtml(
+                  cut.why
+                )}
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <div class="up-col add">
+
+            ${
+              paired
+                ? `
+
+                  ${
+                    addImage
+                      ? `
+                        <img
+                          class="up-thumb"
+                          src="${escapeHtml(addImage)}"
+                          alt=""
+                        >
+                      `
+                      : ""
+                  }
+
+                  <div class="up-body">
+
+                    <div class="up-tag add">
+                      ADD
+                    </div>
+
+                    <div class="up-name">
+
+                      ${escapeHtml(
+                        paired.name
+                      )}
+
+                      ${edhBadge(
+                        paired.edh
+                      )}
+
+                    </div>
+
+                    ${priceLine(
+                      paired.price,
+                      paired.tcgUrl
+                    )}
+
+                    <div class="up-why">
+
+                      ${escapeHtml(
+                        paired.reason
+                      )}
+
+                    </div>
+
+                  </div>
+
+                `
+
+                : `
+
+                  <div class="up-body">
+
+                    <div class="up-tag add">
+                      ADD
+                    </div>
+
+                    <div class="up-name">
+                      No matching recommendation
+                    </div>
+
+                  </div>
+
+                `
+
+            }
+
+          </div>
+
+        </div>
+
+
+        ${
+          paired
+            ? `
+
+              <div class="compare-band">
+
+                <div class="cl">
+
+                  <b>
+                    Why this swap:
+                  </b>
+
+                  ${escapeHtml(
+                    paired.name
+                  )}
+
+                  ${ROLE_VERBS[
+                    paired.roles[0]
+                  ] || "strengthens the deck"}.
+
+                </div>
+
+
+                <div class="cl">
+
+                  <b>
+                    Important:
+                  </b>
+
+                  This is a strategic recommendation,
+                  not a guarantee of game results.
+
+                </div>
+
+              </div>
+
+            `
+            : ""
+        }
+
+      </div>
+
+    `;
+
+  }
+
+
+  html += `</div>`;
+
+
+  /* ------------------------------------------------------------
+     PROJECTED SCORE
+  ------------------------------------------------------------ */
+
+  if(
+    cuts.some(
+      cut =>
+        !!cut.pairedAdd
+    )
+  ){
+
+    const projection =
+      computeProjectedScore(
+        analysis,
+        scores,
+        cuts
+      );
+
+
+    html += `
+
+      <div class="card">
+
+        <h2>
+          Projected Effect Of The Swaps
+        </h2>
+
+        <div class="projected-box">
+
+          <div class="proj-score current">
+
+            <div class="n">
+              ${scores.overall}
+            </div>
+
+            <div class="l">
+              Current
+            </div>
+
+          </div>
+
+
+          <div class="proj-arrow">
+            →
+          </div>
+
+
+          <div class="proj-score projected">
+
+            <div class="n">
+              ${projection.projectedScores.overall}
+            </div>
+
+            <div class="l">
+              Projected
+            </div>
+
+          </div>
+
+        </div>
+
+
+        ${
+          projection.notes.length
+            ? `
+
+              <ul class="proj-notes">
+
+                ${
+                  projection.notes
+                    .map(
+                      note =>
+                        `<li>
+                          ${escapeHtml(note)}
+                        </li>`
+                    )
+                    .join("")
+                }
+
+              </ul>
+
+            `
+            : ""
+        }
+
+
+        <div class="confidence-note">
+
+          Projection is directional.
+          Each paired swap represents one card in
+          and one card out. It is not a simulation of
+          actual games.
+
+        </div>
+
+      </div>
+
+    `;
+
+  }
+
+
+  /* ------------------------------------------------------------
+     PERSONALIZED REPORT
+  ------------------------------------------------------------ */
+
+  html += `
+
+    <div class="card">
+
+      <h2>
+        Personalized Upgrade Report
+      </h2>
+
+      <div class="report-box">
+
+        <p>
+
+          Your deck is currently detected as primarily
+          <b>
+            ${escapeHtml(strategyText)}
+          </b>.
+
+        </p>
+
+
+        <p>
+
+          Your largest weakness is
+
+          <b>
+            ${weakestCategory.label.toLowerCase()}
+          </b>
+
+          at
+
+          <b>
+            ${weakestCategory.score}/100
+          </b>.
+
+        </p>
+
+
+        <p>
+
+          You have
+
+          <b>
+            ${analysis.landCount}
+          </b>
+
+          lands and
+
+          <b>
+            ${analysis.roleCounts.ramp}
+          </b>
+
+          detected ramp effects.
+
+        </p>
+
+
+        <p>
+
+          The Coach found
+
+          <b>
+            ${cuts.length}
+          </b>
+
+          low-synergy card(s) worth considering
+          for replacement.
+
+        </p>
+
+
+        ${
+          budgetPlan.selected.length
+            ? `
+
+              <p>
+
+                The highest-priority budget-compatible
+                recommendation is
+
+                <b>
+                  ${escapeHtml(
+                    budgetPlan.selected[0].name
+                  )}
+                </b>.
+
+              </p>
+
+            `
+            : ""
+        }
+
+      </div>
+
+    </div>
+
+  `;
+
+
+  /* ------------------------------------------------------------
+     PLAYTEST LOOP
+  ------------------------------------------------------------ */
+
+  const playtestKey =
+    commanderCards.length
+      ? commanderCards[0].name
+      : "unknown";
+
+
+  html += `
+
+    <div class="card">
+
+      <h2>
+        Playtest & Repeat
+      </h2>
+
+      <p class="confidence-note">
+
+        This is the final part of the Coach system:
+        analyze → upgrade → playtest → record → analyze again.
+
+        Notes are stored locally in this browser.
+
+      </p>
+
+
+      <div class="checklist">
+
+        <label class="check-row">
+
+          <input
+            type="checkbox"
+            data-playtest="strategy"
+          >
+
+          I can explain the deck's main strategy
+          in one sentence.
+
+        </label>
+
+
+        <label class="check-row">
+
+          <input
+            type="checkbox"
+            data-playtest="weakness"
+          >
+
+          I addressed the biggest weakness first.
+
+        </label>
+
+
+        <label class="check-row">
+
+          <input
+            type="checkbox"
+            data-playtest="games"
+          >
+
+          I played at least three games after
+          making the changes.
+
+        </label>
+
+
+        <label class="check-row">
+
+          <input
+            type="checkbox"
+            data-playtest="results"
+          >
+
+          I recorded what actually worked.
+
+        </label>
+
+
+        <label class="check-row">
+
+          <input
+            type="checkbox"
+            data-playtest="repeat"
+          >
+
+          I am ready to run the Coach again.
+
+        </label>
+
+      </div>
+
+
+      <textarea
+        id="playtestNotes"
+        class="notes-area"
+        placeholder="What worked? What felt weak? Did you miss land drops? Did you run out of cards? Which recommendation felt bad? Which one overperformed?"
+      ></textarea>
+
+
+      <button
+        class="save-btn"
+        id="savePlaytestBtn"
+      >
+        Save Playtest Notes
+      </button>
+
+    </div>
+
+  `;
+
+
+  /* ------------------------------------------------------------
+     LIMITATIONS
+  ------------------------------------------------------------ */
+
+  html += `
+
+    <div class="card">
+
+      <h2>
+        What This Tool Knows
+      </h2>
+
+      <div class="limitation-note">
+
+        <b>Hard data:</b>
+
+        card identity, card text, color identity,
+        Commander legality, current Scryfall price
+        data, card quantities and deck-size validation.
+
+        <br><br>
+
+        <b>Heuristic data:</b>
+
+        strategy detection, synergy scoring,
+        deck score, weakness detection and
+        recommendation ranking.
+
+        <br><br>
+
+        EDHREC is optional secondary context.
+        If EDHREC is unavailable, the Coach continues
+        using the actual deck composition.
+
+      </div>
+
+    </div>
+
+  `;
+
+
+  results.innerHTML =
+    html;
+
+
+  /*
+    Restore playtest data.
+  */
+
+  loadPlaytestData(
+    playtestKey
+  );
+
+
+  /*
+    Save button.
+  */
+
+  document
+    .getElementById(
+      "savePlaytestBtn"
+    )
+    .addEventListener(
+      "click",
+      ()=>savePlaytestData(
+        playtestKey
+      )
+    );
+
+
+  results.scrollIntoView({
+    behavior:"smooth",
+    block:"start"
+  });
+
+}
+
+
+/* ================================================================
+   PLAYTEST STORAGE
+================================================================ */
+
+function playtestStorageKey(
+  commanderName
+){
+
+  return (
+    "puc_playtest_" +
+    normalizeName(
+      commanderName
+    )
+  );
+
+}
+
+
+function loadPlaytestData(
+  commanderName
+){
+
+  try{
+
+    const raw =
+      localStorage.getItem(
+        playtestStorageKey(
+          commanderName
+        )
+      );
+
+
+    if(!raw){
+      return;
+    }
+
+
+    const data =
+      JSON.parse(raw);
+
+
+    document
+      .querySelectorAll(
+        "[data-playtest]"
+      )
+      .forEach(input=>{
+
+        input.checked =
+          !!data[
+            input.dataset.playtest
+          ];
+
+      });
+
+
+    const notes =
+      document.getElementById(
+        "playtestNotes"
+      );
+
+
+    if(notes){
+
+      notes.value =
+        data.notes || "";
+
+    }
+
+  }catch{
+
+    /*
+      Local storage failure should never
+      prevent deck analysis.
+    */
+
+  }
+
+}
+
+
+function savePlaytestData(
+  commanderName
+){
+
+  const data = {
+
+    notes:
+      document
+        .getElementById(
+          "playtestNotes"
+        )
+        .value
+
+  };
+
+
+  document
+    .querySelectorAll(
+      "[data-playtest]"
+    )
+    .forEach(input=>{
+
+      data[
+        input.dataset.playtest
+      ] =
+        input.checked;
+
+    });
+
+
+  try{
+
+    localStorage.setItem(
+
+      playtestStorageKey(
+        commanderName
+      ),
+
+      JSON.stringify(data)
+
+    );
+
+
+    const button =
+      document.getElementById(
+        "savePlaytestBtn"
+      );
+
+
+    button.textContent =
+      "Saved ✓";
+
+
+    setTimeout(
+      ()=>{
+        button.textContent =
+          "Save Playtest Notes";
+      },
+      1200
+    );
+
+  }catch{
+
+    alert(
+      "Your browser would not allow the Coach " +
+      "to save playtest notes locally."
+    );
+
+  }
+
+}
+
+
+/* ================================================================
+   MAIN ANALYSIS
+================================================================ */
+
+async function runAnalysis(){
+
+  const text =
+    document
+      .getElementById(
+        "decklistInput"
+      )
+      .value;
+
+
+  const errorBox =
+    document.getElementById(
+      "errorBox"
+    );
+
+
+  const statusLine =
+    document.getElementById(
+      "statusLine"
+    );
+
+
+  const button =
+    document.getElementById(
+      "analyzeBtn"
+    );
+
+
+  errorBox.style.display =
+    "none";
+
+
+  document.getElementById(
+    "results"
+  ).style.display =
+    "none";
+
+
+  if(!text.trim()){
+
+    errorBox.textContent =
+      "Paste a decklist first.";
+
+    errorBox.style.display =
+      "block";
+
+    return;
+
+  }
+
+
+  button.disabled =
+    true;
+
+
+  try{
+
+    /* ----------------------------------------------------------
+       STEP 1 — PARSE
+    ---------------------------------------------------------- */
+
+    statusLine.textContent =
+      "Parsing decklist…";
+
+
+    const parsed =
+      parseDecklist(
+        text
+      );
+
+
+    /*
+      Commander override takes precedence.
+    */
+
+    const override =
+      document
+        .getElementById(
+          "commanderOverride"
+        )
+        .value
+        .trim();
+
+
+    let commanderNames =
+      override
+        ? [override]
+        : parsed.commanderNames;
+
+
+    /*
+      If no commander was explicitly supplied,
+      we do NOT blindly guess from arbitrary
+      legendary creatures.
+
+      That prevents a random legendary creature
+      in the 99 from becoming the commander.
+    */
+
+    if(
+      parsed.mainCards.length === 0 &&
+      commanderNames.length === 0
+    ){
+
+      throw new Error(
+        "No card lines were found."
+      );
+
+    }
+
+
+    /* ----------------------------------------------------------
+       STEP 2 — FETCH CARD DATA
+    ---------------------------------------------------------- */
+
+    statusLine.textContent =
+      "Resolving cards with Scryfall…";
+
+
+    const allNames =
+      Array.from(
+        new Set(
+
+          [
+            ...commanderNames,
+
+            ...parsed.mainCards
+              .map(
+                card =>
+                  card.name
+              ),
+
+            ...CANDIDATES
+              .map(
+                candidate =>
+                  candidate.name
+              )
+
+          ]
+
+        )
+      );
+
+
+    const {
+      results:cardData,
+      apiFailed
+    } =
+      await fetchCollection(
+        allNames
+      );
+
+
+    /* ----------------------------------------------------------
+       STEP 3 — RESOLVE COMMANDERS
+    ---------------------------------------------------------- */
+
+    const commanderCards =
+      commanderNames
+        .map(
+          name =>
+            cardData.get(
+              normalizeName(name)
+            )
+        )
+        .filter(Boolean);
+
+
+    const unresolvedCommanders =
+      commanderNames.filter(
+        name =>
+          !cardData.has(
+            normalizeName(name)
+          )
+      );
+
+
+    if(
+      unresolvedCommanders.length
+    ){
+
+      throw new Error(
+        "Could not resolve commander: " +
+        unresolvedCommanders.join(", ")
+      );
+
+    }
+
+
+    /* ----------------------------------------------------------
+       STEP 4 — BUILD DECK ENTRIES
+    ---------------------------------------------------------- */
+
+    const deckEntries =
+      parsed.mainCards.map(
+        entry => {
+
+          const card =
+            cardData.get(
+              normalizeName(
+                entry.name
+              )
+            ) || null;
+
+
+          return {
+
+            name:
+              entry.name,
+
+            quantity:
+              entry.quantity,
+
+            card,
+
+            tags:
+              tagCard(card)
+
+          };
+
+        }
+      );
+
+
+    /* ----------------------------------------------------------
+       STEP 5 — HARD VALIDATION
+    ---------------------------------------------------------- */
+
+    statusLine.textContent =
+      "Checking Commander legality, color identity and quantities…";
+
+
+    const validation =
+      validateDeck(
+        commanderCards,
+        commanderNames,
+        deckEntries
+      );
+
+
+    /* ----------------------------------------------------------
+       STEP 6 — ANALYSIS
+    ---------------------------------------------------------- */
+
+    statusLine.textContent =
+      "Analyzing deck structure…";
+
+
+    const analysis =
+      analyzeDeck(
+        commanderCards,
+        deckEntries
+      );
+
+
+    const scores =
+      computeScores(
+        analysis
+      );
+
+
+    /* ----------------------------------------------------------
+       STEP 7 — EDHREC
+    ---------------------------------------------------------- */
+
+    statusLine.textContent =
+      "Checking optional commander synergy data…";
+
+
+    let edhrecMap = null;
+
+
+    /*
+      EDHREC commander data is only requested when
+      there is exactly one commander.
+
+      This avoids pretending a partner pair has the
+      same EDHREC page as a single commander.
+    */
+
+    if(
+      commanderCards.length === 1
+    ){
+
+      edhrecMap =
+        await fetchEdhrecData(
+          commanderCards[0].name
+        );
+
+    }
+
+
+    /* ----------------------------------------------------------
+       STEP 8 — RECOMMENDATIONS
+    ---------------------------------------------------------- */
+
+    statusLine.textContent =
+      "Finding legal upgrade candidates…";
+
+
+    const deckNameSet =
+      new Set(
+
+        deckEntries
+          .map(
+            entry =>
+              normalizeName(
+                entry.name
+              )
+          )
+
+      );
+
+
+    for(const commander of commanderCards){
+
+      deckNameSet.add(
+        normalizeName(
+          commander.name
+        )
+      );
+
+    }
+
+
+    const recommendations =
+      await buildRecommendations(
+        analysis,
+        deckNameSet,
+        edhrecMap
+      );
+
+
+    /* ----------------------------------------------------------
+       STEP 9 — CUTS
+    ---------------------------------------------------------- */
+
+    statusLine.textContent =
+      "Finding cards that are actually worth cutting…";
+
+
+    const cuts =
+      buildCuts(
+        deckEntries,
+        analysis,
+        recommendations,
+        commanderCards[0]?.name || null
+      );
+
+
+    /* ----------------------------------------------------------
+       STEP 10 — BUDGET
+    ---------------------------------------------------------- */
+
+    const budgetPlan =
+      chooseBudgetBasket(
+        recommendations
+      );
+
+
+    /* ----------------------------------------------------------
+       STEP 11 — RENDER
+    ---------------------------------------------------------- */
+
+    render(
+      commanderCards,
+      analysis,
+      scores,
+      validation,
+      cuts,
+      recommendations,
+      apiFailed,
+      edhrecMap,
+      budgetPlan
+    );
+
+
+    statusLine.textContent =
+      apiFailed
+        ? "Done — some Scryfall requests failed. Unresolved cards were not treated as known."
+        : "Done.";
+
+  }catch(error){
+
+    console.error(
+      "Precon Upgrade Coach error:",
+      error
+    );
+
+
+    errorBox.textContent =
+      "Something went wrong: " +
+      error.message;
+
+
+    errorBox.style.display =
+      "block";
+
+
+    statusLine.textContent =
+      "";
+
+  }finally{
+
+    button.disabled =
+      false;
+
+  }
+
+}
+
+
+/* ================================================================
+   UI — BUDGET BUTTONS
+================================================================ */
+
+document
+  .querySelectorAll(
+    ".budget-chip"
+  )
+  .forEach(button=>{
+
+    button.addEventListener(
+      "click",
+      ()=>{
+
+        document
+          .querySelectorAll(
+            ".budget-chip"
+          )
+          .forEach(
+            item =>
+              item.classList.remove(
+                "active"
+              )
+          );
+
+
+        button.classList.add(
+          "active"
+        );
+
+
+        selectedBudget =
+          parseInt(
+            button.dataset.budget,
+            10
+          );
+
+      }
+    );
+
+  });
+
+
+/* ================================================================
+   UI — ANALYZE
+================================================================ */
+
+document
+  .getElementById(
+    "analyzeBtn"
+  )
+  .addEventListener(
+    "click",
+    runAnalysis
+  );
+
+
+/* ================================================================
+   SAMPLE DECK
+================================================================ */
+
+document
+  .getElementById(
+    "sampleBtn"
+  )
+  .addEventListener(
+    "click",
+    ()=>{
+
+      document
+        .getElementById(
+          "decklistInput"
+        )
+        .value =
+
 `Commander: Ghired, Conclave Exile
+
 1 Sol Ring
 1 Arcane Signet
+1 Selesnya Signet
 1 Cultivate
+1 Kodama's Reach
 1 Rampant Growth
-1 Swords to Plowshares
-1 Beast Within
-1 Wrath of God
+1 Farseek
+1 Nature's Lore
 1 Skullclamp
+1 Harmonize
+1 Beast Whisperer
+1 Guardian Project
+1 Swords to Plowshares
+1 Path to Exile
+1 Beast Within
+1 Generous Gift
+1 Wrath of God
+1 Austere Command
+1 Heroic Intervention
+1 Swiftfoot Boots
 1 Anointed Procession
 1 Parallel Lives
-1 Krenko, Mob Boss
-2 Elvish Visionary
-1 Trained Armodon
-1 Grizzly Bears
-1 Hill Giant
-1 Sengir Vampire
+1 Doubling Season
+1 Avenger of Zendikar
+1 Craterhoof Behemoth
 1 Command Tower
 1 Exotic Orchard
 1 Temple Garden
-17 Forest
-15 Plains
-1 Selesnya Signet`;
-});
+1 Sacred Foundry
+1 Stomping Ground
+1 Canopy Vista
+1 Sunpetal Grove
+1 Rootbound Crag
+1 Clifftop Retreat
+1 Temple of Plenty
+1 Temple of Triumph
+1 Temple of Abandon
+1 Krosan Verge
+1 Terramorphic Expanse
+1 Evolving Wilds
+1 Myriad Landscape
+1 Reliquary Tower
+1 Rogue's Passage
+20 Forest
+10 Plains
+5 Mountain`;
 
-document.getElementById('analyzeBtn').addEventListener('click', runAnalysis);
-
-async function runAnalysis() {
-  const text = document.getElementById('decklistInput').value;
-  const errBox = document.getElementById('errorBox');
-  const statusLine = document.getElementById('statusLine');
-  const btn = document.getElementById('analyzeBtn');
-  errBox.style.display = 'none';
-  document.getElementById('results').style.display = 'none';
-
-  if (!text.trim()) { errBox.textContent = 'Paste a decklist first.'; errBox.style.display = 'block'; return; }
-
-  btn.disabled = true;
-  statusLine.textContent = 'Parsing decklist…';
-
-  try {
-    const { commanderNames, mainCards } = parseDecklist(text);
-    const override = document.getElementById('commanderOverride').value.trim();
-    let finalCommanderNames = override ? [override] : commanderNames;
-    if (mainCards.length === 0 && finalCommanderNames.length === 0) throw new Error('Couldn\'t find any card lines in that text. Check the format and try again.');
-
-    statusLine.textContent = 'Fetching card data (cached where possible)…';
-    const allNames = Array.from(new Set([...finalCommanderNames, ...mainCards.map(c => c.name)]));
-    const { results: cardData, apiFailed } = await fetchCollection(allNames);
-
-    let commanderCard = null;
-    if (finalCommanderNames.length) commanderCard = cardData.get(finalCommanderNames[0].toLowerCase()) || null;
-    if (!commanderCard) {
-      for (const entry of mainCards) {
-        const card = cardData.get(entry.name.toLowerCase());
-        if (card && /Legendary/.test(normalizedType(card)) && (/Creature/.test(normalizedType(card)) || /Planeswalker/.test(normalizedType(card)))) { commanderCard = card; break; }
-      }
     }
-    const commanderKey = commanderCard ? commanderCard.name.toLowerCase() : null;
+  );
 
-    const deckEntries = mainCards
-      .filter(c => c.name.toLowerCase() !== commanderKey)
-      .map(c => {
-        let card = cardData.get(c.name.toLowerCase()) || null;
-        if (!card && apiFailed && FALLBACK_LANDS.has(c.name.toLowerCase())) {
-          card = { name: c.name, type_line: 'Land', cmc: 0, color_identity: [], oracle_text: '' };
-        }
-        const tags = card ? tagCard(card) : new Set();
-        return { name: c.name, quantity: c.quantity, card, tags };
-      });
-    const unresolvedNames = deckEntries.filter(e => !e.card).map(e => e.name);
 
-    statusLine.textContent = 'Analyzing strategy and deck health…';
-    const analysis = analyzeDeck(commanderCard, deckEntries);
-    const scores = computeScores(analysis);
-
-    statusLine.textContent = 'Checking EDHREC for commander synergy data…';
-    const edhrecMap = commanderCard ? await fetchEdhrecData(commanderCard.name) : null;
-
-    statusLine.textContent = 'Finding upgrade candidates…';
-    const deckNameSet = new Set(deckEntries.map(e => e.name.toLowerCase()));
-    if (commanderCard) deckNameSet.add(commanderCard.name.toLowerCase());
-    const adds = await buildRecommendations(analysis, deckNameSet, selectedBudget, edhrecMap);
-    const cuts = buildCuts(deckEntries, analysis, adds, edhrecMap, commanderCard ? commanderCard.name : null);
-
-    render(commanderCard, analysis, scores, cuts, adds, unresolvedNames, apiFailed, edhrecMap, selectedBudget, commanderCard ? commanderCard.name : null);
-
-    statusLine.textContent = unresolvedNames.length ? `Done. ${unresolvedNames.length} card name(s) couldn't be matched.` : 'Done.';
-  } catch (err) {
-    console.error(err);
-    errBox.textContent = 'Something went wrong: ' + err.message + '. If this keeps happening, check that this page can reach api.scryfall.com.';
-    errBox.style.display = 'block';
-    statusLine.textContent = '';
-  } finally {
-    btn.disabled = false;
-  }
-}
 </script>
+
 </body>
 </html>
